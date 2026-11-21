@@ -1,0 +1,8 @@
+import {useState} from 'react';
+import {Swords,X} from 'lucide-react';
+import './MonsterAlertSelection.css';
+export default function MonsterAlertSelection({ids,onChange,disabled,monsters=[]}:{ids:number[];onChange:(ids:number[])=>void;disabled:boolean;monsters?:{monsterId:number;monsterName:string}[]}){
+  const [input,setInput]=useState(''),[error,setError]=useState('');
+  function add(value:number){if(!Number.isSafeInteger(value)||value<=0||value>0xffffffff){setError('Geçerli bir yaratık kimliği gir.');return;}if(ids.length>=512&&!ids.includes(value)){setError('En fazla 512 yaratık seçebilirsin.');return;}setError('');onChange([...new Set([...ids,value])]);setInput('');}
+  return <div className="monster-alert-selection"><div className="monster-alert-chips">{ids.map(id=><span key={id}><Swords size={12}/>{id===1313?'Mobster':monsters.find(monster=>monster.monsterId===id)?.monsterName||`Yaratık #${id}`}<small>#{id}</small><button type="button" aria-label={`${id} yaratığını kaldır`} disabled={disabled} onClick={()=>onChange(ids.filter(value=>value!==id))}><X size={12}/></button></span>)}{!ids.length&&<em>Henüz yaratık seçilmedi.</em>}</div><div className="monster-alert-add"><input aria-label="Bildirim yaratık kimliği" inputMode="numeric" placeholder="Yaratık kimliği" value={input} onChange={event=>setInput(event.target.value)} onKeyDown={event=>{if(event.key==='Enter'){event.preventDefault();add(Number(input));}}} disabled={disabled}/><button type="button" className="button secondary" disabled={disabled} onClick={()=>add(Number(input))}>Yaratık ekle</button>{!ids.includes(1313)&&<button type="button" className="button secondary" disabled={disabled} onClick={()=>add(1313)}>Mobster ekle</button>}</div>{error&&<p role="alert">{error}</p>}</div>;
+}

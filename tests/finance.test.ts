@@ -1,0 +1,44 @@
+import {describe,it,expect} from 'vitest';
+import {applyFinanceCommand,createFinanceState,financeInventory,financeReport,priceFor} from '../src/domain/finance';
+import type {FinanceCommand} from '../src/domain/finance';
+function fixture(){let state=createFinanceState(),sequence=0,now='2026-11-04T10:00:00.000Z';return{get state(){return state;},setTime:(value:string)=>now=value,run:(command:FinanceCommand)=>state=applyFinanceCommand(state,command,{now,id:()=>`event-${++sequence}`}),start:(key='a')=>{state=applyFinanceCommand(state,{type:'session.start',characterKey:key,characterName:`Karakter ${key}`},{now,id:()=>`event-${++sequence}`});return state.sessions.at(-1)!.id;},price:(value:number|null,characterKey:string|null=null)=>{state=applyFinanceCommand(state,{type:'price.set',price:{itemId:501,itemName:'Red Potion',characterKey,marketPrice:value,npcPrice:25,buyCost:12,method:'market'}},{now,id:()=>`event-${++sequence}`});},report:(options:Parameters<typeof financeReport>[1]={})=>financeReport(state,{now,...options})};}
+const receive=(sessionId:string,quantity=10):Extract<FinanceCommand,{type:'receipt.add'}>=>({type:'receipt.add',sessionId,itemId:501,itemName:'Red Potion',quantity});
+describe('manual finance ledger',()=>{
+  it('keeps missing prices unknown, supports real zero and excludes unclassified inventory',()=>{const f=fixture(),id=f.start();f.run(receive(id));expect(f.report()).toMatchObject({estimatedValue:null,unknownQuantity:10,knownEstimatedValue:0,partial:true});
+    const g=fixture(),session=g.start();g.price(0);g.run(receive(session));expect(g.report()).toMatchObject({estimatedValue:0,unknownQuantity:0,partial:false});
+    const h=fixture(),other=h.start();h.price(10);h.run({...receive(other),type:'receipt.add',source:'inventory',sourceKey:'observed-1'});expect(h.report()).toMatchObject({estimatedValue:0,unclassifiedQuantity:10,realizedRevenue:0});
+  });
+  it('freezes original prices and revalues only with an explicit option',()=>{const f=fixture(),id=f.start();f.price(10);f.run(receive(id));f.price(20);expect(f.report().estimatedValue).toBe(100);expect(f.report({revalue:true}).estimatedValue).toBe(200);});
+  it('uses character overrides and can return to the shared book without rewriting history',()=>{const f=fixture(),a=f.start('a'),b=f.start('b');f.price(10);f.price(15,'a');f.run(receive(a,2));f.run(receive(b,2));expect(f.report().estimatedValue).toBe(50);expect(priceFor(f.state,501,'a').scope).toBe('character');
+    f.run({type:'price.remove',itemId:501,characterKey:'a'});expect(priceFor(f.state,501,'a').unitValue).toBe(10);expect(f.report().estimatedValue).toBe(50);expect(f.report({revalue:true}).estimatedValue).toBe(40);
+  });
+  it('consumes unsold quantities FIFO and separates proceeds from the remaining estimate',()=>{const f=fixture(),id=f.start();f.price(10);f.run(receive(id,5));f.price(20);f.run(receive(id,5));f.run({type:'sale.add',sessionId:id,itemId:501,quantity:6,unitPrice:30});
+    expect(financeInventory(f.state)).toHaveLength(1);expect(f.report()).toMatchObject({knownEstimatedValue:80,realizedRevenue:180,grossValue:260});
+    expect(()=>f.run({type:'sale.add',sessionId:id,itemId:501,quantity:5,unitPrice:30})).toThrow('yeterli');
+  });
+  it('transfers original lots without creating income and does not count a later sale twice',()=>{const f=fixture(),a=f.start('a'),b=f.start('b');f.price(10);f.run(receive(a));f.run({type:'transfer.add',sessionId:a,toSessionId:b,itemId:501,quantity:4});
+    expect(f.report().grossValue).toBe(100);expect(f.report().characters.map(value=>value.grossValue)).toEqual([60,40]);
+    f.run({type:'sale.add',sessionId:b,itemId:501,quantity:2,unitPrice:15});expect(f.report()).toMatchObject({knownEstimatedValue:80,realizedRevenue:30,grossValue:110});expect(f.state.events.filter(value=>value.kind==='receipt')).toHaveLength(1);
+  });
+  it('uses one wall-clock hour for three simultaneous characters and exposes three character-hours',()=>{const f=fixture();f.price(100);for(const key of ['a','b','c']){const id=f.start(key);f.run(receive(id,1));}f.setTime('2026-11-04T11:00:00.000Z');
+    expect(f.report()).toMatchObject({activeMs:3600000,characterHours:3,netPerHour:300});expect(f.report().characters.every(value=>value.netPerHour===100)).toBe(true);
+  });
+  it('separates active, idle and total session time and stops closed sessions',()=>{const f=fixture(),id=f.start();f.price(100);f.run(receive(id,1));f.setTime('2026-11-04T10:20:00.000Z');f.run({type:'session.pause',sessionId:id});f.setTime('2026-11-04T10:40:00.000Z');f.run({type:'session.resume',sessionId:id});f.setTime('2026-11-04T11:00:00.000Z');f.run({type:'session.close',sessionId:id});f.setTime('2026-11-04T12:00:00.000Z');
+    expect(f.report()).toMatchObject({activeMs:2400000,totalMs:3600000,idleMs:1200000,netPerHour:150});expect(()=>f.run(receive(id))).toThrow('kapalı');
+  });
+  it('records only explicit expenses and optional acquisition costs',()=>{const f=fixture(),id=f.start();f.price(20);f.run(receive(id,10));expect(f.report().expenses).toBe(0);
+    f.run({...receive(id,2),type:'receipt.add',purchaseUnitCost:7});f.run({type:'expense.add',sessionId:id,category:'travel',amount:5,note:'Kafra'});expect(f.report()).toMatchObject({grossValue:240,expenses:19,netValue:221});
+  });
+  it('deduplicates an accepted observation across repeat ingestion and audits classification changes',()=>{const f=fixture(),id=f.start();f.price(10);const command:FinanceCommand={...receive(id,2),type:'receipt.add',source:'inventory',sourceKey:'stream-owner-packet-fingerprint'};f.run(command);const before=f.state;expect(f.run(command)).toBe(before);expect(f.report().unclassifiedQuantity).toBe(2);
+    const receipt=f.state.events[0];f.run({type:'receipt.classify',receiptId:receipt.id,classification:'farm'});expect(f.report()).toMatchObject({grossValue:20,unclassifiedQuantity:0});expect(f.state.events.at(-1)?.kind).toBe('classification');
+  });
+  it('applies day, Monday-based week, month and all-time event filters',()=>{const f=fixture();f.setTime('2026-10-15T10:00:00.000Z');const id=f.start();f.price(10);f.run(receive(id,1));for(const date of ['2026-11-01T10:00:00.000Z','2026-11-03T10:00:00.000Z','2026-11-04T10:00:00.000Z']){f.setTime(date);f.run(receive(id,1));}
+    expect(f.report({period:'all'}).grossValue).toBe(40);expect(f.report({period:'month'}).grossValue).toBe(30);expect(f.report({period:'week'}).grossValue).toBe(20);expect(f.report({period:'day'}).grossValue).toBe(10);
+  });
+  it('keeps prior-period sales separate from current unsold inventory and preserves unknown IDs',()=>{const f=fixture();f.setTime('2026-11-03T10:00:00.000Z');const id=f.start();f.price(10);f.run(receive(id,10));f.setTime('2026-11-04T10:00:00.000Z');f.run({type:'sale.add',sessionId:id,itemId:501,quantity:4,unitPrice:15});
+    expect(f.report({period:'day'})).toMatchObject({knownEstimatedValue:0,realizedRevenue:60,grossValue:60});f.run({type:'receipt.add',sessionId:id,itemId:999999,itemName:'Bilinmeyen eşya #999999',quantity:1});expect(f.report().unknownItems).toBe(1);
+  });
+  it('rejects invalid amounts, duplicate open characters and transfers to the same owner',()=>{const f=fixture(),id=f.start();expect(()=>f.start()).toThrow('zaten');expect(()=>f.run(receive(id,-1))).toThrow();expect(()=>f.price(NaN)).toThrow();expect(()=>f.run({type:'expense.add',sessionId:id,category:'other',amount:Infinity})).toThrow();
+    f.price(1);f.run(receive(id));expect(()=>f.run({type:'transfer.add',sessionId:id,toSessionId:id,itemId:501,quantity:1})).toThrow('farklı');expect(f.state.version).toBe(1);
+  });
+});

@@ -1,0 +1,682 @@
+.assistant-shell .auto-finance,
+.assistant-shell .kill-count-panel {
+  color: #243b34;
+  gap: 22px;
+}
+
+.assistant-shell .auto-finance-intro {
+  background: #f0eee3;
+  border-color: #ded8c5;
+  border-radius: 12px;
+}
+
+.assistant-shell .auto-finance-intro h2,
+.assistant-shell .auto-finance-section-heading h3,
+.assistant-shell .auto-finance-empty h3,
+.assistant-shell .kill-count-toolbar h2,
+.assistant-shell .kill-count-list-heading h3,
+.assistant-shell .kill-count-empty h3,
+.assistant-shell .character-alert-heading h2 {
+  color: #243b34;
+  font-weight: 600;
+}
+
+.assistant-shell .auto-finance-intro p,
+.assistant-shell .auto-finance-empty p,
+.assistant-shell .auto-finance-waiting,
+.assistant-shell .auto-finance-note,
+.assistant-shell .auto-finance-section-heading > span,
+.assistant-shell .kill-count-kpi p,
+.assistant-shell .kill-count-unattributed,
+.assistant-shell .kill-count-unattributed small,
+.assistant-shell .kill-count-empty p,
+.assistant-shell .kill-count-note {
+  color: #65746a;
+}
+
+.assistant-shell .auto-finance-trust,
+.assistant-shell .auto-finance-stat svg,
+.assistant-shell .kill-count-toolbar h2 span,
+.assistant-shell .kill-count-kpi svg,
+.assistant-shell .kill-count-unattributed > svg,
+.assistant-shell .kill-count-unattributed strong {
+  color: #8a6734;
+}
+
+.assistant-shell .auto-finance-stat,
+.assistant-shell .auto-finance-section,
+.assistant-shell .kill-count-monsters,
+.assistant-shell .character-alert-preferences {
+  background: #fffef9;
+  border-color: #dcded2;
+  border-radius: 12px;
+  box-shadow: 0 3px 14px #243b3403;
+}
+
+.assistant-shell .auto-finance-stat:first-child {
+  border-color: #c4d3c6;
+  background: #edf3eb;
+}
+
+.assistant-shell .auto-finance-stat > div {
+  color: #52675c;
+}
+
+.assistant-shell .auto-finance-stat > div > small {
+  background: #f5efdf;
+  color: #866331;
+  border-color: #ddcfb1;
+}
+
+.assistant-shell .auto-finance-stat > strong {
+  color: #243b34;
+  font-variant-numeric: tabular-nums;
+}
+
+.assistant-shell .auto-finance-stat:first-child > strong,
+.assistant-shell .auto-finance-character-rate {
+  color: #315f50;
+}
+
+.assistant-shell .auto-finance-stat > p,
+.assistant-shell .auto-finance-character small,
+.assistant-shell .auto-finance td > small {
+  color: #65746a;
+}
+
+.assistant-shell .auto-finance-character {
+  background: #f7f8f1;
+  border-color: #e0e4d8;
+  border-radius: 9px;
+}
+
+.assistant-shell .auto-finance-character-name > span {
+  background: #e9eee1;
+  color: #54704d;
+  border-color: #d2dcc8;
+}
+
+.assistant-shell .auto-finance-character.waiting {
+  opacity: 1;
+  color: #65746a;
+}
+
+.assistant-shell .auto-finance-unpriced {
+  background: #faf4e5;
+  border-color: #e4d7b4;
+}
+
+.assistant-shell .auto-finance-unpriced > div:first-child,
+.assistant-shell .auto-finance td:last-child {
+  color: #856332;
+}
+
+.assistant-shell .auto-finance-unpriced p,
+.assistant-shell .auto-finance-unpriced-list small {
+  color: #7b6b4d;
+}
+
+.assistant-shell .auto-finance-unpriced-list > button {
+  background: #fffdf6;
+  color: #71562c;
+  border-color: #d9c9a7;
+  border-radius: 8px;
+  min-height: 36px;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.assistant-shell .auto-finance-unpriced-list > button:hover:not(:disabled) {
+  background: #f3ead3;
+  border-color: #aa8955;
+}
+
+.assistant-shell .auto-finance th {
+  color: #65746a;
+  background: #f6f7f0;
+  border-bottom-color: #dcded2;
+}
+
+.assistant-shell .auto-finance td {
+  border-bottom-color: #e6e8dd;
+}
+
+.assistant-shell .auto-finance td.unpriced {
+  color: #766b50;
+}
+
+.assistant-shell .kill-count-toolbar label {
+  color: #65746a;
+}
+
+.assistant-shell .kill-count-toolbar select {
+  color: #243b34;
+  background: #fffef9;
+  border-color: #d0d7cb;
+  border-radius: 8px;
+  min-height: 40px;
+}
+
+.assistant-shell .kill-count-kpi {
+  background: #edf3eb;
+  border-color: #c9d6c8;
+  border-radius: 12px;
+}
+
+.assistant-shell .kill-count-kpi.rate {
+  background: #f5f0e4;
+  border-color: #dfd5bc;
+}
+
+.assistant-shell .kill-count-kpi > div {
+  color: #52675c;
+}
+
+.assistant-shell .kill-count-kpi > strong {
+  color: #315f50;
+  font-variant-numeric: tabular-nums;
+}
+
+.assistant-shell .kill-count-kpi.rate > strong {
+  color: #856332;
+}
+
+.assistant-shell .kill-count-search {
+  border-color: #d0d7cb;
+  background: #fffef9;
+}
+
+.assistant-shell .kill-count-search svg,
+.assistant-shell .kill-count-empty svg {
+  color: #6a7a6d;
+}
+
+.assistant-shell .kill-count-search input {
+  color: #243b34;
+}
+
+.assistant-shell .kill-count-search input::placeholder {
+  color: #7b877c;
+}
+
+.assistant-shell .kill-count-search:focus-within {
+  border-color: #547c67;
+  box-shadow: 0 0 0 3px #315f5012;
+}
+
+.assistant-shell .kill-count-monster-heading > div {
+  color: #315f50;
+}
+
+.assistant-shell .kill-count-monster-heading span {
+  color: #65746a;
+}
+
+.assistant-shell .kill-count-monsters li.unknown .kill-count-monster-heading > div,
+.assistant-shell .kill-count-monsters li > small {
+  color: #856332;
+}
+
+.assistant-shell .kill-count-thinbar {
+  background: #e4e9dc;
+}
+
+.assistant-shell .kill-count-thinbar > span,
+.assistant-shell .kill-count-monsters li.unknown .kill-count-thinbar > span {
+  background: #6a9a7c;
+}
+
+.assistant-shell .character-farm,
+.assistant-shell .character-exp {
+  border-color: #d7dfce;
+  background: #f2f6ed;
+  border-radius: 9px;
+  padding: 14px;
+}
+
+.assistant-shell .character-farm.waiting {
+  background: #f6f7f1;
+  border-color: #dfe3d6;
+}
+
+.assistant-shell .character-farm-heading,
+.assistant-shell .character-exp-heading {
+  color: #6f774c;
+}
+
+.assistant-shell .character-farm-heading > span {
+  color: #856332;
+  background: #f7efd9;
+  border-color: #dfd0ac;
+}
+
+.assistant-shell .character-farm-stats span,
+.assistant-shell .character-exp-stats > div > span {
+  color: #65746a;
+}
+
+.assistant-shell .character-farm-stats strong,
+.assistant-shell .character-exp-stats strong {
+  color: #315f50;
+  font-variant-numeric: tabular-nums;
+}
+
+.assistant-shell .character-exp-stats strong > i {
+  color: #9ca68f;
+}
+
+.assistant-shell .character-farm-partial {
+  color: #856332;
+}
+
+.assistant-shell .character-farm-note,
+.assistant-shell .character-farm-waiting,
+.assistant-shell .character-exp-waiting {
+  color: #65746a;
+}
+
+.assistant-shell .character-farm-items,
+.assistant-shell .character-exp-details {
+  border-top-color: #d7dfce;
+}
+
+.assistant-shell .character-farm-items summary,
+.assistant-shell .character-exp-details > summary {
+  color: #496452;
+}
+
+.assistant-shell .character-farm th {
+  color: #65746a;
+  border-bottom-color: #d7dfce;
+}
+
+.assistant-shell .character-farm td {
+  color: #405a4d;
+  border-bottom-color: #dfe5d8;
+}
+
+.assistant-shell .character-farm td:last-child {
+  color: #856332;
+}
+
+.assistant-shell .farm-price-input-wrap {
+  border-color: #cbd5c5;
+  background: #fffef9;
+  border-radius: 8px;
+}
+
+.assistant-shell .farm-price-input-wrap input {
+  color: #243b34;
+  font-variant-numeric: tabular-nums;
+}
+
+.assistant-shell .farm-price-input-wrap input::placeholder {
+  color: #7c8678;
+}
+
+.assistant-shell .farm-price-input-wrap > small,
+.assistant-shell .farm-price-status {
+  color: #65746a;
+}
+
+.assistant-shell .farm-price-input-wrap:focus-within {
+  border-color: #547c67;
+  box-shadow: 0 0 0 3px #315f5012;
+}
+
+.assistant-shell .farm-price-field.unpriced .farm-price-input-wrap {
+  border-color: #b59b65;
+  background: #fffdf6;
+}
+
+.assistant-shell .farm-price-field.pending .farm-price-status,
+.assistant-shell .farm-price-field.saving .farm-price-status {
+  color: #8a6734;
+}
+
+.assistant-shell .farm-price-field.saved .farm-price-status {
+  color: #315f50;
+}
+
+.assistant-shell .farm-price-field.error .farm-price-input-wrap {
+  border-color: #b16663;
+}
+
+.assistant-shell .farm-price-field.error .farm-price-status,
+.assistant-shell .monster-alert-selection > p[role="alert"] {
+  color: #9b4645;
+}
+
+.assistant-shell .expanded-exp-track,
+.assistant-shell .expanded-exp-calibration {
+  border-top-color: #d7dfce;
+}
+
+.assistant-shell .expanded-exp-heading > strong,
+.assistant-shell .expanded-exp-amount > strong,
+.assistant-shell .expanded-exp-rates dd {
+  color: #243b34;
+}
+
+.assistant-shell .expanded-exp-level,
+.assistant-shell .expanded-exp-quality.calibrated,
+.assistant-shell .expanded-exp-quality.estimated,
+.assistant-shell .expanded-exp-calibration summary,
+.assistant-shell .expanded-exp-paused {
+  color: #856332;
+}
+
+.assistant-shell .expanded-exp-quality,
+.assistant-shell .expanded-exp-amount,
+.assistant-shell .expanded-exp-remaining,
+.assistant-shell .expanded-exp-rates summary,
+.assistant-shell .expanded-exp-rates dl,
+.assistant-shell .expanded-exp-rates p,
+.assistant-shell .expanded-exp-calibration,
+.assistant-shell .expanded-exp-calibration p,
+.assistant-shell .expanded-exp-table-source,
+.assistant-shell .expanded-exp-metrics span,
+.assistant-shell .expanded-exp-metrics small {
+  color: #65746a;
+}
+
+.assistant-shell .expanded-exp-quality.actual,
+.assistant-shell .expanded-exp-amount b,
+.assistant-shell .expanded-exp-rates summary > strong,
+.assistant-shell .expanded-exp-metrics strong {
+  color: #315f50;
+}
+
+.assistant-shell .expanded-exp-quality.stale {
+  color: #9b4645;
+}
+
+.assistant-shell .expanded-exp-bar {
+  background: #dfe7d8;
+}
+
+.assistant-shell .expanded-exp-bar > span {
+  background: #6a9a7c;
+}
+
+.assistant-shell .expanded-exp-track.job .expanded-exp-bar > span {
+  background: #9a87aa;
+}
+
+.assistant-shell .expanded-exp-track.job .expanded-exp-amount b,
+.assistant-shell .expanded-exp-track.job .expanded-exp-metrics strong {
+  color: #79628c;
+}
+
+.assistant-shell .expanded-exp-remaining strong {
+  color: #405a4d;
+}
+
+.assistant-shell .expanded-exp-metrics > div {
+  background: #fffef9;
+  border-color: #dce2d3;
+}
+
+.assistant-shell .expanded-exp-calibration select,
+.assistant-shell .expanded-exp-calibration input,
+.assistant-shell .character-alert-preferences select,
+.assistant-shell .character-alert-preferences input:not([type="checkbox"]),
+.assistant-shell .monster-alert-add input {
+  color: #243b34;
+  background: #fffef9;
+  border-color: #cbd5c5;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.assistant-shell .expanded-exp-calibration select,
+.assistant-shell .expanded-exp-calibration input,
+.assistant-shell .character-alert-preferences select,
+.assistant-shell .character-alert-preferences input:not([type="checkbox"]),
+.assistant-shell .monster-alert-add input {
+  min-height: 36px;
+}
+
+.assistant-shell .expanded-exp-calibration .button {
+  min-height: 36px;
+  height: auto;
+}
+
+.assistant-shell .character-alert-heading {
+  color: #8a6734;
+}
+
+.assistant-shell .character-alert-heading p,
+.assistant-shell .character-alert-fields label,
+.assistant-shell .character-alert-expanded small,
+.assistant-shell .character-alert-actions small {
+  color: #65746a;
+}
+
+.assistant-shell .character-alert-legacy,
+.assistant-shell .character-alert-expanded {
+  border-color: #dcded2;
+}
+
+.assistant-shell .character-alert-legacy label {
+  color: #405a4d;
+}
+
+.assistant-shell .character-alert-preferences input[type="checkbox"] {
+  accent-color: #315f50;
+}
+
+.assistant-shell .character-alert-expanded label {
+  color: #405a4d;
+  background: #f6f7f0;
+  border-color: #dfe4d6;
+}
+
+.assistant-shell .character-alert-expanded label:has(input:checked) {
+  background: #edf3e8;
+  border-color: #b7c9b1;
+}
+
+.assistant-shell .character-alert-estimates {
+  background: #faf4e5;
+  border-color: #e4d7b4;
+  color: #856332;
+}
+
+.assistant-shell .character-alert-estimates small {
+  color: #7b6b4d;
+}
+
+.assistant-shell .monster-alert-chips > span {
+  color: #71562c;
+  background: #f6efd9;
+  border-color: #ded0ac;
+}
+
+.assistant-shell .monster-alert-chips > span > small,
+.assistant-shell .monster-alert-chips button {
+  color: #7e673f;
+}
+
+.assistant-shell .monster-alert-chips em {
+  color: #65746a;
+}
+
+.assistant-shell .monster-alert-chips button {
+  min-width: 24px;
+  min-height: 24px;
+  border-radius: 4px;
+}
+
+.assistant-shell .monster-alert-chips button:hover:not(:disabled) {
+  color: #9b4645;
+  background: #eadfc7;
+}
+
+.assistant-shell .monster-alert-add .button {
+  min-height: 36px;
+}
+
+.assistant-shell .assistant-alert-row.monster .assistant-alert-symbol {
+  color: #52784c;
+  background: #eaf0e2;
+  border-color: #cbdac1;
+}
+
+.assistant-shell .auto-finance-unpriced-list > button:focus-visible,
+.assistant-shell .monster-alert-chips button:focus-visible,
+.assistant-shell .kill-count-toolbar select:focus-visible,
+.assistant-shell .expanded-exp-calibration select:focus-visible,
+.assistant-shell .expanded-exp-calibration input:focus-visible,
+.assistant-shell .character-alert-preferences select:focus-visible,
+.assistant-shell .character-alert-preferences input:focus-visible,
+.assistant-shell .monster-alert-add input:focus-visible {
+  outline: 2px solid #547c67;
+  outline-offset: 3px;
+}
+
+.assistant-shell .character-alert-preferences select:disabled,
+.assistant-shell .character-alert-preferences input:disabled,
+.assistant-shell .monster-alert-add input:disabled,
+.assistant-shell .auto-finance-unpriced-list > button:disabled,
+.assistant-shell .monster-alert-chips button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 800px) {
+  .assistant-shell .auto-finance-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .assistant-shell .auto-finance-intro {
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .assistant-shell .auto-finance-intro > img {
+    width: 80px;
+  }
+
+  .assistant-shell .auto-finance-intro h2 {
+    font-size: 23px;
+  }
+
+  .assistant-shell .auto-finance-stat,
+  .assistant-shell .auto-finance-section,
+  .assistant-shell .kill-count-monsters,
+  .assistant-shell .character-alert-preferences {
+    padding: 18px;
+  }
+
+  .assistant-shell .auto-finance-character {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .assistant-shell .auto-finance-character-rate {
+    grid-column: 2;
+    grid-row: 1 / 3;
+  }
+
+  .assistant-shell .character-alert-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .assistant-shell .character-alert-heading select {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .assistant-shell .character-alert-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .assistant-shell .character-alert-expanded {
+    grid-template-columns: 1fr;
+  }
+
+  .assistant-shell .kill-count-toolbar,
+  .assistant-shell .kill-count-list-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .assistant-shell .kill-count-toolbar label,
+  .assistant-shell .kill-count-search {
+    min-width: 0;
+  }
+
+  .assistant-shell .kill-count-kpi {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .assistant-shell .auto-finance-intro > img {
+    display: none;
+  }
+
+  .assistant-shell .auto-finance-kpis,
+  .assistant-shell .kill-count-kpis,
+  .assistant-shell .character-alert-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .assistant-shell .auto-finance-section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .assistant-shell .auto-finance-character {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .assistant-shell .auto-finance-character-rate {
+    grid-column: auto;
+    grid-row: auto;
+    text-align: left;
+  }
+
+  .assistant-shell .auto-finance table {
+    min-width: 530px;
+  }
+
+  .assistant-shell .kill-count-monster-heading {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .assistant-shell .kill-count-kpi > strong {
+    font-size: 34px;
+    margin: 16px 0 10px;
+  }
+
+  .assistant-shell .character-alert-actions .button {
+    width: 100%;
+  }
+
+  .assistant-shell .character-alert-actions small {
+    margin-left: 0;
+  }
+
+  .assistant-shell .character-exp-stats > div {
+    gap: 7px;
+  }
+
+  .assistant-shell .character-farm table {
+    min-width: 290px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .assistant-shell .auto-finance-unpriced-list > button,
+  .assistant-shell .expanded-exp-bar > span,
+  .assistant-shell .kill-count-thinbar > span {
+    transition: none;
+  }
+}

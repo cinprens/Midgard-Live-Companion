@@ -1,0 +1,490 @@
+.assistant-shell[data-theme='dark'] .auto-finance,
+.assistant-shell[data-theme='dark'] .kill-count-panel {
+  color: #e3e7d8;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-intro {
+  background: #23261c;
+  border-color: #4b4733;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-intro h2,
+.assistant-shell[data-theme='dark'] .auto-finance-section-heading h3,
+.assistant-shell[data-theme='dark'] .auto-finance-empty h3,
+.assistant-shell[data-theme='dark'] .kill-count-toolbar h2,
+.assistant-shell[data-theme='dark'] .kill-count-list-heading h3,
+.assistant-shell[data-theme='dark'] .kill-count-empty h3,
+.assistant-shell[data-theme='dark'] .character-alert-heading h2 {
+  color: #e3e7d8;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-intro p,
+.assistant-shell[data-theme='dark'] .auto-finance-empty p,
+.assistant-shell[data-theme='dark'] .auto-finance-waiting,
+.assistant-shell[data-theme='dark'] .auto-finance-note,
+.assistant-shell[data-theme='dark'] .auto-finance-section-heading > span,
+.assistant-shell[data-theme='dark'] .kill-count-kpi p,
+.assistant-shell[data-theme='dark'] .kill-count-unattributed,
+.assistant-shell[data-theme='dark'] .kill-count-unattributed small,
+.assistant-shell[data-theme='dark'] .kill-count-empty p,
+.assistant-shell[data-theme='dark'] .kill-count-note {
+  color: #a1ad98;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-trust,
+.assistant-shell[data-theme='dark'] .auto-finance-stat svg,
+.assistant-shell[data-theme='dark'] .kill-count-toolbar h2 span,
+.assistant-shell[data-theme='dark'] .kill-count-kpi svg,
+.assistant-shell[data-theme='dark'] .kill-count-unattributed > svg,
+.assistant-shell[data-theme='dark'] .kill-count-unattributed strong {
+  color: #d1b57d;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-stat,
+.assistant-shell[data-theme='dark'] .auto-finance-section,
+.assistant-shell[data-theme='dark'] .kill-count-monsters,
+.assistant-shell[data-theme='dark'] .character-alert-preferences {
+  background: #171c17;
+  border-color: #303b30;
+  box-shadow: 0 3px 14px #00000020;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-stat:first-child {
+  border-color: #40543b;
+  background: #1d2a1d;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-stat > div {
+  color: #bcc8b2;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-stat > div > small {
+  background: #30291c;
+  color: #d1b57d;
+  border-color: #675537;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-stat > strong {
+  color: #e3e7d8;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-stat:first-child > strong,
+.assistant-shell[data-theme='dark'] .auto-finance-character-rate {
+  color: #afc99c;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-stat > p,
+.assistant-shell[data-theme='dark'] .auto-finance-character small,
+.assistant-shell[data-theme='dark'] .auto-finance td > small {
+  color: #a1ad98;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-character {
+  background: #1c241d;
+  border-color: #303b30;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-character-name > span {
+  background: #263221;
+  color: #afc99c;
+  border-color: #40543b;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-character.waiting {
+  color: #a1ad98;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-unpriced {
+  background: #272319;
+  border-color: #625236;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-unpriced > div:first-child,
+.assistant-shell[data-theme='dark'] .auto-finance td:last-child {
+  color: #d1b57d;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-unpriced p,
+.assistant-shell[data-theme='dark'] .auto-finance-unpriced-list small {
+  color: #bdb093;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-unpriced-list > button {
+  background: #211f17;
+  color: #d1b57d;
+  border-color: #675537;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-unpriced-list > button:hover:not(:disabled) {
+  background: #382f1e;
+  border-color: #a78b59;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance th {
+  color: #a1ad98;
+  background: #1c241d;
+  border-bottom-color: #303b30;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance td {
+  border-bottom-color: #303b30;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance td.unpriced {
+  color: #c0b18d;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-toolbar label {
+  color: #a1ad98;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-toolbar select {
+  color: #e3e7d8;
+  background: #171c17;
+  border-color: #3f4c38;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-kpi {
+  background: #1d2a1d;
+  border-color: #40543b;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-kpi.rate {
+  background: #28251b;
+  border-color: #51472f;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-kpi > div {
+  color: #bcc8b2;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-kpi > strong {
+  color: #afc99c;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-kpi.rate > strong {
+  color: #d1b57d;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-search {
+  border-color: #3f4c38;
+  background: #171c17;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-search svg,
+.assistant-shell[data-theme='dark'] .kill-count-empty svg {
+  color: #a1ad98;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-search input {
+  color: #e3e7d8;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-search input::placeholder {
+  color: #8f9d85;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-search:focus-within {
+  border-color: #afc99c;
+  box-shadow: 0 0 0 3px #afc99c18;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-monster-heading > div {
+  color: #afc99c;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-monster-heading span {
+  color: #a1ad98;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-monsters li.unknown .kill-count-monster-heading > div,
+.assistant-shell[data-theme='dark'] .kill-count-monsters li > small {
+  color: #d1b57d;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-thinbar {
+  background: #303c2e;
+}
+
+.assistant-shell[data-theme='dark'] .kill-count-thinbar > span,
+.assistant-shell[data-theme='dark'] .kill-count-monsters li.unknown .kill-count-thinbar > span {
+  background: #93b27f;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm,
+.assistant-shell[data-theme='dark'] .character-exp {
+  border-color: #354230;
+  background: #1c261b;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm.waiting {
+  background: #1c241d;
+  border-color: #303b30;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm-heading,
+.assistant-shell[data-theme='dark'] .character-exp-heading {
+  color: #c4c394;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm-heading > span {
+  color: #d1b57d;
+  background: #30291c;
+  border-color: #675537;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm-stats span,
+.assistant-shell[data-theme='dark'] .character-exp-stats > div > span {
+  color: #a1ad98;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm-stats strong,
+.assistant-shell[data-theme='dark'] .character-exp-stats strong {
+  color: #afc99c;
+}
+
+.assistant-shell[data-theme='dark'] .character-exp-stats strong > i {
+  color: #73816a;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm-partial {
+  color: #d1b57d;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm-note,
+.assistant-shell[data-theme='dark'] .character-farm-waiting,
+.assistant-shell[data-theme='dark'] .character-exp-waiting {
+  color: #a1ad98;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm-items,
+.assistant-shell[data-theme='dark'] .character-exp-details {
+  border-top-color: #354230;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm-items summary,
+.assistant-shell[data-theme='dark'] .character-exp-details > summary {
+  color: #b5c9a6;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm th {
+  color: #a1ad98;
+  border-bottom-color: #354230;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm td {
+  color: #c9d4bf;
+  border-bottom-color: #303b30;
+}
+
+.assistant-shell[data-theme='dark'] .character-farm td:last-child {
+  color: #d1b57d;
+}
+
+.assistant-shell[data-theme='dark'] .farm-price-input-wrap {
+  border-color: #3f4c38;
+  background: #171c17;
+}
+
+.assistant-shell[data-theme='dark'] .farm-price-input-wrap input {
+  color: #e3e7d8;
+}
+
+.assistant-shell[data-theme='dark'] .farm-price-input-wrap input::placeholder {
+  color: #8f9d85;
+}
+
+.assistant-shell[data-theme='dark'] .farm-price-input-wrap > small,
+.assistant-shell[data-theme='dark'] .farm-price-status {
+  color: #a1ad98;
+}
+
+.assistant-shell[data-theme='dark'] .farm-price-input-wrap:focus-within {
+  border-color: #afc99c;
+  box-shadow: 0 0 0 3px #afc99c18;
+}
+
+.assistant-shell[data-theme='dark'] .farm-price-field.unpriced .farm-price-input-wrap {
+  border-color: #8f784e;
+  background: #211f17;
+}
+
+.assistant-shell[data-theme='dark'] .farm-price-field.pending .farm-price-status,
+.assistant-shell[data-theme='dark'] .farm-price-field.saving .farm-price-status {
+  color: #d1b57d;
+}
+
+.assistant-shell[data-theme='dark'] .farm-price-field.saved .farm-price-status {
+  color: #afc99c;
+}
+
+.assistant-shell[data-theme='dark'] .farm-price-field.error .farm-price-input-wrap {
+  border-color: #af6660;
+}
+
+.assistant-shell[data-theme='dark'] .farm-price-field.error .farm-price-status,
+.assistant-shell[data-theme='dark'] .monster-alert-selection > p[role="alert"] {
+  color: #f0a29a;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-track,
+.assistant-shell[data-theme='dark'] .expanded-exp-calibration {
+  border-top-color: #354230;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-heading > strong,
+.assistant-shell[data-theme='dark'] .expanded-exp-amount > strong,
+.assistant-shell[data-theme='dark'] .expanded-exp-rates dd {
+  color: #e3e7d8;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-level,
+.assistant-shell[data-theme='dark'] .expanded-exp-quality.calibrated,
+.assistant-shell[data-theme='dark'] .expanded-exp-quality.estimated,
+.assistant-shell[data-theme='dark'] .expanded-exp-calibration summary,
+.assistant-shell[data-theme='dark'] .expanded-exp-paused {
+  color: #d1b57d;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-quality,
+.assistant-shell[data-theme='dark'] .expanded-exp-amount,
+.assistant-shell[data-theme='dark'] .expanded-exp-remaining,
+.assistant-shell[data-theme='dark'] .expanded-exp-rates summary,
+.assistant-shell[data-theme='dark'] .expanded-exp-rates dl,
+.assistant-shell[data-theme='dark'] .expanded-exp-rates p,
+.assistant-shell[data-theme='dark'] .expanded-exp-calibration,
+.assistant-shell[data-theme='dark'] .expanded-exp-calibration p,
+.assistant-shell[data-theme='dark'] .expanded-exp-table-source,
+.assistant-shell[data-theme='dark'] .expanded-exp-metrics span,
+.assistant-shell[data-theme='dark'] .expanded-exp-metrics small {
+  color: #a1ad98;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-quality.actual,
+.assistant-shell[data-theme='dark'] .expanded-exp-amount b,
+.assistant-shell[data-theme='dark'] .expanded-exp-rates summary > strong,
+.assistant-shell[data-theme='dark'] .expanded-exp-metrics strong {
+  color: #afc99c;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-quality.stale {
+  color: #f0a29a;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-bar {
+  background: #303c2e;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-bar > span {
+  background: #93b27f;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-track.job .expanded-exp-bar > span {
+  background: #ae95c4;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-track.job .expanded-exp-amount b,
+.assistant-shell[data-theme='dark'] .expanded-exp-track.job .expanded-exp-metrics strong {
+  color: #c7b3d8;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-remaining strong {
+  color: #c9d4bf;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-metrics > div {
+  background: #171c17;
+  border-color: #354230;
+}
+
+.assistant-shell[data-theme='dark'] .expanded-exp-calibration select,
+.assistant-shell[data-theme='dark'] .expanded-exp-calibration input,
+.assistant-shell[data-theme='dark'] .character-alert-preferences select,
+.assistant-shell[data-theme='dark'] .character-alert-preferences input:not([type="checkbox"]),
+.assistant-shell[data-theme='dark'] .monster-alert-add input {
+  color: #e3e7d8;
+  background: #171c17;
+  border-color: #3f4c38;
+}
+
+.assistant-shell[data-theme='dark'] .character-alert-heading {
+  color: #d1b57d;
+}
+
+.assistant-shell[data-theme='dark'] .character-alert-heading p,
+.assistant-shell[data-theme='dark'] .character-alert-fields label,
+.assistant-shell[data-theme='dark'] .character-alert-expanded small,
+.assistant-shell[data-theme='dark'] .character-alert-actions small {
+  color: #a1ad98;
+}
+
+.assistant-shell[data-theme='dark'] .character-alert-legacy,
+.assistant-shell[data-theme='dark'] .character-alert-expanded {
+  border-color: #303b30;
+}
+
+.assistant-shell[data-theme='dark'] .character-alert-legacy label {
+  color: #c9d4bf;
+}
+
+.assistant-shell[data-theme='dark'] .character-alert-preferences input[type="checkbox"] {
+  accent-color: #afc99c;
+}
+
+.assistant-shell[data-theme='dark'] .character-alert-expanded label {
+  color: #c9d4bf;
+  background: #1c241d;
+  border-color: #303b30;
+}
+
+.assistant-shell[data-theme='dark'] .character-alert-expanded label:has(input:checked) {
+  background: #263522;
+  border-color: #607452;
+}
+
+.assistant-shell[data-theme='dark'] .character-alert-estimates {
+  background: #272319;
+  border-color: #625236;
+  color: #d1b57d;
+}
+
+.assistant-shell[data-theme='dark'] .character-alert-estimates small {
+  color: #bdb093;
+}
+
+.assistant-shell[data-theme='dark'] .monster-alert-chips > span {
+  color: #d1b57d;
+  background: #30291c;
+  border-color: #675537;
+}
+
+.assistant-shell[data-theme='dark'] .monster-alert-chips > span > small,
+.assistant-shell[data-theme='dark'] .monster-alert-chips button {
+  color: #c7af7d;
+}
+
+.assistant-shell[data-theme='dark'] .monster-alert-chips em {
+  color: #a1ad98;
+}
+
+.assistant-shell[data-theme='dark'] .monster-alert-chips button:hover:not(:disabled) {
+  color: #f0a29a;
+  background: #3c3321;
+}
+
+.assistant-shell[data-theme='dark'] .assistant-alert-row.monster .assistant-alert-symbol {
+  color: #afc99c;
+  background: #263221;
+  border-color: #40543b;
+}
+
+.assistant-shell[data-theme='dark'] .auto-finance-unpriced-list > button:focus-visible,
+.assistant-shell[data-theme='dark'] .monster-alert-chips button:focus-visible,
+.assistant-shell[data-theme='dark'] .kill-count-toolbar select:focus-visible,
+.assistant-shell[data-theme='dark'] .expanded-exp-calibration select:focus-visible,
+.assistant-shell[data-theme='dark'] .expanded-exp-calibration input:focus-visible,
+.assistant-shell[data-theme='dark'] .character-alert-preferences select:focus-visible,
+.assistant-shell[data-theme='dark'] .character-alert-preferences input:focus-visible,
+.assistant-shell[data-theme='dark'] .monster-alert-add input:focus-visible {
+  outline: 2px solid #afc99c;
+}

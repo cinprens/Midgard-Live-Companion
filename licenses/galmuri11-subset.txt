@@ -1,0 +1,10 @@
+Galmuri11 Regular, version 2.403
+Copyright © 2019–2025 Lee Minseo (quiple@quiple.dev)
+
+The bundled galmuri11-latin.woff2 is a Latin subset of Galmuri11 produced
+with fontTools (pyftsubset). MIDGARD uses the subset from RagReplayStats.
+The subset is distributed under the SIL Open Font License, Version 1.1.
+The full license and original copyright notice appear in galmuri-OFL.md.
+
+Upstream project: https://github.com/quiple/galmuri
+Upstream license: https://github.com/quiple/galmuri/blob/main/ofl.md

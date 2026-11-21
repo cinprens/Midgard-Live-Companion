@@ -1,0 +1,317 @@
+.assistant-shell {
+  --hud-edge: #8e7c89;
+  --hud-inset: #fffcf3;
+  --hud-shadow: #48354a24;
+  --hud-wash: #f0e6db;
+  --hud-accent-wash: #eee4f2;
+  --hud-coin: #946020;
+  --hud-health: #b84f63;
+  --hud-frame: inset 0 0 0 1px var(--hud-inset), 2px 2px 0 var(--hud-shadow);
+  --hud-display: var(--taskbar-display, 'Trebuchet MS', 'Segoe UI', sans-serif);
+}
+
+.assistant-shell[data-theme='dark'] {
+  --hud-edge: #6d5b80;
+  --hud-inset: #40354d;
+  --hud-shadow: #130f20a6;
+  --hud-wash: #30283e;
+  --hud-accent-wash: #3d304e;
+  --hud-coin: #f8bd67;
+  --hud-health: #eb879a;
+}
+
+.assistant-shell[data-theme] .live-workspace {
+  --l-paper: var(--a-panel);
+  --l-ink: var(--forest-ink);
+  --l-soft: var(--hud-wash);
+  --l-selected: var(--hud-accent-wash);
+  --l-warning: var(--hud-coin);
+}
+
+.assistant-shell[data-theme] .finance-workspace {
+  --f-ink: var(--forest-ink);
+  --f-paper: var(--a-panel);
+  --f-soft: var(--hud-wash);
+  --f-selected: var(--hud-accent-wash);
+  --f-hover: color-mix(in srgb, var(--hud-accent-wash) 60%, var(--a-panel));
+  --f-field: var(--a-panel);
+  --f-value: var(--hud-coin);
+}
+
+.assistant-shell[data-theme] .kill-workspace {
+  --k-ink: var(--forest-ink);
+  --k-paper: var(--a-panel);
+  --k-soft: var(--hud-wash);
+  --k-selected: var(--hud-accent-wash);
+  --k-hover: color-mix(in srgb, var(--hud-accent-wash) 60%, var(--a-panel));
+  --text-muted: var(--a-muted);
+  color: var(--k-ink);
+}
+
+.assistant-shell[data-theme] :is(.solo-exp-workspace, .solo-exp-compact) {
+  --se-ink: var(--forest-ink);
+  --se-paper: var(--a-panel);
+}
+
+/* Frame panels without changing the space reserved for measured character cards. */
+.assistant-shell .assistant-content :is(
+  .live-overview, .live-target, .live-character-row, .live-loot-strip, .live-alerts,
+  .live-runtime, .live-detail, .live-appearance-dialog,
+  .finance-stat, .finance-list, .finance-detail, .finance-daily-panel,
+  .summary-kill-kpis > section, .kill-list, .kill-daily-panel,
+  .solo-exp-panels > section, .solo-exp-character, .solo-exp-datebar, .solo-exp-week,
+  .solo-exp-information, .notice-list, .notice-characters, .notice-composer
+) {
+  border: 1px solid var(--hud-edge);
+  border-radius: 2px;
+  background-color: var(--a-panel);
+  box-shadow: var(--hud-frame);
+}
+
+.assistant-shell .assistant-content :is(
+  .live-search, .live-tools > select, .live-attention-filter, .live-runtime-open,
+  .finance-search, .finance-character-select, .finance-sort-select,
+  .kill-search, .kill-character, .kill-sort, .notice-search, .notice-segments,
+  .solo-exp-period-switch, .kill-period-controls > [role='group'], .finance-period-controls > [role='group']
+) {
+  border-radius: 2px;
+  border-color: var(--a-border);
+}
+
+.assistant-shell .assistant-content :is(
+  .live-row-pagination, .live-alerts, .live-source-pagination, .live-source-controls,
+  .live-detail-controls, .live-source-picker, .finance-pagination, .kill-pagination,
+  .finance-daily-datebar, .kill-daily-datebar, .notice-options, .notice-segments,
+  .notice-chips, .solo-exp-period-switch, .solo-exp-datebar, .solo-exp-panels,
+  .kill-period-controls, .finance-period-controls, .live-appearance-options
+) :is(button, select, input, textarea) {
+  border-radius: 2px;
+}
+
+.assistant-shell .assistant-content :is(.finance-search, .kill-search, .live-search, .notice-search):focus-within {
+  outline: 2px solid var(--a-teal);
+  outline-offset: 1px;
+}
+
+.assistant-shell .assistant-content :is(.live-search, .kill-search, .finance-search, .notice-search) > svg {
+  color: var(--a-teal);
+}
+
+.assistant-shell .assistant-content .live-overview {
+  background-color: var(--hud-wash);
+}
+
+.assistant-shell .live-overview > span > svg {
+  color: var(--a-teal);
+}
+
+.assistant-shell .live-target > svg {
+  color: var(--hud-coin);
+  filter: drop-shadow(1px 1px 0 var(--hud-shadow));
+}
+
+.assistant-shell .live-target .live-target-count,
+.assistant-shell.live-page .live-workspace .live-overview strong {
+  font-weight: 700;
+}
+
+.assistant-shell .live-target .live-target-name > :is(strong, select) {
+  font-family: var(--hud-display);
+  font-weight: 700;
+}
+
+.assistant-shell.live-page .live-workspace :is(.live-roster-panel h2, .live-alerts h2, .live-loot-strip h2, .live-detail h2) {
+  font-family: var(--hud-display);
+  font-weight: 700;
+}
+
+.assistant-shell.live-page .live-workspace .live-roster-panel h2 small {
+  display: inline-block;
+  border: 1px solid var(--a-border);
+  padding: 0 5px;
+  background: var(--hud-wash);
+  color: var(--l-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.assistant-shell.live-page .live-workspace .live-character-row {
+  background: var(--l-paper);
+}
+
+.assistant-shell.live-page .live-character-row:is(:hover, :focus-within) {
+  border-color: var(--a-teal);
+}
+
+.assistant-shell.live-page .live-workspace .live-character-row[data-selected='true'],
+.assistant-shell .solo-exp-character.selected {
+  border-color: var(--a-teal);
+  box-shadow: inset 0 0 0 1px var(--a-teal), 2px 2px 0 var(--hud-shadow);
+}
+
+.assistant-shell .live-character-scene {
+  box-shadow: inset 0 -1px 0 var(--hud-edge);
+}
+
+.assistant-shell .live-character-art {
+  filter: drop-shadow(2px 3px 0 #1f162944);
+}
+
+.assistant-shell.live-page .live-workspace :is(.live-appearance-open, .live-card-freshness) {
+  background: #272135;
+  color: #fff2da;
+  border: 1px solid #9c86ab;
+  border-radius: 1px;
+  box-shadow: 1px 1px 0 #1a1328;
+  backdrop-filter: none;
+}
+
+.assistant-shell.live-page .live-workspace .live-card-freshness .live-source-age {
+  color: #d8cde0;
+}
+
+.assistant-shell.live-page .live-workspace .live-character-card-body .live-character-link strong {
+  font-family: var(--hud-display);
+  font-weight: 700;
+}
+
+.assistant-shell .live-character-card-body .live-character-link small,
+.assistant-shell .live-detail > header > div > p {
+  color: var(--a-muted);
+}
+
+.assistant-shell .live-character-card-body .live-hourly strong,
+.assistant-shell.live-page .live-workspace .live-star.active {
+  color: var(--hud-coin);
+}
+
+.assistant-shell .live-workspace .live-meter-track,
+.assistant-shell .solo-exp-gain-bar,
+.assistant-shell .solo-exp-day-bar {
+  border-radius: 0;
+  background: var(--hud-wash);
+  box-shadow: inset 0 0 0 1px var(--a-border);
+}
+
+.assistant-shell .live-workspace .live-meter-track > i,
+.assistant-shell .solo-exp-gain-bar > i,
+.assistant-shell .solo-exp-day-bar > i {
+  border-radius: 0;
+  background-image: repeating-linear-gradient(90deg, transparent 0 8px, #211d3426 8px 9px);
+}
+
+.assistant-shell .live-workspace :is(.live-card-vitals, .live-vitals) .live-detail-meter:first-of-type .live-meter-track > i {
+  background-color: var(--hud-health);
+}
+
+.assistant-shell .live-workspace .live-detail-meter.warning .live-meter-track > i {
+  background-color: var(--hud-coin);
+}
+
+.assistant-shell .live-appearance-dialog::backdrop {
+  background: #181324bf;
+}
+
+.assistant-shell .live-workspace :is(.live-avatar, .live-appearance-preview, .live-detail-target, .live-appearance-reset, .live-view-error) {
+  border-radius: 2px;
+}
+
+.assistant-shell .live-workspace .live-appearance-options button[aria-pressed='true'] {
+  background: var(--l-selected);
+  border-color: var(--a-teal);
+  box-shadow: inset 0 0 0 1px var(--a-teal);
+}
+
+.assistant-shell .assistant-content :is(.finance-heading, .kill-heading, .solo-exp-heading, .notice-heading) h1 {
+  font-family: var(--hud-display);
+  font-weight: 800;
+  letter-spacing: -.035em;
+}
+
+.assistant-shell .assistant-content :is(.finance-heading, .kill-heading, .solo-exp-heading, .notice-heading) {
+  isolation: isolate;
+  position: relative;
+  align-items: center;
+  padding: 9px clamp(12px, 1.8vw, 24px);
+  border: 1px solid var(--hud-edge);
+  border-radius: 2px;
+  background-color: var(--a-panel);
+  background-image:
+    linear-gradient(90deg, var(--a-panel) 5%, color-mix(in srgb, var(--a-panel) 93%, transparent) 33%, transparent 65%, var(--a-panel) 100%),
+    url('./assets/live/skadi-outpost.webp');
+  background-position: center, center 52%;
+  background-size: cover;
+  box-shadow: var(--hud-frame);
+}
+
+.assistant-shell .assistant-content :is(.finance-heading, .kill-heading, .solo-exp-heading) > img,
+.assistant-shell .assistant-content :is(.finance-heading, .kill-heading)::after {
+  display: none;
+}
+
+.assistant-shell .assistant-content :is(.finance-heading-note, .kill-heading > span) {
+  align-self: center;
+  margin-top: 0;
+}
+
+.assistant-shell .assistant-content :is(.solo-exp-heading .solo-exp-badge, .kill-heading .solo-exp-open) {
+  background: var(--a-panel);
+  border-color: var(--a-border);
+}
+
+.assistant-shell .assistant-content .notice-heading .notice-audio {
+  padding: 3px 5px;
+  background: var(--a-panel);
+}
+
+@media (max-width: 760px) {
+  .assistant-shell .assistant-content .notice-heading {
+    align-items: flex-start;
+    background-image:
+      linear-gradient(90deg, var(--a-panel) 0%, color-mix(in srgb, var(--a-panel) 90%, transparent) 55%, transparent),
+      url('./assets/live/skadi-outpost.webp');
+  }
+}
+
+.assistant-shell .assistant-content :is(.finance-stat, .summary-kill-kpis > section) {
+  border-top: 3px solid var(--hud-edge);
+  background: var(--a-panel);
+}
+
+.assistant-shell .assistant-content :is(.finance-stat:first-child, .summary-kill-kpis > section:first-child) {
+  border-top-color: var(--hud-coin);
+  background: linear-gradient(120deg, color-mix(in srgb, var(--hud-coin) 9%, var(--a-panel)), var(--a-panel) 72%);
+}
+
+.assistant-shell .assistant-content :is(.finance-stat > div > strong, .summary-kill-kpis strong, .solo-exp-deaths strong) {
+  font-family: var(--hud-display);
+  font-variant-numeric: tabular-nums;
+  color: var(--forest-ink);
+}
+
+.assistant-shell .finance-list-top,
+.assistant-shell .kill-list > header {
+  background: var(--hud-wash);
+}
+
+.assistant-shell :is(.kill-table, .finance-table) th {
+  color: var(--a-muted);
+  background: var(--a-panel);
+}
+
+.assistant-shell :is(.solo-exp-workspace, .notice-center, .kill-workspace, .finance-workspace) :is(.button, .solo-exp-badge, .solo-exp-start, .solo-exp-save, .finance-complete-prices, .kill-favorite-filter, .solo-exp-open) {
+  border-radius: 2px;
+}
+
+.assistant-shell .notice-center .notice-glyph {
+  border: 1px solid var(--a-border);
+  border-radius: 2px;
+}
+
+.assistant-shell .notice-center .notice-switch,
+.assistant-shell .notice-center .notice-switch span {
+  border-radius: 2px;
+}
+
+.assistant-shell .notice-center .notice-characters-toggle {
+  border-radius: 1px;
+}

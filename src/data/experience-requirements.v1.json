@@ -1,0 +1,1423 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "zero-global-guide21-2026-11-01",
+  "game": "Ragnarok Zero: Global",
+  "serverScope": "Global; Skadi live requirement packets not yet verified",
+  "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+  "verifiedAt": "2026-11-01",
+  "licenseNote": "Factual numeric requirements transcribed from the public official guide; no client assets or third-party database dump included.",
+  "indexing": {
+    "publishedLevelMeaning": "destination-level",
+    "confidence": "supporting-calculator-cross-check",
+    "officialGuideExplicit": false,
+    "supportingSourceUrl": "https://rozerodb.com/tools/exp",
+    "evidence": {
+      "base1To50": 89006400,
+      "firstJob1To50": 1685910,
+      "calculation": "sum of published destination rows 2 through 50 inclusive"
+    },
+    "notice": "The official guide labels LV and EXP without defining the edge direction. Destination-level indexing exactly reproduces both supporting calculator totals; direct Skadi requirement-packet confirmation is still pending."
+  },
+  "rows": [
+    {
+      "track": "base",
+      "publishedLevel": 1,
+      "requiredExp": 2100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 2,
+      "requiredExp": 2500,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 3,
+      "requiredExp": 3000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 4,
+      "requiredExp": 3600,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 5,
+      "requiredExp": 4300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 6,
+      "requiredExp": 5100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 7,
+      "requiredExp": 6100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 8,
+      "requiredExp": 7300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 9,
+      "requiredExp": 8700,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 10,
+      "requiredExp": 10400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 11,
+      "requiredExp": 12400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 12,
+      "requiredExp": 14800,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 13,
+      "requiredExp": 17700,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 14,
+      "requiredExp": 21200,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 15,
+      "requiredExp": 25400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 16,
+      "requiredExp": 30400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 17,
+      "requiredExp": 36400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 18,
+      "requiredExp": 43600,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 19,
+      "requiredExp": 52300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 20,
+      "requiredExp": 62700,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 21,
+      "requiredExp": 75200,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 22,
+      "requiredExp": 90200,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 23,
+      "requiredExp": 108200,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 24,
+      "requiredExp": 129800,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 25,
+      "requiredExp": 155700,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 26,
+      "requiredExp": 186800,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 27,
+      "requiredExp": 224100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 28,
+      "requiredExp": 268900,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 29,
+      "requiredExp": 322600,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 30,
+      "requiredExp": 387100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 31,
+      "requiredExp": 464500,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 32,
+      "requiredExp": 557400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 33,
+      "requiredExp": 668800,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 34,
+      "requiredExp": 802500,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 35,
+      "requiredExp": 963000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 36,
+      "requiredExp": 1155600,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 37,
+      "requiredExp": 1386700,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 38,
+      "requiredExp": 1664000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 39,
+      "requiredExp": 1996800,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 40,
+      "requiredExp": 2396100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 41,
+      "requiredExp": 2875300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 42,
+      "requiredExp": 3450300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 43,
+      "requiredExp": 4140300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 44,
+      "requiredExp": 4968300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 45,
+      "requiredExp": 5961900,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 46,
+      "requiredExp": 7154200,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 47,
+      "requiredExp": 8585000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 48,
+      "requiredExp": 10302000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 49,
+      "requiredExp": 12362400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 50,
+      "requiredExp": 14834800,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 51,
+      "requiredExp": 17801700,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 52,
+      "requiredExp": 21362000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 53,
+      "requiredExp": 25634400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 54,
+      "requiredExp": 30761200,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 55,
+      "requiredExp": 36913400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 56,
+      "requiredExp": 44296000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 57,
+      "requiredExp": 53155200,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 58,
+      "requiredExp": 63786200,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 59,
+      "requiredExp": 76543400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 60,
+      "requiredExp": 91852000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 61,
+      "requiredExp": 110222400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 62,
+      "requiredExp": 132266800,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 63,
+      "requiredExp": 158720100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 64,
+      "requiredExp": 190464100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 65,
+      "requiredExp": 228556900,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 66,
+      "requiredExp": 274268200,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 67,
+      "requiredExp": 329121800,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 68,
+      "requiredExp": 394946100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 69,
+      "requiredExp": 473935300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "base",
+      "publishedLevel": 70,
+      "requiredExp": 568722300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "novice",
+      "publishedLevel": 1,
+      "requiredExp": 5,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "novice",
+      "publishedLevel": 2,
+      "requiredExp": 12,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "novice",
+      "publishedLevel": 3,
+      "requiredExp": 22,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "novice",
+      "publishedLevel": 4,
+      "requiredExp": 35,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "novice",
+      "publishedLevel": 5,
+      "requiredExp": 50,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "novice",
+      "publishedLevel": 6,
+      "requiredExp": 113,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "novice",
+      "publishedLevel": 7,
+      "requiredExp": 188,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "novice",
+      "publishedLevel": 8,
+      "requiredExp": 256,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "novice",
+      "publishedLevel": 9,
+      "requiredExp": 335,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "novice",
+      "publishedLevel": 10,
+      "requiredExp": 425,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 1,
+      "requiredExp": 150,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 2,
+      "requiredExp": 340,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 3,
+      "requiredExp": 550,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 4,
+      "requiredExp": 760,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 5,
+      "requiredExp": 990,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 6,
+      "requiredExp": 1250,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 7,
+      "requiredExp": 1600,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 8,
+      "requiredExp": 1980,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 9,
+      "requiredExp": 2340,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 10,
+      "requiredExp": 2740,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 11,
+      "requiredExp": 3140,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 12,
+      "requiredExp": 3950,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 13,
+      "requiredExp": 4510,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 14,
+      "requiredExp": 5210,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 15,
+      "requiredExp": 5950,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 16,
+      "requiredExp": 7000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 17,
+      "requiredExp": 8150,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 18,
+      "requiredExp": 9130,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 19,
+      "requiredExp": 10220,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 20,
+      "requiredExp": 11480,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 21,
+      "requiredExp": 12780,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 22,
+      "requiredExp": 14090,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 23,
+      "requiredExp": 15560,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 24,
+      "requiredExp": 16980,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 25,
+      "requiredExp": 18620,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 26,
+      "requiredExp": 20280,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 27,
+      "requiredExp": 21780,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 28,
+      "requiredExp": 24510,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 29,
+      "requiredExp": 27000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 30,
+      "requiredExp": 29000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 31,
+      "requiredExp": 31000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 32,
+      "requiredExp": 36000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 33,
+      "requiredExp": 39000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 34,
+      "requiredExp": 41000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 35,
+      "requiredExp": 45000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 36,
+      "requiredExp": 49000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 37,
+      "requiredExp": 51900,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 38,
+      "requiredExp": 55000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 39,
+      "requiredExp": 59450,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 40,
+      "requiredExp": 64630,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 41,
+      "requiredExp": 70030,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 42,
+      "requiredExp": 74940,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 43,
+      "requiredExp": 79800,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 44,
+      "requiredExp": 84630,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 45,
+      "requiredExp": 89610,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 46,
+      "requiredExp": 95170,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 47,
+      "requiredExp": 100420,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 48,
+      "requiredExp": 107250,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 49,
+      "requiredExp": 112070,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "first",
+      "publishedLevel": 50,
+      "requiredExp": 118120,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 1,
+      "requiredExp": 1600,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 2,
+      "requiredExp": 2500,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 3,
+      "requiredExp": 4200,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 4,
+      "requiredExp": 7000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 5,
+      "requiredExp": 10300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 6,
+      "requiredExp": 15900,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 7,
+      "requiredExp": 18900,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 8,
+      "requiredExp": 20900,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 9,
+      "requiredExp": 22600,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 10,
+      "requiredExp": 24900,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 11,
+      "requiredExp": 28800,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 12,
+      "requiredExp": 31500,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 13,
+      "requiredExp": 32000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 14,
+      "requiredExp": 33300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 15,
+      "requiredExp": 35100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 16,
+      "requiredExp": 40500,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 17,
+      "requiredExp": 44100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 18,
+      "requiredExp": 46300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 19,
+      "requiredExp": 48500,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 20,
+      "requiredExp": 50700,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 21,
+      "requiredExp": 56000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 22,
+      "requiredExp": 59400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 23,
+      "requiredExp": 63500,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 24,
+      "requiredExp": 68100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 25,
+      "requiredExp": 76000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 26,
+      "requiredExp": 87700,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 27,
+      "requiredExp": 94500,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 28,
+      "requiredExp": 104600,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 29,
+      "requiredExp": 114600,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 30,
+      "requiredExp": 126600,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 31,
+      "requiredExp": 143700,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 32,
+      "requiredExp": 158000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 33,
+      "requiredExp": 172300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 34,
+      "requiredExp": 188600,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 35,
+      "requiredExp": 208100,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 36,
+      "requiredExp": 233500,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 37,
+      "requiredExp": 259600,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 38,
+      "requiredExp": 280400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 39,
+      "requiredExp": 300300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 40,
+      "requiredExp": 326800,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 41,
+      "requiredExp": 384900,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 42,
+      "requiredExp": 445200,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 43,
+      "requiredExp": 492000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 44,
+      "requiredExp": 575700,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 45,
+      "requiredExp": 655900,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 46,
+      "requiredExp": 769300,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 47,
+      "requiredExp": 894000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 48,
+      "requiredExp": 1058700,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 49,
+      "requiredExp": 1207000,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 50,
+      "requiredExp": 1335400,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 51,
+      "requiredExp": 1669250,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 52,
+      "requiredExp": 2086562,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 53,
+      "requiredExp": 2608202,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 54,
+      "requiredExp": 3260252,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 55,
+      "requiredExp": 4075315,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 56,
+      "requiredExp": 5094143,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 57,
+      "requiredExp": 6367678,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 58,
+      "requiredExp": 7959597,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 59,
+      "requiredExp": 9949496,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 60,
+      "requiredExp": 12436870,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 61,
+      "requiredExp": 15546087,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 62,
+      "requiredExp": 19432608,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 63,
+      "requiredExp": 24290760,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 64,
+      "requiredExp": 30363450,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 65,
+      "requiredExp": 37954312,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 66,
+      "requiredExp": 47442890,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 67,
+      "requiredExp": 59303612,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 68,
+      "requiredExp": 74129515,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 69,
+      "requiredExp": 92661893,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    },
+    {
+      "track": "second",
+      "publishedLevel": 70,
+      "requiredExp": 115827366,
+      "sourceUrl": "https://roz.mygnjoy.com/en/intro/guide/21",
+      "verifiedAt": "2026-11-01"
+    }
+  ]
+}

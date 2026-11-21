@@ -1,0 +1,2 @@
+import { build } from 'esbuild';
+await build({ entryPoints: {main:'electron/main.ts',preload:'electron/preload.ts','parser-worker':'electron/parser-worker.ts','bridge-worker':'electron/live/bridge-worker.ts','hunt-analytics-worker':'electron/hunt-analytics-worker.ts','startup-worker':'electron/startup-worker.ts'}, outdir: 'dist-electron', bundle: true, platform: 'node', format: 'cjs', outExtension: { '.js': '.cjs' }, target: 'node24', external: ['electron', 'node:*'], sourcemap: true });

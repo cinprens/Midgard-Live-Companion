@@ -1,0 +1,96 @@
+{
+  "name": "midgard-replay",
+  "productName": "MIDGARD REPLAY",
+  "version": "0.28.0",
+  "license": "MIT",
+  "description": "MIDGARD LIVE hedef av zamanlaması, çanta takibi ve çoklu karakter farm yardımcısı",
+  "author": "MIDGARD REPLAY",
+  "private": true,
+  "main": "dist-electron/main.cjs",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:web": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build && node scripts/build-desktop.mjs",
+    "start": "electron .",
+    "catalog:local": "node scripts/export-local-game-names.mjs",
+    "test": "vitest run",
+    "test:desktop": "node scripts/auto-farm-ui-qa.mjs",
+    "test:notifications:desktop": "node scripts/notification-center-ui-qa.mjs",
+    "test:rare-drop:desktop": "node scripts/rare-drop-desktop-qa.mjs",
+    "test:finance:desktop": "node scripts/finance-workspace-ui-qa.mjs",
+    "test:design:desktop": "node scripts/design-ui-qa.mjs",
+    "test:sounds:desktop": "node scripts/sound-presets-ui-qa.mjs",
+    "test:live:desktop": "node scripts/expansion-controls-qa.mjs",
+    "test:kill:desktop": "node scripts/kill-count-ui-qa.mjs",
+    "test:monster:desktop": "node scripts/monster-alert-ui-qa.mjs",
+    "test:exp:auto:desktop": "node scripts/auto-exp-ui-qa.mjs",
+    "test:exp:kill:desktop": "node scripts/kill-exp-ui-qa.mjs",
+    "package:win": "npm run build && electron-builder --win nsis portable --x64",
+    "package:dir": "npm run build && electron-builder --win --dir --x64",
+    "test:kill:workspace": "node scripts/kill-workspace-ui-qa.mjs",
+    "test:live:workspace": "node scripts/live-workspace-ui-qa.mjs",
+    "test:kill:daily": "node scripts/kill-daily-ui-qa.mjs",
+    "test:hunt:analytics": "node scripts/hunt-analytics-ui-qa.mjs",
+    "test:finance:daily": "node scripts/finance-daily-ui-qa.mjs",
+    "test:live:adventure": "node scripts/live-adventure-ui-qa.mjs",
+    "test:exp:solo": "node scripts/solo-experience-ui-qa.mjs"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "echarts": "^6.0.0",
+    "lucide-react": "^0.548.0",
+    "rrfparser": "1.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.4",
+    "@tailwindcss/vite": "^4.1.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.0",
+    "vitest": "^3.2.4",
+    "electron": "^42.0.0",
+    "electron-builder": "^26.0.12",
+    "esbuild": "^0.25.11",
+    "playwright": "^1.56.0"
+  },
+  "build": {
+    "appId": "local.midgard.replay",
+    "productName": "MIDGARD REPLAY",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "build/icon.png",
+      "build/audio/*.wav",
+      "package.json",
+      "LICENSE",
+      "THIRD_PARTY_NOTICES.md",
+      "licenses/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "build/icon.ico",
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "MIDGARD-LIVE-${version}-${arch}-Setup.${ext}"
+    },
+    "portable": {
+      "artifactName": "MIDGARD-LIVE-${version}-${arch}-Portable.${ext}"
+    }
+  }
+}

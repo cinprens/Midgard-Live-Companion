@@ -1,0 +1,10 @@
+.replay-exp-comparison .replay-exp-interval {
+  border-block-end: 1px solid var(--a-border);
+  padding-block: 9px;
+}
+.replay-exp-interval > strong { font-size: 13px; }
+.replay-exp-interval dl, .replay-exp-actions { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 6px 0; }
+.replay-exp-interval dl > div { display: flex; align-items: baseline; gap: 6px; }
+.replay-exp-interval dt { color: var(--a-muted); font-size: 11px; }
+.replay-exp-interval dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+.replay-exp-actions button { padding: 5px 9px; }

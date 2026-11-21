@@ -1,0 +1,10 @@
+import {describe,it,expect} from 'vitest';
+import {withFarmPrices} from '../src/components/farm-valuation';
+import type {AutoFarmItem,AutoFarmTotals} from '../src/shared/auto-farm';
+const item=(itemId:number,quantity:number,unitPrice:number|null):AutoFarmItem=>({itemId,itemName:`Eşya #${itemId}`,quantity,unitPrice,value:unitPrice===null?null:quantity*unitPrice,sourceLabel:'Çantaya gelen eşya'});
+const totals:AutoFarmTotals={knownValue:100,estimatedValue:null,hourlyValue:null,knownHourlyValue:100,durationMs:3600000,unpricedItems:1,unpricedQuantity:3,partial:true,quantity:13,distinctItems:2,timeBasis:'replay-start'};
+describe('shared live price preview',()=>{
+  it('values a new price immediately without altering quantities or shared elapsed time',()=>{const result=withFarmPrices([item(501,10,10),item(502,3,null)],totals,new Map([[502,20]]));expect(result.totals).toMatchObject({knownValue:160,estimatedValue:160,hourlyValue:160,unpricedItems:0,partial:false,durationMs:3600000,quantity:13});expect(result.items[1]).toMatchObject({quantity:3,unitPrice:20,value:60});});
+  it('revalues all prior quantity and restores uncertainty when a price is cleared',()=>{const result=withFarmPrices([item(501,10,10),item(502,3,null)],totals,new Map([[501,30],[502,0]]));expect(result.totals.estimatedValue).toBe(300);const cleared=withFarmPrices(result.items,result.totals,new Map([[501,null]]));expect(cleared.totals).toMatchObject({knownValue:0,estimatedValue:null,unpricedItems:1,unpricedQuantity:10,partial:true});});
+  it('shares the same item price across character quantities and leaves unedited state intact',()=>{const price=new Map([[501,500]]),left=withFarmPrices([item(501,2,null)],{...totals,knownValue:0,quantity:2,unpricedQuantity:2,distinctItems:1},price),right=withFarmPrices([item(501,3,null)],{...totals,knownValue:0,quantity:3,unpricedQuantity:3,distinctItems:1},price);expect(left.totals.estimatedValue).toBe(1000);expect(right.totals.estimatedValue).toBe(1500);const original=[item(501,10,10)];expect(withFarmPrices(original,totals,new Map()).items).toBe(original);});
+});

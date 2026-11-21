@@ -1,0 +1,7 @@
+.replay-exp-reading { padding: 10px; margin-block: 9px; color: var(--se-ink); background: var(--hud-wash); border: 1px solid var(--a-border); }
+.replay-exp-reading h3 { font-size: 13px; }
+.replay-exp-reading table { width: 100%; margin: 5px 0; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+.replay-exp-reading th, .replay-exp-reading td { padding: 3px; text-align: right; }
+.replay-exp-reading tr > :first-child { text-align: left; }
+.replay-exp-reading tbody th { font-weight: 500; }
+.replay-exp-reading p { color: var(--a-muted); font-size: 11px; }

@@ -31,6 +31,76 @@ If you want to support maintenance directly:
 
 
 
+# MIDGARD LIVE · v0.28.0
+
+Ragnarok Zero Global / Skadi için Windows masaüstü takip aracı. Birden fazla karakterin Replay kaydını birlikte izler. Görev çubuğu modunda her karakterin son ganimetlerini, gün içindeki adetlerini, çanta ağırlığını ve Replay’de görülen Zeny hareketlerini gösterir.
+
+Taşınabilir Windows uygulaması tamamen çevrimdışı çalışır. Katalog uygulamanın içinde gelir. Replay, ayarlar, sesler ve karakter kayıtları bilgisayarda işlenir. Çalışma sırasında dış API bağlantıları kapalıdır.
+
+![Görev çubuğunda ağırlık eşiğine ulaşan karakter](docs/images/taskbar-weight.png)
+
+## Oyunda kullanım
+
+1. Oyunda Replay kaydını başlat. MIDGARD LIVE’da **Canlı takip** bölümüne gir ve oyunun **Replay** klasörünü seç.
+2. **Görev çubuğu modu** ile karakterlerini aynı şeritte takip et. **Bildirim ayarları** bölümünde eşya, yaratık ölümü, çanta ağırlığı, harita değişimi ve karakter ölümü için sahne süresini ayrı ayrı seçebilirsin.
+3. **Kart ve kostüm sesleri** bölümünden genel bir ses veya belirli bir eşya için özel bir ses seç. Sahne süreleri 1–60 saniye, başlangıç değeri 5 saniyedir.
+
+**Finans** kart ve kostüm kazanımlarını ayrı gösterir. **EXP Kazanımı** desteklenen Replay verilerini ve doğrulanabilen kayıt karşılaştırmalarını kullanır. Kayıtta bulunmayan değerler için uygulama eksik bilgiyi belirtir.
+
+## Kaynaktan çalıştırma
+
+Windows x64, Node.js 24 ve npm ile proje klasöründe çalıştır:
+
+```powershell
+npm.cmd ci
+npm.cmd run build
+npm.cmd start
+```
+
+İlk kurulum, bağımlılıkları ve Electron’u internetten indirir. Geliştirme sırasında canlı arayüz güncellemeleri için `npm.cmd run dev` kullanabilirsin.
+
+## Test ve Windows paketi
+
+```powershell
+npm.cmd test
+npm.cmd run package:win
+```
+
+Windows paketleri `release/` klasörüne yazılır. Derlemeden sonra bildirim sahnelerini örnek verilerle masaüstünde denemek için `npm.cmd run test:rare-drop:desktop` komutunu çalıştırabilirsin.
+
+Paketlemeden sonra çevrimdışı çalışmayı doğrulamak için aşağıdaki komutu çalıştır. Denetim boş bir profilde üç katalog aramasını, ağ engelini ve açılıştaki bağlantı kayıtlarını kontrol eder.
+
+```powershell
+node scripts/verify-offline-desktop.mjs
+```
+
+## Veriler
+
+Kaynak paketinde EXP tablosu, arayüz görselleri, yerleşik ses ve test verileri bulunur. Kullanıcının SQLite profili ilk çalıştırmada oluşturulur.
+
+| Bilgi | Yeni kurulumda nereden gelir? |
+| --- | --- |
+| Kart, kostüm ve canavar adları | Hazır gelen topluluk listesinde 324 kart, 1.413 kostüm ve 489 canavarın ID’si ve adı bulunur. Bildirim hedeflerini ilk açılışta çevrimdışı arayabilirsin. Bu liste Skadi’de hangi eşyaların şu anda düştüğünü veya düşme oranlarını göstermez. [Ad listesi](src/data/public-game-names.json) · [RagnaDex veri kaynağı](https://ragnadex.com/en/api/) |
+| Kurulu oyundaki adlar | Oyunun `Replay` klasörünü seçtiğinde MIDGARD LIVE aynı kurulumdaki `System/iteminfo_enUS.lub` ve `System/itemInfo_data.lub` dosyalarını okur. Canavarlar için Replay’de görülen adlar ve varsa masaüstündeki `Ragnarok Calculator` kataloğu da kullanılabilir. |
+| Gerçek ganimet ve kesimler | Ganimet ve kesimler Replay’den takip edilir. Desteklenen paketlerdeki eşya türü ve kostüm yuvası düşüşü tanımaya yardım eder. Ad çözülemezse kimlik numarası gösterilebilir. |
+
+Kendi kurulumundaki kart, kostüm ve canavar adlarını başka bir bilgisayara taşımak için aşağıdaki örnekteki klasör yollarını kendi kurulumuna göre düzenle. İkinci yol isteğe bağlıdır ve canavar adlarını ekler.
+
+```powershell
+npm.cmd run catalog:local -- "C:\Gravity\RagnarokZero\Replay" "$([Environment]::GetFolderPath('Desktop'))\Ragnarok Calculator"
+```
+
+Komut proje köküne `game-names.local.json` yazar. Kaynaktan çalıştırdığında uygulama bu dosyayı bulunduğu yerden okur. Taşınabilir sürüm için dosyayı `Portable.exe` ile aynı klasöre koy. Git bu yerel kopyayı dışarıda tutar. Dosya yalnızca ad, tür ve sayısal kimlik içerir.
+
+Oyunda varsa Mobster sesi yerel kurulumdan okunabilir. Birim testleri sentetik kayıtlar ve kaynağı belgelenmiş tek bir LATAM örneği kullanır. [Test verisinin kaynağı](tests/fixtures/README.md)
+
+## Lisans
+
+MIDGARD LIVE kaynak kodu MIT lisanslıdır. Üçüncü taraf bileşenlerin, yazı tipinin ve örnek Replay’in kendi lisansları ve atıfları geçerlidir. [MIT lisansı](LICENSE) · [Üçüncü taraf bildirimleri](THIRD_PARTY_NOTICES.md)
+
+<details>
+<summary>Önceki sürümlerin notları (v0.22.0 ve öncesi)</summary>
+
 # MIDGARD LIVE · v0.22.0
 
 Bildirim ayarlarında **Hızlı bildirim ekle** alanından eşya veya yaratığı adıyla arayabilir, sayısal ID girebilir ya da harita kimliği yazabilirsin. Bir öneriye tıklamak veya tek eşleşmede Enter’a basmak kuralı etkinleştirir. Yaratık seçimi ortak av hedefleriyle paylaşılır.
@@ -398,3 +468,5 @@ Mimari: [ARCHITECTURE.md](ARCHITECTURE.md). Kaynak araştırması ve paket sın�
 - EXP, item drop ve party kill ayrıntıları yalnızca doğrulanabilir olay varsa anlamlıdır; mevcut kaynak profilindeki eksikler sıfır başarı olarak sunulmaz.
 - 3D oynatma, gelişmiş harita görselleştirme, bulut eşitleme ve topluluk istatistikleri kapsam dışıdır.
 - İstemciye müdahale, otomatik oyun kontrolü ve canlı ağ dinleme uygulanmaz.
+
+</details>
