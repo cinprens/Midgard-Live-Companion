@@ -1,3 +1,36 @@
+## Sponsor
+
+[![Become a Sponsor](https://img.shields.io/badge/Sponsor%20Me-%F0%9F%92%96-red?style=flat-square)](https://github.com/sponsors/cinprens)
+
+If you find this project useful, consider sponsoring on GitHub to help keep it maintained.
+
+| Tier | Price | Description |
+| --- | --- | --- |
+| ![PORING](https://github.com/user-attachments/assets/535df144-2c45-4e66-9f40-be56fbc377c7) *Poring Tier* | **$1/month** | Light support tier. Adds a bit of charm with fun Poring-style content. Small, cute, and appreciated. |
+| ![DROPS](https://github.com/user-attachments/assets/229ef95e-ccb8-437b-9f25-85efb8789402) **Drops Tier** | **$3/month** | Monster drop visuals and loot-inspired additions. A little flair goes a long way. |
+| ![POPORING](https://github.com/user-attachments/assets/c4d6314d-f442-4579-86ce-a1f8205c482b) ***Poporing Tier*** | **$7/month** | For those who want to brighten things up with wobbly charm. Slightly more playful. |
+
+> Thanks to every supporter who helps keep this alive. Even small porings matter.
+
+| Tier | Price | Description |
+| --- | --- | --- |
+| ![ANGELING](https://github.com/user-attachments/assets/4fbf4c0e-47c9-47f1-8c0c-888cd8bf19b4) **Angeling** | **$50 one-time** | Holy aura, pure bounce, golden heart. |
+| ![GHOSTRING](https://github.com/user-attachments/assets/c72e672a-a499-4e0a-bb6b-2ec6e6756091) **Ghostring** | **$100 one-time** | Ethereal vibes, phase-through energy, the cutest haunting. |
+| ![DEVILING](https://github.com/user-attachments/assets/aa92be65-794f-445a-9c77-08adc14e2229) **Deviling** | **$250 one-time** | Mischievous shadows, pink chaos, the master of cursed fun. |
+
+---
+
+## Contribution
+
+Issues and PRs are welcome.
+
+If you want to support maintenance directly:
+
+[GitHub Sponsors](https://github.com/sponsors/cinprens)
+
+
+
+
 # MIDGARD LIVE · v0.22.0
 
 Bildirim ayarlarında **Hızlı bildirim ekle** alanından eşya veya yaratığı adıyla arayabilir, sayısal ID girebilir ya da harita kimliği yazabilirsin. Bir öneriye tıklamak veya tek eşleşmede Enter’a basmak kuralı etkinleştirir. Yaratık seçimi ortak av hedefleriyle paylaşılır.
@@ -340,6 +373,9 @@ npm.cmd run test:desktop
 npm.cmd run test:live:desktop
 npm.cmd run package:win
 ```
+
+
+
 
 `release` klasörü Windows x64 kurulum ve taşınabilir paketleri için hedef klasördür. v0.2 paketleri `MIDGARD-LIVE-0.2.1-x64-Setup.exe` ve `MIDGARD-LIVE-0.2.1-x64-Portable.exe` adını kullanır. Gerçekten tamamlanan v0.2 kontrolleri [QA-LIVE.md](QA-LIVE.md), önceki v0.1 sonuçları [QA.md](QA.md) içinde kaydedilir. Gerçek oyun kaydı doğrulaması ile sentetik birim testleri aynı kanıt değildir.
 
