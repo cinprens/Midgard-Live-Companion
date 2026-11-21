@@ -165,7 +165,8 @@ export class IncrementalReplayParser {
           if(statusKey==='weight')inventory.observeWeight(amount,chunk.time,metadata.playerId,initial);
           const status = statusKey.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
           result.events.push({ ...base, eventType: 'status', actorId: metadata.playerId ?? undefined, statusKey, amount,
-            attribution: 'personal', rawData: { status, parameter, source: 'self-parameter-update', timed: !initial } });
+            attribution: 'personal', rawData: { status, parameter, source: 'self-parameter-update', timed: !initial,
+              ...(statusKey==='zenyBalance'?{timedPacketOrder:chunk.order}:{}) } });
           if (statusKey === 'baseLevel' || statusKey === 'jobLevel') {
             const previousLevel = levels[statusKey];
             if (statusKey === 'jobLevel' && previousLevel !== null && amount < previousLevel) deathJobTrack = null;
@@ -348,7 +349,7 @@ export class IncrementalReplayParser {
   private accumulate(event:ReplayEvent):void{
     this.itemContribution(event,1);
     if(event.eventType==='map'&&event.mapId)this.telemetry.currentMap=event.mapId;
-    applyLiveStatus(this.telemetry,event,this.telemetryOverflow);
+    applyLiveStatus(this.telemetry,event,this.telemetryOverflow,true);
     if(event.eventType==='exp-gain'&&event.expKind&&Number.isSafeInteger(event.amount)&&event.amount!>=0&&event.attribution==='personal'){
       const totalKey=event.expKind==='base'?'baseExpGained':'jobExpGained',lastKey=event.expKind==='base'?'lastBaseExpGain':'lastJobExpGain';this.telemetry[lastKey]=event.amount!;
       const sum=(this.telemetry[totalKey]??0)+event.amount!;if(!Number.isSafeInteger(sum))this.telemetryOverflow.add(event.expKind);this.telemetry[totalKey]=this.telemetryOverflow.has(event.expKind)?null:sum;

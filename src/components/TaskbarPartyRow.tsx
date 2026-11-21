@@ -1,84 +1,115 @@
-import { Coins, Heart, MapPin, PackageOpen, Weight } from 'lucide-react';
+import { useId } from 'react';
+import { ChevronDown, Coins, FileText, Heart, PackageOpen, Weight } from 'lucide-react';
 import { liveStatusPresentation } from '../domain/live-presentation';
-import { isLiveSourceActive, liveHealthPercent, type LiveWorkspaceRow } from '../domain/live-workspace';
+import { liveHealthPercent, type LiveWorkspaceRow } from '../domain/live-workspace';
+import { isTaskbarSourceLive, type taskbarPartyReading } from '../domain/taskbar-party';
 import { liveAppearanceForCharacter } from '../shared/live-appearance';
 import type { LiveViewPreferences } from '../shared/live-view';
 import { LIVE_CHARACTER_ART } from './live-adventure-assets';
 import ReplayExperience from './ReplayExperience';
+import { taskbarEstimateHint, taskbarEstimateText, taskbarShortEstimate } from './taskbar-estimate';
 import crest from '../assets/live/pixel-party/crest.webp';
 
-const number = new Intl.NumberFormat('tr-TR', {maximumFractionDigits:1});
-const percent = (value: number | null | undefined) => value == null ? '—' : `%${number.format(value)}`;
+const number = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 1 });
+const clock = new Intl.DateTimeFormat('tr-TR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'});
+const fmt = (value: number | null | undefined) => value == null ? '—' : number.format(value);
+const gain = (value: number | null) => value == null ? '—' : `+${number.format(value)}`;
+const pair = (current: number | null | undefined, max: number | null | undefined, unit = 1) =>
+  `${fmt(current == null ? null : current / unit)} / ${fmt(max == null ? null : max / unit)}`;
 
 interface PartyRowProps {
   row: LiveWorkspaceRow;
+  reading: ReturnType<typeof taskbarPartyReading>;
   view: LiveViewPreferences;
   itemNames: ReadonlyMap<number, string>;
+  selected: boolean;
+  expanded: boolean;
+  onToggle: () => void;
 }
 
-export default function TaskbarPartyRow({row, view, itemNames}: PartyRowProps) {
+function Vital({ kind, value, detail, warning }: {kind: 'hp' | 'weight'; value?: number | null; detail: string; warning?: boolean}) {
+  const health = kind === 'hp';
+  const label = health ? 'Can' : 'Ağırlık';
+  const pct = value == null ? '—' : `%${number.format(value)}`;
+  return <div className={`taskbar-meter taskbar-strip-${kind}`} data-warning={warning} title={`${label} · ${pct} · ${detail}`}>
+    {health ? <Heart size={12} aria-hidden="true"/> : <Weight size={12} aria-hidden="true"/>}
+    <div className="taskbar-meter-body"><div><b>{pct}</b><small className={health ? 'taskbar-hp-load' : 'taskbar-weight-load'}>{detail}</small></div>
+      <span className="taskbar-meter-track">{value != null && <meter min={0} max={100} value={Math.max(0, Math.min(100, value))}
+        aria-label={label} aria-valuetext={`${pct} · ${detail}`}/>}</span>
+    </div>
+  </div>;
+}
+
+export default function TaskbarPartyRow({row, reading, view, itemNames, selected, expanded, onToggle}: PartyRowProps) {
   const {stream, name} = row;
   const telemetry = stream.summary?.liveTelemetry;
+  const live = isTaskbarSourceLive(stream);
   const status = liveStatusPresentation(stream);
   const map = telemetry?.currentMap || stream.summary?.mapName;
-  const hp = liveHealthPercent(stream);
-  const weight = telemetry?.weightPercent;
-  const weightDetail = telemetry?.weight != null && telemetry.maxWeight != null && telemetry.maxWeight > 0
-    ? `${number.format(telemetry.weight / 10)} / ${number.format(telemetry.maxWeight / 10)}` : '';
   const appearance = liveAppearanceForCharacter(view.appearanceByCharacter, row.key);
-  const loot = stream.recentLoot ?? (stream.lastLoot ? {
-    pickupCount: 1, totalQuantity: stream.lastLoot.quantity, items:[stream.lastLoot],
-  } : undefined);
-  const today = stream.dailyLoot;
-  const received = telemetry?.zenyReceived;
-  const balance = telemetry?.zenyBalance;
-  const zenyDetail = received == null ? 'Replay’de gelir ölçümü için cüzdan hareketi bekleniyor.' :
-    `Gösterilen Replay’de gözlenen cüzdan artışları toplamı +${number.format(received)} Zeny.`;
-  return <article className="taskbar-party-row" aria-label={name} data-character-key={row.key} data-stream-id={stream.id}>
-    <div className="taskbar-party-member">
-      <div className="taskbar-strip-scene" aria-hidden="true">
-        <img src={appearance ? LIVE_CHARACTER_ART[appearance] : crest} alt="" draggable={false}
-          data-active={!!appearance && !!stream.summary && isLiveSourceActive(stream)}/>
+  const detailId = useId();
+  const itemName = (id: number) => itemNames.get(id) ?? `Eşya #${id}`;
+  const lastRead = reading.lastReadAt ? new Date(reading.lastReadAt) : null;
+  const estimate = taskbarEstimateText(reading.estimatedLootZeny, reading.estimatePartial);
+  const estimateHint = taskbarEstimateHint(reading.estimatedLootZeny, reading.estimatePartial);
+  return <article className="taskbar-party-row" aria-label={name} data-character-key={row.key} data-stream-id={stream.id} data-selected={selected}>
+    <div className="taskbar-party-summary" onClick={onToggle}>
+      <div className="taskbar-party-member">
+        <div className="taskbar-strip-scene" aria-hidden="true"><img src={appearance ? LIVE_CHARACTER_ART[appearance] : crest} alt="" draggable={false}/></div>
+        <div className="taskbar-strip-identity">
+          <strong title={name}>{name}</strong>
+          <span className="taskbar-recording" title={stream.sourcePath}><FileText size={10}/><span>{stream.filename}</span></span>
+          <span className="taskbar-strip-source" data-tone={live ? 'active' : status.tone === 'active' ? 'waiting' : status.tone} title={status.description}><i/>{live ? 'Canlı' : status.label}</span>
+        </div>
       </div>
-      <div className="taskbar-strip-identity">
-        <strong title={name}>{name}</strong>
-        {map && <span className="taskbar-strip-map" title={map}><MapPin size={10} aria-hidden="true"/><span>{map}</span></span>}
-        <span className="taskbar-strip-source" data-tone={status.tone} title={`${status.description} · ${stream.filename}`}><i/>{status.label}</span>
+      <div className="taskbar-party-vitals">
+        <Vital kind="hp" value={liveHealthPercent(stream)} detail={pair(telemetry?.hp, telemetry?.maxHp)}/>
+        <Vital kind="weight" value={telemetry?.weightPercent} detail={pair(telemetry?.weight, telemetry?.maxWeight, 10)}
+          warning={telemetry?.weightPercent != null && telemetry.weightPercent >= row.threshold}/>
       </div>
-    </div>
-    <div className="taskbar-party-vitals" aria-label="Can ve ağırlık">
-      <div className="taskbar-meter taskbar-strip-hp" title={`Can · ${percent(hp)}`}>
-        <Heart size={13} aria-hidden="true"/><span className="taskbar-meter-track">{hp != null &&
-          <meter min={0} max={100} value={hp} aria-label={`${name} can`}/>}</span><b>{percent(hp)}</b>
+      <div className="taskbar-strip-loot" aria-label="Son üç ganimet ve günlük adetleri">
+        <small className="taskbar-mobile-label">Son ganimet</small>
+        {reading.recentLoot.length ? <ul>{reading.recentLoot.map(item => <li key={item.itemId} className="taskbar-loot-item"
+          title={`${itemName(item.itemId)} · Bugün ${fmt(item.quantity)} adet`}>
+          <i aria-hidden="true"/><strong>{itemName(item.itemId)}</strong><b>×{fmt(item.quantity)}</b>
+        </li>)}</ul> : <span className="taskbar-loot-empty"><PackageOpen size={12}/>{reading.lootTotal === 0 ? 'Henüz ganimet yok' :
+          reading.lootTotal != null ? `Bugün ${fmt(reading.lootTotal)} adet` : 'Veri bekleniyor'}</span>}
       </div>
-      <div className="taskbar-meter taskbar-strip-weight" data-warning={weight != null && weight >= row.threshold}
-        title={`Ağırlık · ${weightDetail || percent(weight)} · Uyarı eşiği %${row.threshold}`}>
-        <Weight size={13} aria-hidden="true"/><span className="taskbar-meter-track">{weight != null &&
-          <meter min={0} max={100} value={Math.max(0, Math.min(100, weight))} aria-label={`${name} ağırlık`} aria-valuetext={`${percent(weight)} · ${weightDetail}`}/>}</span><b>{percent(weight)}</b>
+      <div className="taskbar-strip-zeny" aria-label="Zeny">
+        <small className="taskbar-mobile-label">Tahmini Zeny</small>
+        <div className="taskbar-zeny-value" title={`${estimate} · ${estimateHint}`}><Coins size={13}/><strong data-short={taskbarShortEstimate(reading.estimatedLootZeny, reading.estimatePartial)}>{estimate}</strong></div>
+        <small className="taskbar-zeny-balance" title={`Son cüzdan bakiyesi · ${fmt(reading.wallet)} Zeny`}>Cüzdan <b>{fmt(reading.wallet)}</b></small>
       </div>
-      {weightDetail && <small className="taskbar-weight-load" title="Taşınan ağırlık / taşıma kapasitesi">{weightDetail}</small>}
+      <div className="taskbar-exp" aria-label="Kayıt boyunca gözlenen EXP kazanımı">
+        <small className="taskbar-vertical-label">Kayıt EXP</small>
+        {(['Base', 'Job'] as const).map(kind => {
+          const base = kind === 'Base';
+          const level = base ? reading.baseLevel : reading.jobLevel;
+          const amount = base ? reading.baseGain : reading.jobGain;
+          return <div key={kind} title={`${kind} seviye ${fmt(level)} · Kayıt boyunca okunan EXP kazancı ${gain(amount)}`}>
+            <span>{kind} <b>{fmt(level)}</b></span><strong>{gain(amount)}</strong>
+          </div>;
+        })}
+      </div>
+      <button type="button" className="party-disclosure" aria-label={`${name} ayrıntılarını ${expanded ? 'kapat' : 'aç'}`}
+        aria-expanded={expanded} aria-controls={detailId} onClick={event => {event.stopPropagation(); onToggle();}}><ChevronDown size={15} aria-hidden="true"/></button>
     </div>
-    <div className="taskbar-strip-loot" aria-label="Son 3 ganimet ve günlük adetleri">
-      <small className="taskbar-mobile-label">Son 3 ganimet</small>
-      {loot?.items.length ? <ul>{loot.items.map(item => {
-        const label = itemNames.get(item.itemId) ?? `Eşya #${item.itemId}`;
-        const quantity = today?.itemQuantities[item.itemId];
-        const dailyDetail = quantity == null ? 'Günlük adet bekleniyor' : `Bugün ${number.format(quantity)} adet`;
-        return <li key={item.itemId} className="taskbar-loot-item"
-          title={`${label} · ${dailyDetail} · Son ${loot.pickupCount} alımda ${number.format(item.quantity)} adet`}>
-          <strong>{label}</strong><b>{quantity == null ? '—' : `×${number.format(quantity)}`}</b>
-        </li>;
-      })}</ul> : <span className="taskbar-loot-empty"><PackageOpen size={12} aria-hidden="true"/>Bekleniyor</span>}
-      <span className="taskbar-loot-total" title="Bu karakterin bugün tüm eşyalardan topladığı doğrulanmış ganimet adedi (Türkiye saati)">
-        <small>Bugün</small><b>{today ? number.format(today.totalQuantity) : '—'}</b>
-      </span>
-    </div>
-    <div className="taskbar-strip-zeny" aria-label="Gelen Zeny"
-      title={`${zenyDetail}${balance == null ? '' : ` Son bakiye ${number.format(balance)} Zeny.`}`}>
-      <small className="taskbar-mobile-label">Gelen Zeny</small>
-      <strong className="taskbar-zeny-value"><Coins size={13} aria-hidden="true"/><span>{received == null ? '—' : `+${number.format(received)}`}</span></strong>
-      {balance != null && <small className="taskbar-zeny-balance" title={`Cüzdan ${number.format(balance)} Zeny`}>Cüzdan {number.format(balance)}</small>}
-    </div>
-    <ReplayExperience key={`${stream.id}/${stream.summary?.startedAt ?? ''}`} compact telemetry={telemetry}/>
+    {expanded && <section className="taskbar-party-detail" id={detailId} aria-label={`${name} ayrıntıları`}>
+      <div className="party-detail-loot"><h3>Günlük ganimet <span className="taskbar-loot-total"><b>{fmt(reading.lootTotal)}</b> adet</span></h3>
+        {reading.dailyLoot?.length ? <ul tabIndex={0} aria-label="Günlük ganimet listesi">{reading.dailyLoot.map(item => <li key={item.itemId}><span title={itemName(item.itemId)}>{itemName(item.itemId)}</span><b>×{fmt(item.quantity)}</b></li>)}</ul>
+          : <p>{reading.dailyLoot == null ? 'Günlük veri bekleniyor.' : 'Bugün ganimet kaydedilmedi.'}</p>}
+      </div>
+      <div className="party-detail-wallet"><h3>Zeny</h3><dl>
+        <dt title={estimateHint}>Ganimet tahmini</dt><dd title={estimateHint}>{estimate}</dd>
+        <dt>Bugün gelen</dt><dd>{gain(reading.zenyToday)}</dd><dt>Bu kayıtta gelen</dt><dd>{gain(reading.recordingZeny)}</dd>
+        <dt>Cüzdan</dt><dd>{fmt(reading.wallet)}</dd>
+      </dl>{reading.estimatePartial && <p>{reading.estimatedLootZeny == null ? 'Birim fiyatlar Finans’ta girilebilir.' : '* Fiyatı bilinen ganimetler.'}</p>}</div>
+      <ReplayExperience telemetry={telemetry}/>
+      <div className="party-detail-source"><h3>Replay</h3><p title={stream.filename}>{stream.filename}</p>
+        {map && <p title={map}>{map}</p>}
+        <small>Son başarılı okuma</small><time dateTime={reading.lastReadAt ?? undefined}>{lastRead && Number.isFinite(lastRead.getTime()) ? clock.format(lastRead) : '—'}</time>
+        {reading.lootPerHour != null && <p>Ganimet / izleme saati <b>{fmt(reading.lootPerHour)}</b></p>}
+      </div>
+    </section>}
   </article>;
 }

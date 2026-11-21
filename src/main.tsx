@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import {restoreLanguage} from './i18n/language';
 import './styles.css';
 import './live.css';
 import './live-redesign.css';
@@ -12,4 +13,6 @@ import './ragnarok-dark.css';
 import './panel-dark.css';
 import './taskbar-panels.css';
 import './taskbar-theme.css';
-ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);
+void restoreLanguage().then(() => {
+  ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);
+});

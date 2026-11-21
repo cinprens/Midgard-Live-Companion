@@ -28,7 +28,7 @@ async function launch(){app=await electron.launch({...(process.argv[2]?{executab
 async function capture(name){const file=path.join(output,name);await page.screenshot({path:file,fullPage:false});screenshots.push(file);}
 async function closeSheet(){await page.getByLabel('Av analizini kapat').click();await sheet().waitFor({state:'hidden'});}
 async function openSheet(){await page.getByRole('button',{name:'Analiz',exact:true}).click();await sheet().waitFor();}
-async function size(width,height){await app.evaluate(({BrowserWindow},[w,h])=>{const win=BrowserWindow.getAllWindows()[0];win.setMinimumSize(400,600);win.setSize(w,h);},[width,height]);await page.waitForTimeout(120);}
+async function size(width,height){await app.evaluate(({BaseWindow},[w,h])=>{const win=BaseWindow.getAllWindows()[0];win.setMinimumSize(400,600);win.setSize(w,h);},[width,height]);await page.waitForTimeout(120);}
 try{
   await launch();
   const before=await page.evaluate(()=>window.midgard.getState()),finance=JSON.stringify(before.expansion.finance),totals=JSON.stringify(before.expansion.killCount.totals),notifications=JSON.stringify(before.assistance.preferences.selectedMonsterIds);

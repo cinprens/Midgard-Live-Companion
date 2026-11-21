@@ -170,7 +170,7 @@ try {
       await theme(mode);
       for (const width of [1480, 1100]) {
         await viewport.send('Emulation.clearDeviceMetricsOverride');
-        await app.evaluate(({ BrowserWindow }, width) => BrowserWindow.getAllWindows()[0].setSize(width, 980), width);
+        await app.evaluate(({ BaseWindow }, width) => BaseWindow.getAllWindows()[0].setSize(width, 980), width);
         await page.waitForFunction(width => innerWidth >= width - 40 && innerWidth <= width, width);
         const actualWidth = await page.evaluate(() => innerWidth);
         assert(actualWidth >= width - 40 && actualWidth <= width, `${mode}: native ${width} pixel window has an actual ${actualWidth} pixel renderer viewport`);
@@ -223,7 +223,7 @@ try {
   assert(penaltySession.base.gained === 200 && penaltySession.job.gained === 50 && penaltySession.base.lost === base5 + base10 && penaltySession.job.lost === job5 + job10, 'A monster death adds configured EXP without charging another player-death penalty');
   assert(penaltySession.base.net === 200 - base5 - base10 && penaltySession.job.net === 50 - job5 - job10 && Math.abs(penaltySession.base.perHour - penaltySession.base.net * 3600000 / penaltySession.durationMs) < 0.001, 'Estimated net totals and hourly rates subtract accumulated losses exactly once');
   assert(state.expansion.experience[sourceOf(state, 0).id].base.current === null && state.expansion.experience[sourceOf(state, 0).id].job.current === null, 'Estimated death deductions keep actual Replay Base and Job EXP unknown');
-  await goKill(a); await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1100, 980)); await page.waitForFunction(() => innerWidth >= 1060 && innerWidth <= 1100);
+  await goKill(a); await app.evaluate(({ BaseWindow }) => BaseWindow.getAllWindows()[0].setSize(1100, 980)); await page.waitForFunction(() => innerWidth >= 1060 && innerWidth <= 1100);
   await screenshot('kill-exp-penalty-1100');
   await page.getByRole('button', { name: 'Finans', exact: true }).click(); assert(await page.locator('.auto-finance').count() === 1, 'Existing automatic Finance remains accessible');
   await page.getByRole('button', { name: 'Bildirim ayarları', exact: true }).click(); assert(await page.getByRole('button', { name: 'Karakter öldüğünde sesini dene', exact: true }).count() === 1, 'Existing sound notification controls remain accessible');

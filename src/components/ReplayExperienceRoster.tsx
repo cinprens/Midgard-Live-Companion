@@ -53,7 +53,7 @@ function ExperienceTrack({row, kind, interval}: {row:ReplayExpCharacter; kind:ty
     </div>
     {atCap ? <span className="replay-exp-at-cap" data-exp-at-cap={kind}><Crown size={14} aria-hidden="true"/>Seviye sınırında</span>
     : progress ? <div className="replay-exp-progress" data-exp-progress={progress.source}>
-      <div><span>{progressSource}{progress.level !== track.level ? ` · Sv. ${progress.level}` : ''} <em>{amount(progress.balance)}</em></span><b>%{percent.format(progress.percent)}</b></div>
+      <div><span>{progressSource}{progress.level !== track.level ? ` · Sv. ${progress.level}` : ''} <em>{amount(progress.balance)}</em></span><b>{`%${percent.format(progress.percent)}`}</b></div>
       <progress value={progress.balance} max={progress.required} aria-label={`${row.name} ${label} · ${progressSource}`}/>
       <div><span>Seviyeye kalan{progress.requirementSource==='official' && <small className="replay-exp-requirement-source"> · GNJOY tablosu</small>}</span><strong data-exp-remaining>{amount(progress.remaining)}</strong></div>
     </div> : <div className="replay-exp-no-progress"><span>Seviyeye kalan</span><strong data-exp-remaining>—</strong></div>}

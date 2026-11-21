@@ -68,6 +68,7 @@ describe('native incremental bridge controller',()=>{
   const file=await source(replay(10000));let initialEvents=0;const deltas:{initial:boolean|undefined;timestamps:number[];packetCount:number}[]=[];
   const live=controller({onSnapshot:(parsed,meta)=>{if(meta.initial)initialEvents+=parsed.events.length;else deltas.push({initial:meta.initial,timestamps:parsed.events.map(event=>event.timestamp),packetCount:parsed.packetCount});}});
   await live.addFiles([file]);await live.waitForIdle();const before=live.snapshot().streams[0];await appendFile(file,frame(10001,true));await refresh(live);const after=live.snapshot().streams[0];
+  expect(before.lastValidatedProgressAt).toBeFalsy();expect(after.lastValidatedProgressAt).toBeTruthy();
   expect(initialEvents).toBe(0);expect(deltas).toHaveLength(2);expect(deltas.every(delta=>delta.initial===false)).toBe(true);expect(deltas.flatMap(delta=>delta.timestamps)).toEqual([1000100]);expect(after.packetCount).toBe(10001);expect(after.bytesReadTotal-before.bytesReadTotal).toBeLessThan(1024);expect(live.hasCurrentSnapshot(after.id)).toBe(true);
  });
  it('drains an admitted callback on pause, starts no further batch, and resumes silently',async()=>{

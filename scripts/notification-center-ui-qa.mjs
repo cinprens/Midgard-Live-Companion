@@ -128,7 +128,7 @@ try {
   await button('Karakter ayarlarını uygula').click();
   await wait(page, async () => Object.values((await window.midgard.getState()).expansion.alertPreferences).some(value => value.legacy.selectedCardIds?.join() === '909' && value.legacy.enabled?.['old-blue-box'] === false));
   await add('Eşya', 'Eşya adı veya kimliği', '#972');
-  await app.evaluate(({BrowserWindow}) => BrowserWindow.getAllWindows()[0].blur());
+  await app.evaluate(({BaseWindow}) => BaseWindow.getAllWindows()[0].blur());
   await grow(verifiedItemReceipt(972, 3, 8));
   await wait(page, () => window.qaNotices.some(event => event.type === 'card' && event.itemId === 972 && event.amount === 3));
   await page.locator('[aria-controls="notice-card"]').click();

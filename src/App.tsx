@@ -24,6 +24,7 @@ import NotificationCenter from './components/NotificationCenter';
 import {targetIsActive, targetPatch, usesSelectedItemSound} from './domain/alert-targets';
 import type {AlertPreferencesPatch} from './domain/notifications';
 import { Coins } from 'lucide-react';
+import {chooseLanguage, useLanguage} from './i18n/language';
 
 const empty: AppState = { records: [], jobs: [], folderFiles: [], settings: { replayFolder: null, databasePath: 'Kayıt tutulmuyor', watchRequested: false, watchPermissionConfirmed: false, watchActive: false, watchPolicyVerified: false } };
 const icons = { death: Skull, weight: Weight, card: Gem, 'glass-bead':Gem, 'old-blue-box':Coins, city: MapPin, level: Crown, monster:Swords };
@@ -38,6 +39,7 @@ const sections = [
 ] as const;
 
 export default function App() {
+  const language = useLanguage();
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     try { return !window.midgard && localStorage.getItem('midgard-ui-theme') === 'dark' ? 'dark' : 'light'; }
     catch { return 'light'; }
@@ -61,9 +63,17 @@ export default function App() {
   const taskbar=useTaskbarMode();
   const {current:taskbarScene, enqueue:enqueueScene} = useTaskbarDropQueue(taskbar.active);
   const taskbarTrigger=useRef<HTMLButtonElement>(null);
+  const settingsNav=useRef<HTMLButtonElement>(null);
+  const openSettingsOnReturn=useRef(false);
   const wasCompact=useRef(false);
   useEffect(()=>{
-    if(wasCompact.current && !taskbar.active) taskbarTrigger.current?.focus();
+    if(wasCompact.current && !taskbar.active) {
+      if(openSettingsOnReturn.current) {
+        setPage('settings');
+        settingsNav.current?.focus();
+      } else taskbarTrigger.current?.focus();
+      openSettingsOnReturn.current=false;
+    }
     wasCompact.current=taskbar.active;
   },[taskbar.active]);
   const [busy, setBusy] = useState(false), [error, setError] = useState('');
@@ -231,12 +241,12 @@ export default function App() {
   const killCharacters=[...new Map([...streams.map(stream=>({key:stream.character?.key??`unassigned:${stream.id}`,name:stream.character?.name??stream.summary?.characterName??stream.filename})),...(state.expansion?.killCount.characters??[]).map(character=>({key:character.characterKey,name:character.characterName}))].map(character=>[character.key,character])).values()];
   const characters=[...new Map([...streams.map(stream=>({key:stream.character?.key??`unassigned:${stream.id}`,name:stream.character?.name??stream.summary?.characterName??stream.filename})),...(state.expansion?.finance.sessions??[]).map(session=>({key:session.characterKey,name:session.characterName}))].map(character=>[character.key,character])).values()];
   // Keep the workspace mounted while the strip is open so draft prices, filters and dialogs survive the round trip.
-  return <><div className={`assistant-shell skadi-shell${page === 'finance' ? ' finance-page' : page === 'kill-count' ? ' kill-page' : page === 'live' ? ' live-page' : ''}`} hidden={taskbar.active} data-theme={theme} lang="tr">
+  return <><div className={`assistant-shell skadi-shell${page === 'finance' ? ' finance-page' : page === 'kill-count' ? ' kill-page' : page === 'live' ? ' live-page' : ''}`} hidden={taskbar.active} data-theme={theme} lang={language}>
     <aside className="assistant-sidebar">
       <div className="assistant-brand"><i className="item-sprite sprite-swords" aria-hidden="true" /><div>MIDGARD<span>LIVE COMPANION</span></div></div>
       <nav aria-label="Ana gezinme">
         {sections.map(({id,name,icon})=><button type="button" key={id} className={page===id?'selected':''}
-          aria-current={page===id?'page':undefined} onClick={()=>id==='experience'?openExperience():setPage(id)}>
+          ref={id==='settings'?settingsNav:undefined} aria-current={page===id?'page':undefined} onClick={()=>id==='experience'?openExperience():setPage(id)}>
           <i className={`item-sprite sprite-${icon}`} aria-hidden="true" />{name}{id==='live'&&<span>{streams.length}</span>}
         </button>)}
       </nav>
@@ -248,6 +258,11 @@ export default function App() {
         <span className="skadi-location"><MapPin size={14} aria-hidden="true"/>Ragnarok Zero<ChevronRight size={12} aria-hidden="true"/><b>Skadi</b></span>
         <div className="assistant-topbar-actions">
           {taskbar.available && <button type="button" className="taskbar-launch" ref={taskbarTrigger} onClick={()=>void taskbar.change(true)} disabled={taskbar.pending}><PanelBottom size={16}/>Görev çubuğu modu</button>}
+          <div className="assistant-theme-switch language-switch" role="group" aria-label={language === 'en' ? 'Interface language' : 'Arayüz dili'}>
+            {(['tr', 'en'] as const).map(code => <button key={code} type="button" lang={code}
+              aria-pressed={language === code} aria-label={code === 'tr' ? 'Türkçe' : 'English'} title={code === 'tr' ? 'Türkçe' : 'English'}
+              onClick={() => { if (language !== code) void chooseLanguage(code).catch(() => setError('Dil tercihi kaydedilemedi.')); }}>{code === 'tr' ? 'TR' : 'ENG'}</button>)}
+          </div>
           {page!=='settings' && <button type="button" className="finance-sound-toggle" aria-label={prefs.muted ? 'Bildirim sesini aç' : !audioReady ? 'Sesli bildirimleri etkinleştir' : 'Bildirim sesini kapat'} disabled={busy} aria-pressed={!prefs.muted&&audioReady} title={prefs.muted ? 'Sessiz mod açık' : !audioReady ? 'Sesli bildirimleri etkinleştir' : 'Bildirim sesi açık'} onClick={toggleAudio}>{prefs.muted ? <VolumeX size={16}/> : <Volume2 size={16}/>}</button>}
           <div className="assistant-theme-switch" role="group" aria-label="Görünüm teması">
             <button type="button" aria-label="Açık tema" title="Açık tema" aria-pressed={theme === 'light'} onClick={() => changeTheme('light')}><Sun size={14}/><span>Açık</span></button>
@@ -271,5 +286,7 @@ export default function App() {
     {error && <div className="assistant-error" role="alert"><span>{error}</span><button aria-label="Mesajı kapat" onClick={() => setError('')}><X size={16} /></button></div>}
     {busy && <div className="assistant-working">Tercihler uygulanıyor…</div>}
   </div>{taskbar.active && <TaskbarStrip state={state} view={liveView.view} pending={taskbar.pending} error={error || taskbar.error} notification={flashes[flashes.length-1]} scene={taskbarScene}
-    audioReady={audioReady} audioBusy={alertBusy} onAudioToggle={toggleNotificationAudio} onExit={()=>void taskbar.change(false)}/>}</>;
+    audioReady={audioReady} audioBusy={alertBusy} onAudioToggle={toggleNotificationAudio}
+    onSettings={()=>{openSettingsOnReturn.current=true;void taskbar.change(false);}}
+    onExit={()=>{openSettingsOnReturn.current=false;void taskbar.change(false);}}/>}</>;
 }

@@ -103,12 +103,12 @@ try{
   check(await page.locator('.finance-table-scroll').evaluate(node=>{const r=node.getBoundingClientRect();return [...node.querySelectorAll('tr[data-farm-item-id]')].filter(row=>{const q=row.getBoundingClientRect();return q.top>=r.top-1&&q.bottom<=r.bottom+1;}).length>=3;}),'Desktop daily view retains at least three complete item rows');await capture('finance-daily-dark-1480.png');
   await openItem(603,'Old Blue Box');await geometry('1480 dark detail',{detail:true});await capture('finance-daily-dark-detail-1480.png');await closeDetail();
   await theme('light');await capture('finance-daily-light-1480.png');
-  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setMinimumSize(480,600));
+  await app.evaluate(({BaseWindow})=>BaseWindow.getAllWindows()[0].setMinimumSize(480,600));
   for(const [width,height]of [[1100,820],[620,800]]){
-    await app.evaluate(({BrowserWindow},size)=>BrowserWindow.getAllWindows()[0].setSize(...size),[width,height]);await page.waitForTimeout(120);await geometry(`${width} light`);await capture(`finance-daily-light-${width}.png`);
+    await app.evaluate(({BaseWindow},size)=>BaseWindow.getAllWindows()[0].setSize(...size),[width,height]);await page.waitForTimeout(120);await geometry(`${width} light`);await capture(`finance-daily-light-${width}.png`);
     await theme('dark');await geometry(`${width} dark`);await capture(`finance-daily-dark-${width}.png`);await theme('light');
   }
-  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1480,980));
+  await app.evaluate(({BaseWindow})=>BaseWindow.getAllWindows()[0].setSize(1480,980));
   await page.getByRole('button',{name:'Bugün',exact:true}).click();await wait(page,async()=>(await window.midgard.getFinanceView()).dailyDate===null);check(true,'Today remains a moving selection instead of freezing the current date');
   await chooseDate(financeDailyDate);await quantity(603,4);
   await app.evaluate(({ipcMain})=>{const channel='midgard:finance-daily';globalThis.__qaFinanceDailyOriginal=ipcMain._invokeHandlers.get(channel);ipcMain.removeHandler(channel);ipcMain.handle(channel,async(event,input)=>{if(input.date==='2026-11-04')await new Promise(resolve=>setTimeout(resolve,450));if(input.date==='2026-11-03')throw new Error('SYNTHETIC günlük finans okuma hatası');return globalThis.__qaFinanceDailyOriginal(event,input);});});

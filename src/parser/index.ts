@@ -25,7 +25,7 @@ const MAX_DURATION_MS = 7 * 24 * 3600000;
 const MAX_DISPLAY_TEXT_BYTES = 1024;
 const TABLE_END = 112 + 24 * 10;
 const FIXED_LENGTHS = new Map([[0x0080, 7], [0x008a, 29], [0x02e1, 33], [0x08c8, 34], [0x01de, 33], [0x0091, 22]]);
-type Chunk = { id: number; data: Uint8Array; time: number; offset: number; order: number };
+type Chunk = { id: number; data: Uint8Array; time: number; offset: number; order: number; timedOrder?: number };
 type Entity = { kind: string; view: number; name: string; dead: boolean; attackers: Map<number, number>;
   lifecycleId:string;generation:number;appearedAt:number;deathAt:number|null;
   lastAttackServerTick:number|null;lastAttackTimestamp:number|null };
@@ -174,7 +174,7 @@ export function parseReplay(buffer: ArrayBuffer, filename: string): ParsedReplay
             diagnostic('warning', 'TRUNCATED_PACKET', 'Paket eksik veya uzunluğu geçersiz; akışın kalan kısmı atlandı.', start + pointer);
             break;
           } else {
-            stream.push({ id: packetView.getInt32(pointer, true), time, data: decryptChunk(body.subarray(pointer + 10, pointer + 10 + size), size, keys), offset: start + pointer, order: totalChunks });
+            stream.push({ id: packetView.getInt32(pointer, true), time, data: decryptChunk(body.subarray(pointer + 10, pointer + 10 + size), size, keys), offset: start + pointer, order: totalChunks, timedOrder: stream.length+1 });
           }
           pointer += 10 + size;
         }
@@ -248,7 +248,8 @@ export function parseReplay(buffer: ArrayBuffer, filename: string): ParsedReplay
           if(statusKey==='weight')inventory.observeWeight(amount,chunk.time,metadata.playerId,initialOrders.has(chunk.order));
           const status = statusKey.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
           result.events.push({ ...base, eventType: 'status', actorId: metadata.playerId ?? undefined, statusKey, amount,
-            attribution: 'personal', rawData: { status, parameter, source: 'self-parameter-update', timed: !initialOrders.has(chunk.order) } });
+            attribution: 'personal', rawData: { status, parameter, source: 'self-parameter-update', timed: !initialOrders.has(chunk.order),
+              ...(statusKey==='zenyBalance'?{timedPacketOrder:chunk.timedOrder}:{}) } });
           if (statusKey === 'baseLevel' || statusKey === 'jobLevel') {
             const previousLevel = levels[statusKey];
             if (statusKey === 'jobLevel' && previousLevel !== null && amount < previousLevel) deathJobTrack = null;
@@ -414,7 +415,7 @@ export function parseReplay(buffer: ArrayBuffer, filename: string): ParsedReplay
     result.summary = analyzeEvents(result.events, { ...metadata, durationMs: Math.max(lastTime, storedDuration) });
     result.summary.inventoryFlow=inventory.summary(result.events);
     result.summary.itemObservations=summarizeItemObservations(result.events);
-    result.summary.liveTelemetry = summarizeLiveTelemetry(result.events, { ...telemetrySeed, currentMap: metadata.mapName ?? null });
+    result.summary.liveTelemetry = summarizeLiveTelemetry(result.events, { ...telemetrySeed, currentMap: metadata.mapName ?? null }, true);
     if(result.summary.itemObservations.groundCount||result.summary.itemObservations.obtainedCount)diagnostic('info','ITEM_OBSERVATION_ONLY','Yerde görülen veya envantere eklenen eşyalar gözlemdir; yaratık kökeni ve kişisel drop aidiyeti doğrulanmadı.');
     result.unknownPackets = [...unknown.entries()].map(([packetId, count]) => ({ packetId, count }));
     result.status = result.unknownPackets.length > 0 || result.diagnostics.some(d => d.code !== 'SKADI_UNVERIFIED' && d.severity === 'warning') ? 'partial' : 'supported';

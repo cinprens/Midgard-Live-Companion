@@ -125,7 +125,7 @@ try{
   await page.getByRole('button',{name:'Siyah tema',exact:true}).click();await capture('finance-dark-1480.png');
   await page.getByRole('button',{name:'Açık tema',exact:true}).click();await capture('finance-light-1480.png');
   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Finance fits the 1480 pixel desktop width');
-  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1100,820));await page.waitForTimeout(120);await capture('finance-light-1100.png');
+  await app.evaluate(({BaseWindow})=>BaseWindow.getAllWindows()[0].setSize(1100,820));await page.waitForTimeout(120);await capture('finance-light-1100.png');
   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Finance fits the 1100 pixel desktop width with the detail panel open');
   await page.getByRole('button',{name:'Siyah tema',exact:true}).click();await capture('finance-dark-1100.png');
   const savedView=await preferences(),savedFarm=(await state()).expansion.autoFarm;

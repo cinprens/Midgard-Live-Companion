@@ -8,6 +8,8 @@ import RareDropSoundSettings, {type RareSoundAction} from './RareDropSoundSettin
 import type {RareSoundCategory, RareSoundTarget} from '../shared/rare-drop-sounds';
 import SceneDurationField, {type SaveSceneDuration} from './SceneDurationField';
 import {GENERAL_ALERT_RULES} from './general-alert-rules';
+import UsageGuide from './UsageGuide';
+import {serviceMessage} from '../i18n/catalog';
 import './NotificationCenter.css';
 
 type Kind = typeof GENERAL_ALERT_RULES[number]['kind'];
@@ -33,6 +35,11 @@ const basicNames: AlertTargetNames = {
 function summarize(names: string[], noun: string) {
   if (!names.length) return `Henüz ${noun} seçilmedi`;
   return names.slice(0, 2).join(', ') + (names.length > 2 ? ` · +${names.length - 2} ${noun}` : '');
+}
+
+function soundDisplayName(name: string | undefined) {
+  // Imported sounds carry the original basename; built-in sounds carry an app label.
+  return !name || /\.(wav|mp3|ogg)$/i.test(name) ? name : serviceMessage(name);
 }
 
 export default function NotificationCenter({state, characters, prefs, busy, audioReady, onAudioToggle, onSave, onSound, onTest, onRareSound, onSceneDuration, children}: Props) {
@@ -90,7 +97,7 @@ export default function NotificationCenter({state, characters, prefs, busy, audi
   }
   function soundControls(kind:AlertKind) {
     const silent=prefs.muted || prefs.volume===0;
-    return <div className="notice-sounds"><span><Volume2 size={14}/>{state.assistance?.sounds[kind]?.name ?? 'MIDGARD bildirim tonu'}</span>
+    return <div className="notice-sounds"><span><Volume2 size={14}/>{soundDisplayName(state.assistance?.sounds[kind]?.name) ?? 'MIDGARD bildirim tonu'}</span>
       <button className="button secondary" disabled={busy} type="button" onClick={() => onSound(kind)}>Ses seç</button>
       {(kind === 'old-blue-box' || kind === 'monster') && <button className="button secondary" disabled={busy} type="button" onClick={() => onSound(kind, true)}>{kind === 'monster' ? 'Mobster sesi' : 'Ganimet çanı'}</button>}
       <button type="button" className="button secondary" disabled={busy || silent} title={silent ? 'Önce sesi aç' : 'Sesi dene'} onClick={() => onTest(kind)}><Play size={13}/>Dene</button>
@@ -108,7 +115,7 @@ export default function NotificationCenter({state, characters, prefs, busy, audi
           onChange={event => setVolume(Number(event.target.value))}
           onPointerUp={() => {if (volume !== prefs.volume) void onSave({volume});}}
           onKeyUp={() => {if (volume !== prefs.volume) void onSave({volume});}}
-          onBlur={() => {if (volume !== prefs.volume) void onSave({volume});}}/><output>%{volume}</output></label>
+          onBlur={() => {if (volume !== prefs.volume) void onSave({volume});}}/><output>{`%${volume}`}</output></label>
       </div>
     </header>
     <AlertQuickAdd prefs={prefs} items={items} rareCategories={rareCategories} monsters={monsters} maps={knownMaps} disabled={busy}
@@ -116,7 +123,7 @@ export default function NotificationCenter({state, characters, prefs, busy, audi
     {lookupError && <p role="alert">{lookupError}</p>}
     <RareDropSoundSettings choices={state.assistance?.rareDropSounds ?? []} items={items} categories={rareCategories} busy={busy}
       silent={prefs.muted || prefs.volume === 0} onSound={onRareSound} durations={state.assistance?.sceneDurations} onSceneDuration={onSceneDuration}
-      previousItemIds={prefs.selectedCardIds} previousSound={prefs.enabled.card ? state.assistance?.sounds.card?.name : undefined}
+      previousItemIds={prefs.selectedCardIds} previousSound={prefs.enabled.card ? soundDisplayName(state.assistance?.sounds.card?.name) : undefined}
       onRemovePrevious={id=>void onSave(targetPatch(prefs,{type:'item',id},false))}/>
     <section className="notice-rules" aria-labelledby="notice-rules-title">
       <div className="notice-section-head"><h2 id="notice-rules-title">Genel kurallar</h2><span>Karaktere özel tercihler önceliklidir</span></div>
@@ -171,5 +178,6 @@ export default function NotificationCenter({state, characters, prefs, busy, audi
       </button>
       <div id="character-alert-options" hidden={!characterOpen}>{characterOpen && children(rareCategories)}</div>
     </section>
+    <UsageGuide/>
   </div>;
 }

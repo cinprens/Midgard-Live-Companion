@@ -58,10 +58,17 @@ describe('incremental v5 packet bridge',()=>{
       const file=makeSource(opening),parser=new IncrementalReplayParser(file.bootstrap,'wallet.rrf');
       const openingOnly=push(parser,bytes(0));
       expect(openingOnly.summary.liveTelemetry).toMatchObject({zenyBalance:opening,zenyReceived:null});
-      for(let i=0;i<file.frames.length;i+=5)push(parser,file.frames.subarray(i,i+5));
+      const increases:(number|undefined)[]=[];
+      for(let i=0;i<file.frames.length;i+=5){
+        const delta=push(parser,file.frames.subarray(i,i+5));
+        increases.push(...delta.events.filter(event=>event.statusKey==='zenyBalance').map(event=>event.walletIncrease));
+      }
       const finished=push(parser,bytes(0),true);
       expect(finished.summary.liveTelemetry).toMatchObject({zenyBalance:200,zenyReceived:gained});
-      expect(parseReplay(file.full.buffer,'wallet.rrf').summary.liveTelemetry).toEqual(finished.summary.liveTelemetry);
+      const full=parseReplay(file.full.buffer,'wallet.rrf');
+      expect(full.summary.liveTelemetry).toEqual(finished.summary.liveTelemetry);
+      expect(increases).toEqual([120-opening,0,0,120]);
+      expect(full.events.filter(event=>event.statusKey==='zenyBalance').map(event=>event.walletIncrease)).toEqual(increases);
     }
   });
   it('keeps the opening balance across fragments and counts only rewards in the timed stream',()=>{

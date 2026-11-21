@@ -166,13 +166,13 @@ export class LiveController {
   }
   private emit():void{this.options.onUpdate?.();}
   private resetSuccessfulRead(entry:Entry):void{
-    entry.state.lastSuccessfulReadAt=null;entry.acceptedPacketFrontier=0;entry.acceptedRecordingStartedAt=undefined;
+    entry.state.lastSuccessfulReadAt=null;entry.state.lastValidatedProgressAt=null;entry.activityReplayFrontier=-1;entry.acceptedPacketFrontier=0;entry.acceptedRecordingStartedAt=undefined;
     if(entry.state.sourceMode==='folder'){entry.folderNeedsBaseline=true;entry.activityReplayFrontier=-1;entry.state.liveActivity='waiting';entry.state.lastValidatedProgressAt=null;}
   }
   private prepareSuccessfulReadScope(entry:Entry,parsed:ParsedReplay,recordingReset=false):void{
     if(recordingReset||entry.acceptedRecordingStartedAt!==undefined&&entry.acceptedRecordingStartedAt!==parsed.summary.startedAt)this.resetSuccessfulRead(entry);
   }
-  private commitSuccessfulRead(entry:Entry,parsed:ParsedReplay):void{
+  private commitSuccessfulRead(entry:Entry,parsed:ParsedReplay,baseline=false):void{
     entry.acceptedRecordingStartedAt=parsed.summary.startedAt;
     if(entry.state.sourceMode==='folder'){
       const frontier=parsed.events.reduce((latest,event)=>event.eventType!=='unknown'&&Number.isFinite(event.timestamp)&&event.timestamp>=0?Math.max(latest,event.timestamp):latest,-1);
@@ -181,6 +181,11 @@ export class LiveController {
       entry.acceptedPacketFrontier=Math.max(entry.acceptedPacketFrontier,parsed.packetCount);entry.activityReplayFrontier=Math.max(entry.activityReplayFrontier??-1,frontier);return;
     }
     if(Number.isSafeInteger(parsed.packetCount)&&parsed.packetCount>entry.acceptedPacketFrontier){
+      const latest=parsed.events.reduce((end,event)=>event.eventType!=='unknown' && Number.isFinite(event.timestamp)?Math.max(end,event.timestamp):end,-1);
+      if(!baseline && entry.acceptedPacketFrontier>0 && latest>(entry.activityReplayFrontier??-1)){
+        entry.state.lastValidatedProgressAt=new Date(this.clock()).toISOString();
+      }
+      entry.activityReplayFrontier=Math.max(latest,entry.activityReplayFrontier??-1);
       entry.acceptedPacketFrontier=parsed.packetCount;entry.state.lastSuccessfulReadAt=new Date(this.clock()).toISOString();
     }
   }
@@ -368,7 +373,7 @@ export class LiveController {
         entry.state.diagnostics=['Artımlı okuma: yalnız yeni ve değişen desteklenen olaylar işlenir. Skadi uyumluluğu deneysel.',...parsed.diagnostics.slice(0,100).map(value=>`[${value.code}] ${value.message}`),...parsed.unknownPackets.slice(0,100).map(value=>`[UNKNOWN_PACKET] ${value.packetId}: ${value.count}`)];
         await this.options.onSnapshot?.(parsed,{streamId:entry.state.id,sourcePath:entry.state.sourcePath,filename:entry.state.filename,revision:entry.state.revision,size:meta.size,hash:meta.hash,observedAt:new Date(this.clock()).toISOString(),readPosition:meta.readPosition,recordingReset,initial:meta.initial||entry.folderNeedsBaseline===true});
         if(!current())return;
-        this.commitSuccessfulRead(entry,parsed);
+        this.commitSuccessfulRead(entry,parsed,meta.initial);
         if(!meta.catchingUp&&entry.state.sourceMode==='folder'){entry.folderNeedsBaseline=false;entry.recordingResetPending=false;}
         entry.lastParsed={...parsed,events:[]};
         this.emit();

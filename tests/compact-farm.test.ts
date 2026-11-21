@@ -15,6 +15,73 @@ const pending=(timestamp:number):ReplayEvent=>({...incoming(timestamp),eventType
 function fixture(){const db=new DatabaseSync(':memory:');db.exec(COMPACT_FARM_SCHEMA);cleanup.push(()=>db.close());const farm=new CompactAutoFarmStore(db),daily=new CompactFinanceDailyStore(db);return{db,farm,daily};}
 function baseline(farm:CompactAutoFarmStore,startedAt:string|null=start){farm.observe(replay([],0,startedAt),{...metadata,bootstrap:true},who);}
 
+describe('taskbar character and calendar readings',()=>{
+  const day=(farm:CompactAutoFarmStore,date='2026-11-04',character=who)=>{
+    const row:Pick<LiveStreamState,'character'|'taskbarDay'>={character};
+    farm.attachTaskbarDailyLoot([row],date);
+    return row.taskbarDay!;
+  };
+  const movement=(order:number,timestamp:number,increase:number):ReplayEvent=>({id:`packet-${order}`,timestamp,
+    eventType:'status',statusKey:'zenyBalance',attribution:'personal',actorId:42,confidence:'certain',
+    amount:5000,walletIncrease:increase,rawData:{timed:true,timedPacketOrder:order}});
+  it('persists three distinct daily types and restores the previous type order after a transfer correction',()=>{
+    const {db,farm}=fixture();baseline(farm);
+    const drops=[incoming(50,4,500),incoming(100,3,501),incoming(150,2,502),incoming(200,1,503),
+      incoming(250,4,501),incoming(300,5,501),incoming(400,10,500)];
+    farm.observe(replay(drops,1000),metadata,who);
+    expect(day(farm).recentItemIds).toEqual([500,501,503]);
+    const last=drops.at(-1)!;
+    farm.observe(replay([{...last,rawData:{...last.rawData,inventorySource:'trade'}}],1100),metadata,who);
+    expect(day(farm).recentItemIds).toEqual([501,503,502]);
+    expect(day(farm).items).toContainEqual({itemId:501,quantity:12});
+    farm.close();
+    const reopened=new CompactAutoFarmStore(db);
+    expect(day(reopened).recentItemIds).toEqual([501,503,502]);
+    expect(day(reopened,'2026-11-05').recentItemIds).toEqual([]);
+  });
+  it('dates positive wallet changes at the event, ignores catch-up and copies, and distinguishes unknown from zero',()=>{
+    const {db,farm}=fixture();
+    const old=movement(1,10,400),before=movement(4,59000,90),after=movement(6,60000,110);
+    farm.observe(replay([old],20),{...metadata,bootstrap:true},who);
+    expect(day(farm).zenyReceived).toBeNull();
+    farm.observe(replay([old,before,after,{...movement(8,60001,300),actorId:999}],60100),metadata,who);
+    farm.observe(replay([before,after],60100),{...metadata,streamId:'copy',sourcePath:'C:/synthetic/copy.rrf'},who);
+    expect(day(farm).zenyReceived).toBe(90);
+    expect(day(farm,'2026-11-05').zenyReceived).toBe(110);
+    const other={...who,key:'other'};
+    farm.observe(replay([],0),{...metadata,bootstrap:true},other);
+    farm.observe(replay([movement(1,100,0)],200),metadata,other);
+    expect(day(farm,'2026-11-04',other).zenyReceived).toBe(0);
+    farm.close();
+    const reopened=new CompactAutoFarmStore(db);
+    reopened.observe(replay([before,after],60100),{...metadata,bootstrap:true},who);
+    expect(day(reopened,'2026-11-05').zenyReceived).toBe(110);
+    const undated={...who,key:'undated'};
+    reopened.observe(replay([],0,null),{...metadata,bootstrap:true},undated);
+    reopened.observe(replay([movement(1,100,2000)],200,null),metadata,undated);
+    expect(day(reopened,'2026-11-04',undated).zenyReceived).toBeNull();
+  });
+  it('keeps the accepted frontier when an identified Replay is reopened from a shorter identical prefix',()=>{
+    const {farm}=fixture();baseline(farm);
+    const drop=incoming(300,5,501);
+    farm.observe(replay([drop],1000),metadata,who);
+    farm.observe(replay([],0),{...metadata,recordingReset:true},who);
+    farm.observe(replay([drop],1000),metadata,who);
+    expect(day(farm).items).toEqual([{itemId:501,quantity:5}]);
+  });
+  it('counts new same-tick wallet packets once across full snapshots and keeps unranked old daily totals',()=>{
+    const {db,farm}=fixture();
+    db.prepare('INSERT INTO compact_farm_totals VALUES(?,?,?,?,?)').run(who.key,'2026-11-04',123,19,null);
+    expect(day(farm)).toMatchObject({items:[{itemId:123,quantity:19}],recentItemIds:[]});
+    const full=(events:ReplayEvent[],packetCount:number)=>({...replay(events),packetCount,incremental:undefined});
+    const first=movement(1,300,80),next=movement(2,300,60);
+    farm.observe(full([first],1),{...metadata,bootstrap:true},who);
+    farm.observe(full([first,next],2),metadata,who);
+    farm.observe(full([first,next],2),metadata,who);
+    expect(day(farm).zenyReceived).toBe(60);
+  });
+});
+
 describe('compact live farm totals without event storage',()=>{
   it('uses a reference label without turning a receipt into a rare drop',()=>{
     const {farm,db}=fixture();baseline(farm);

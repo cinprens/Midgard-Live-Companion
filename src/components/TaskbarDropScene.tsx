@@ -1,3 +1,4 @@
+import {serviceMessage} from '../i18n/catalog';
 import type { LiveAppearanceId } from '../shared/live-appearance';
 import { Skull } from 'lucide-react';
 import type { GeneralTaskbarScene, TaskbarScene } from '../domain/taskbar-scenes';
@@ -18,7 +19,7 @@ function generalTitle(scene:GeneralTaskbarScene) {
     case 'monster': return scene.monsterId ? `Yaratık #${scene.monsterId}` : 'Ölüm gözlendi';
     case 'death': return 'Karakter öldü';
     case 'weight': return scene.amount === undefined ? 'Eşiğe ulaşıldı' : `%${number.format(scene.amount)}`;
-    case 'city': return scene.message.replace(`${scene.character}: `,'');
+    case 'city': return serviceMessage(scene.message).replace(`${scene.character}: `,'');
   }
 }
 
@@ -41,7 +42,7 @@ export default function TaskbarDropScene({ scene, appearance }: { scene: Taskbar
   return <section className="taskbar-drop-scene" data-category={scene.category} data-drop-id={scene.id}
     role="status" aria-live="polite" aria-atomic="true">
     <span className="drop-announcement">{rare ? `${label} ${scene.character}, ${number.format(scene.quantity)} adet ${scene.itemName} aldı.` :
-      scene.category==='monster' ? `${scene.character} kaydında ${scene.message}` : scene.message}</span>
+      scene.category==='monster' ? `${scene.character} kaydında ${serviceMessage(scene.message)}` : serviceMessage(scene.message)}</span>
     <div className="drop-duel" aria-hidden="true">
       <div className="drop-fighter">
         <img className="drop-portrait" src={appearance ? LIVE_CHARACTER_ART[appearance] : crest} alt="" draggable={false}/>

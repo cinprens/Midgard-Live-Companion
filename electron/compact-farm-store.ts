@@ -128,7 +128,8 @@ interface StreamLoot {characterKey:string;recording:string;source:string;receipt
 const RECENT_PICKUP_COUNT=3;
 const newestFirst=(a:RecentReceipt,b:RecentReceipt)=>b.timestamp-a.timestamp || b.packetOrder-a.packetOrder;
 const lastThree=(receipts:RecentReceipt[])=>receipts.sort(newestFirst).slice(0,RECENT_PICKUP_COUNT);
-interface Runtime{characterKey:string;recording:string;frontier:number;packetCount:number;monitor:number;anchor:number|null;durationAnchor:number;coverage:number|null;recent:Map<string,RecentReceipt>;seen:Map<string,number>;pending:Map<string,number>;recoverUntil:number;protectedFrontier:number;status:AutoFarmStatus;}
+const recentTypes=(receipts:RecentReceipt[],previous:readonly number[])=>[...new Set([...receipts.sort(newestFirst).map(receipt=>receipt.itemId),...previous])].slice(0,3);
+interface Runtime{characterKey:string;recording:string;frontier:number;packetCount:number;monitor:number;anchor:number|null;durationAnchor:number;coverage:number|null;priorCoverage:number|null;settledTypes:Map<string,number[]>;recent:Map<string,RecentReceipt>;seen:Map<string,number>;pending:Map<string,number>;recoverUntil:number;protectedFrontier:number;status:AutoFarmStatus;}
 const stateFor=(status:LiveStreamStatus):AutoFarmStatus=>status==='paused'?'paused':status==='stopped'?'stopped':status==='missing'?'missing':status==='error'?'unavailable':'tracking';
 const excluded=(event:ReplayEvent)=>['trade','storage','cart','purchase','quest','refresh'].includes(String(event.rawData?.inventorySource))||['excluded-client-refresh','excluded-unresolved-transfer'].includes(String(event.rawData?.parserProof));
 export class CompactAutoFarmStore extends CompactFarmView{
@@ -137,7 +138,16 @@ export class CompactAutoFarmStore extends CompactFarmView{
   private sources=new Map<string,string>();
   private alerts:{characterKey:string;id:string;itemId:number;quantity:number;rareCategory?:RareDropCategory}[]=[];
   private coverage=new Map<string,{baseEnd:number|null;spans:Span[]}>();
-  constructor(db:DatabaseSync){super(db);this.db.prepare("UPDATE compact_farm_characters SET status='stopped' WHERE status='tracking'").run();}
+  private cachedDay='';
+  private dayByCharacter=new Map<string,NonNullable<LiveStreamState['taskbarDay']>>();
+  constructor(db:DatabaseSync){
+    super(db);
+    // Also opened by existing v14 profiles. Only daily amounts and three item IDs are stored.
+    db.exec(`CREATE TABLE IF NOT EXISTS compact_taskbar_day(
+      character_key TEXT NOT NULL, day TEXT NOT NULL, recent_ids TEXT NOT NULL DEFAULT '[]',
+      zeny INTEGER, PRIMARY KEY(character_key,day))`);
+    this.db.prepare("UPDATE compact_farm_characters SET status='stopped' WHERE status='tracking'").run();
+  }
   private transaction(action:()=>void):void{const previous=this.coverage;this.coverage=new Map(previous);this.db.exec('BEGIN IMMEDIATE');try{action();this.db.exec('COMMIT');}catch(error){this.db.exec('ROLLBACK');this.coverage=previous;throw error;}}
   private changed():void{meta(this.db,'revision',Number(readMeta(this.db,'revision')??0)+1);}
   override setLocalItemNames(names:Map<number,string>):void{super.setLocalItemNames(names);this.changed();}
@@ -160,15 +170,31 @@ export class CompactAutoFarmStore extends CompactFarmView{
     if(!current||current.recording!==recording||observation.recordingReset){
       freshWindow=true;
       if(saved&&String(saved.recording_key)!==recording&&anchor!==null&&typeof saved.anchor_ms==='number'&&anchor<saved.anchor_ms)return [];
-      const continuing=saved&&saved.recording_key===recording&&!observation.recordingReset,frontier=continuing?Number(saved.seen_ms):edge;
-      current={characterKey:character.key,recording,frontier,packetCount:continuing?Number(saved.packet_count):0,monitor:frontier,anchor,durationAnchor:anchor??Date.parse(observation.observedAt??new Date().toISOString())-edge,coverage:typeof saved?.coverage_end_ms==='number'?saved.coverage_end_ms:null,recent:new Map(),seen:new Map(),pending:new Map(),recoverUntil:continuing?frontier:-1,protectedFrontier:continuing?frontier:-1,status:'tracking'};
-      if(!continuing)observation={...observation,bootstrap:true};
+      const continuing=saved && saved.recording_key===recording && (strong || !observation.recordingReset);
+      const frontier=continuing?Number(saved.seen_ms):edge;
+      const coverage=typeof saved?.coverage_end_ms==='number'?saved.coverage_end_ms:null;
+      current={characterKey:character.key,recording,frontier,packetCount:continuing?Number(saved.packet_count):0,monitor:frontier,anchor,durationAnchor:anchor??Date.parse(observation.observedAt??new Date().toISOString())-edge,coverage,priorCoverage:continuing?null:coverage,settledTypes:new Map(),recent:new Map(),seen:new Map(),pending:new Map(),recoverUntil:continuing?frontier:-1,protectedFrontier:continuing?frontier:-1,status:'tracking'};
+      if(!continuing || observation.recordingReset)observation={...observation,bootstrap:true};
     }
-    const entry={...current,recent:new Map(current.recent),seen:new Map(current.seen),pending:new Map(current.pending)},bootstrap=observation.bootstrap===true,oldEdge=entry.frontier,occurrences=new Map<string,number>();let alerts=[...this.alerts];
+    const entry={...current,settledTypes:new Map(current.settledTypes),recent:new Map(current.recent),seen:new Map(current.seen),pending:new Map(current.pending)},bootstrap=observation.bootstrap===true,oldEdge=entry.frontier,occurrences=new Map<string,number>();let alerts=[...this.alerts];
     const affectedStreams=new Set<string>();
+    const changedDays=new Set<string>(),zenyByDay=new Map<string,number>();
+    const retired=new Map<string,RecentReceipt[]>();
     this.transaction(()=>{
       this.db.prepare(`INSERT INTO compact_farm_characters VALUES(?,?,?,?) ON CONFLICT(character_key) DO UPDATE SET character_name=excluded.character_name,status='tracking',time_basis=CASE WHEN time_basis=excluded.time_basis THEN time_basis ELSE 'mixed' END`).run(character.key,character.name,'tracking',anchor===null?'observation-anchor':'replay-start');
       for(const event of parsed.events){
+        if(!bootstrap && character.source!=='unassigned' && anchor!==null && event.eventType==='status' &&
+          event.statusKey==='zenyBalance' && event.confidence==='certain' && event.attribution==='personal' &&
+          event.actorId===parsed.summary.playerId && !!event.actorId && event.rawData?.timed===true &&
+          Number.isSafeInteger(event.walletIncrease) && event.walletIncrease!>=0 && Number.isSafeInteger(event.timestamp) &&
+          event.timestamp>=0 && anchor+event.timestamp>(entry.priorCoverage??-Infinity)){
+          // Both decoders number accepted timed packets from one, excluding metadata sections.
+          const order=event.rawData.timedPacketOrder;
+          if(typeof order==='number' && Number.isSafeInteger(order) && order>entry.packetCount && order<=parsed.packetCount){
+            const day=dayAt(anchor+event.timestamp);
+            if(day)zenyByDay.set(day,(zenyByDay.get(day)??0)+event.walletIncrease!);
+          }
+        }
         if(!['inventory-ack','item-obtained'].includes(event.eventType)||!Number.isSafeInteger(event.timestamp)||event.timestamp<0)continue;
         if(parsed.incremental?.delta&&(!Number.isSafeInteger(event.rawData?.inventoryOccurrence)||Number(event.rawData?.inventoryOccurrence)<1))continue;
         const semantic=JSON.stringify([event.timestamp,event.itemId,event.amount,event.rawData?.slot]),occurrence=typeof event.rawData?.inventoryOccurrence==='number'?event.rawData.inventoryOccurrence:(occurrences.get(semantic)??0)+1;occurrences.set(semantic,occurrence);
@@ -177,6 +203,7 @@ export class CompactAutoFarmStore extends CompactFarmView{
           if(accepted){
             this.db.prepare('UPDATE compact_farm_totals SET quantity=MAX(0,quantity-?) WHERE character_key=? AND day=? AND item_id=?').run(accepted.amount,character.key,accepted.day,accepted.itemId);
             entry.recent.delete(id);alerts=alerts.filter(alert=>alert.id!==id);pickups.delete(id);
+            if(accepted.day)changedDays.add(accepted.day);
             affectedStreams.add(accepted.streamId);
           }
           entry.pending.delete(id);continue;
@@ -196,9 +223,31 @@ export class CompactAutoFarmStore extends CompactFarmView{
         const category=packetCategory??categoryFor?.(itemId)??(catalogKind==='card'||catalogKind==='costume'?catalogKind:undefined);
         if(packetCategory)meta(this.db,`rare-kind:${itemId}`,packetCategory);
         entry.recent.set(id,receipt);entry.seen.set(id,event.timestamp);
+        if(day)changedDays.add(day);
         alerts.push({characterKey:character.key,id,itemId,quantity:amount,...(category?{rareCategory:category}:{})});
         if(category)pickups.set(id,{id,itemId,itemName:String(imported?.name??name??referenceGameNames.items.get(itemId)??`Eşya #${itemId}`),quantity:amount,category});
         affectedStreams.add(receipt.streamId);
+      }
+      for(const [day,amount] of zenyByDay){
+        this.db.prepare(`INSERT INTO compact_taskbar_day(character_key,day,zeny) VALUES(?,?,?)
+          ON CONFLICT(character_key,day) DO UPDATE SET zeny=COALESCE(zeny,0)+excluded.zeny`).run(character.key,day,amount);
+      }
+      const settle=(receipt:RecentReceipt)=>{
+        const list=retired.get(receipt.streamId)??[];
+        list.push(receipt);retired.set(receipt.streamId,list);affectedStreams.add(receipt.streamId);
+        entry.recent.delete(receipt.id);
+        if(receipt.day)changedDays.add(receipt.day);
+      };
+      for(const receipt of entry.recent.values())if(Math.max(edge,oldEdge)-receipt.timestamp>10000)settle(receipt);
+      while(entry.recent.size>4096)settle(entry.recent.values().next().value!);
+      for(const day of changedDays){
+        const saved=entry.settledTypes.get(day)??this.recentDayIds(character.key,day);
+        const settled=recentTypes([...retired.values()].flat().filter(receipt=>receipt.day===day),saved);
+        const pending=[...entry.recent.values()].filter(receipt=>receipt.day===day);
+        const ids=recentTypes(pending,settled);
+        this.db.prepare(`INSERT INTO compact_taskbar_day(character_key,day,recent_ids) VALUES(?,?,?)
+          ON CONFLICT(character_key,day) DO UPDATE SET recent_ids=excluded.recent_ids`).run(character.key,day,JSON.stringify(ids));
+        if(pending.length)entry.settledTypes.set(day,settled);else entry.settledTypes.delete(day);
       }
       if(!bootstrap&&edge>oldEdge)this.recordDuration(entry,oldEdge,edge);
       if(bootstrap)entry.monitor=Math.max(entry.monitor,edge);
@@ -207,6 +256,7 @@ export class CompactAutoFarmStore extends CompactFarmView{
       this.db.prepare('INSERT INTO compact_farm_cursors VALUES(?,?,?,?,?,?,?) ON CONFLICT(character_key) DO UPDATE SET recording_key=excluded.recording_key,seen_ms=excluded.seen_ms,packet_count=excluded.packet_count,anchor_ms=excluded.anchor_ms,coverage_end_ms=excluded.coverage_end_ms,source_key=excluded.source_key').run(character.key,recording,entry.frontier,entry.packetCount,anchor,entry.coverage,source);this.changed();
     });
     this.runtime.set(character.key,entry);this.alerts=alerts;this.sources.set(source,character.key);
+    this.dayByCharacter.delete(character.key);
     while(this.sources.size>256){
       const oldest=this.sources.keys().next().value!,owner=this.sources.get(oldest)!;
       this.sources.delete(oldest);
@@ -218,14 +268,6 @@ export class CompactAutoFarmStore extends CompactFarmView{
     if(freshWindow)for(const window of this.lastByStream.values()){
       if(window.characterKey===character.key && window.recording===recording)window.settled=window.receipts;
     }
-    const retired=new Map<string,RecentReceipt[]>();
-    const settle=(receipt:RecentReceipt)=>{
-      const list=retired.get(receipt.streamId)??[];
-      list.push(receipt);retired.set(receipt.streamId,list);
-      affectedStreams.add(receipt.streamId);entry.recent.delete(receipt.id);
-    };
-    for(const receipt of entry.recent.values())if(entry.frontier-receipt.timestamp>10000)settle(receipt);
-    while(entry.recent.size>4096)settle(entry.recent.values().next().value!);
     for(const streamId of affectedStreams){
       const previous=this.lastByStream.get(streamId);
       if(streamId!==observation.streamId && (!previous || previous.characterKey!==character.key || previous.recording!==recording))continue;
@@ -285,25 +327,43 @@ export class CompactAutoFarmStore extends CompactFarmView{
     }
     return {pickupCount:receipts.length,totalQuantity,items:Array.from(quantities,([itemId,quantity])=>({itemId,quantity}))};
   }
-  attachTaskbarDailyLoot(streams: Pick<LiveStreamState, 'character' | 'recentLoot' | 'lastLoot' | 'dailyLoot'>[], date=killDailyDate()):void {
+  private recentDayIds(key:string,date:string):number[]{
+    const value=this.db.prepare('SELECT recent_ids FROM compact_taskbar_day WHERE character_key=? AND day=?').get(key,date)?.recent_ids;
+    return typeof value==='string'?JSON.parse(value) as number[]:[];
+  }
+  private taskbarDay(key:string,date:string):NonNullable<LiveStreamState['taskbarDay']>{
+    const cached=this.dayByCharacter.get(key);
+    if(cached)return cached;
+    const items=this.db.prepare(`SELECT item_id,quantity FROM compact_farm_totals
+      WHERE character_key=? AND day=? AND quantity>0 ORDER BY quantity DESC,item_id`).all(key,date)
+      .map(item=>({itemId:Number(item.item_id),quantity:Number(item.quantity)}));
+    const wallet=this.db.prepare('SELECT zeny FROM compact_taskbar_day WHERE character_key=? AND day=?').get(key,date)?.zeny;
+    const duration=this.duration(date,key);
+    const observedMs=duration.durationMs>0 && duration.timeBasis==='replay-start' && !duration.partial?duration.durationMs:null;
+    const result={date,items,recentItemIds:this.recentDayIds(key,date),lootObserved:items.length>0 || duration.durationMs>0,
+      zenyReceived:typeof wallet==='number' && Number.isSafeInteger(wallet)?wallet:null,observedMs};
+    this.dayByCharacter.set(key,result);
+    return result;
+  }
+  attachTaskbarDailyLoot(streams: Pick<LiveStreamState, 'character' | 'recentLoot' | 'lastLoot' | 'dailyLoot' | 'taskbarDay'>[], date=killDailyDate()):void {
     if (!streams.length) return;
-    // Aggregate in SQLite. The renderer only needs item counts for the three displayed pickups.
-    const totals = new Map(this.db.prepare(`SELECT character_key, SUM(quantity) AS total
-      FROM compact_farm_totals WHERE day=? AND quantity>0 GROUP BY character_key`).all(date)
-      .map(row => [String(row.character_key), Number(row.total)]));
-    const count = this.db.prepare('SELECT quantity FROM compact_farm_totals WHERE character_key=? AND day=? AND item_id=?');
+    if(this.cachedDay!==date){this.cachedDay=date;this.dayByCharacter.clear();}
+    const keys=new Set(streams.map(stream=>stream.character?.key));
+    for(const key of this.dayByCharacter.keys())if(!keys.has(key))this.dayByCharacter.delete(key);
     for (const stream of streams) {
       if (!stream.character?.key || stream.character.source === 'unassigned') {
         delete stream.dailyLoot;
+        delete stream.taskbarDay;
         continue;
       }
-      const key = stream.character.key;
+      const day=this.taskbarDay(stream.character.key,date);
+      stream.taskbarDay=day;
       const itemQuantities: Record<number, number> = {};
       const items = stream.recentLoot?.items ?? (stream.lastLoot ? [stream.lastLoot] : []);
       for (const {itemId} of items) {
-        itemQuantities[itemId] = Number(count.get(key, date, itemId)?.quantity ?? 0);
+        itemQuantities[itemId] = day.items.find(item=>item.itemId===itemId)?.quantity??0;
       }
-      stream.dailyLoot = {date, totalQuantity: totals.get(key) ?? 0, itemQuantities};
+      stream.dailyLoot = {date, totalQuantity: day.items.reduce((sum,item)=>sum+item.quantity,0), itemQuantities};
     }
   }
   snapshot():AutoFarmState{const prices=this.prices(),items=this.items(null,null,prices),characters=this.characters(null,prices);return{revision:Number(readMeta(this.db,'revision')??0),status:characters.some(character=>character.status==='tracking')?'tracking':characters.at(-1)?.status??'waiting',items,characters,totals:this.totals(items,'*',null,items.length>0),prices,notice:'Yalnız karakter, gün ve eşya toplamları saklanır. Eşya olay geçmişi tutulmaz; tutarlar güncel ortak fiyat tahminidir.'};}

@@ -60,12 +60,12 @@ try{
   await clearFlashes();
   for(const [width,height]of [[1480,1000],[1100,820],[1100,720]]){
     const shotSize=height===720?'1100x720':String(width);
-    await app.evaluate(({BrowserWindow},size)=>BrowserWindow.getAllWindows()[0].setSize(...size),[width,height]);
+    await app.evaluate(({BaseWindow},size)=>BaseWindow.getAllWindows()[0].setSize(...size),[width,height]);
     for(const theme of ['Siyah','Açık']){await page.getByRole('button',{name:`${theme} tema`,exact:true}).click();await page.waitForTimeout(100);await noScroll(`${theme} ${width}×${height} summary`);await capture(`live-${theme==='Siyah'?'dark':'light'}-${shotSize}.png`);}
     await detail().getByRole('button',{name:'Kaynak bilgileri',exact:true}).click();await showSourceFile(path.basename(files[1]));await noScroll(`${width}×${height} source details`);check((await detail().innerText()).includes(path.basename(files[1])),'Source details show the actual selected file');
     await capture(`live-source-${shotSize}.png`);await detail().getByRole('button',{name:'Karakter eşleştirme',exact:true}).click();await noScroll(`${width}×${height} character binding`);await capture(`live-binding-${shotSize}.png`);await detail().getByRole('button',{name:'Özete dön',exact:true}).click();
   }
-  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1480,1000));
+  await app.evaluate(({BaseWindow})=>BaseWindow.getAllWindows()[0].setSize(1480,1000));
   await page.getByRole('button',{name:'Takip ve kaynak bilgileri',exact:true}).click();await noScroll('Runtime source information');await page.getByRole('button',{name:'Karakterlere dön',exact:true}).click();
   const duplicate=path.join(sources,'SYNTHETIC-live-1-copy.rrf'),copyEntries=[...entries[0],...timed(760000,[status(5,4950)])];await writeFile(duplicate,fixture(0,names[0],players[0],copyEntries));await add([duplicate]);
   await select(names[0]);check((await state()).live.streams.length===4&&await page.locator('.live-character-row').count()===3,'Two Replay files for the same character form one row without duplicating its totals');
@@ -74,13 +74,13 @@ try{
   check((await state()).live.streams.find(stream=>stream.id===first.id).status!=='paused','Pause affects only the selected source while its sibling continues');
   await detail().getByRole('button',{name:'Devam et',exact:true}).click();await wait(page,async id=>!['paused','stopped'].includes((await window.midgard.getState()).live.streams.find(stream=>stream.id===id).status),duplicateStream.id);await detail().getByRole('button',{name:'Özete dön',exact:true}).click();
   check((await view()).sourcePath===duplicate,'The selected source preference stores its stable file path');
-  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1100,720));
+  await app.evaluate(({BaseWindow})=>BaseWindow.getAllWindows()[0].setSize(1100,720));
   await page.waitForTimeout(100);
   await noScroll('1100×720 multiple sources summary');
   await detail().getByRole('button',{name:'Kaynak bilgileri',exact:true}).click();await noScroll('1100×720 multiple sources detail');
   await detail().getByRole('button',{name:'Karakter eşleştirme',exact:true}).click();await noScroll('1100×720 multiple sources binding');await capture('live-multiple-sources-binding-1100x720.png');
-  await detail().getByRole('button',{name:'Özete dön',exact:true}).click();await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1480,1000));
-  await app.evaluate(({BrowserWindow},streamId)=>{const win=BrowserWindow.getAllWindows()[0];for(let i=0;i<45;i++)win.webContents.send('midgard:notification',{id:`qa-injected-${i}`,type:'weight',streamId,character:'QA Uyarı',at:new Date().toISOString(),message:`SYNTHETIC bildirim ${i}`});},first.id);
+  await detail().getByRole('button',{name:'Özete dön',exact:true}).click();await app.evaluate(({BaseWindow})=>BaseWindow.getAllWindows()[0].setSize(1480,1000));
+  await app.evaluate(({BaseWindow},streamId)=>{const win=BaseWindow.getAllWindows()[0];for(let i=0;i<45;i++)win.contentView.children[0].webContents.send('midgard:notification',{id:`qa-injected-${i}`,type:'weight',streamId,character:'QA Uyarı',at:new Date().toISOString(),message:`SYNTHETIC bildirim ${i}`});},first.id);
   await page.waitForFunction(()=>document.querySelector('.live-alerts header')?.textContent?.includes('30'));await clearFlashes();check(await page.locator('.live-alert-item').count()<=2,'The recent notification feed is bounded and only a small page is rendered');
   const more=[];for(let i=0;i<12;i++){const file=path.join(sources,`SYNTHETIC-more-${i}.rrf`);await writeFile(file,fixture(2,`QA Ek Karakter ${i}`,100+i));more.push(file);}await add(more);await page.getByRole('button',{name:'Karakter listesini yenile',exact:true}).click();await noScroll('Many-character pagination');check(await page.locator('.live-character-row').count()<=10,'A growing source list remains a bounded page rather than a growing wall of cards');
   check(JSON.stringify((await state()).expansion.finance)===originalLedger&&JSON.stringify(await page.evaluate(()=>window.midgard.getFinanceView()))===JSON.stringify(originalFinanceView),'Live source controls, favorites and filters leave the legacy ledger and Finance preferences unchanged');

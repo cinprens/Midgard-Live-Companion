@@ -109,14 +109,17 @@ const expTracks = new Map<StatusKey, 'base' | 'job'>([
 ]);
 
 /** Apply the same wallet baselines and status updates in the full and streaming parsers. */
-export function applyLiveStatus(telemetry: LiveTelemetry, event: ReplayEvent, overflow: Set<'base' | 'job' | 'zeny'>): void {
+export function applyLiveStatus(telemetry: LiveTelemetry, event: ReplayEvent, overflow: Set<'base' | 'job' | 'zeny'>, annotateWallet=false): void {
   const {statusKey, amount} = event;
   if (event.eventType !== 'status' || !statusKey || amount == null || !Number.isSafeInteger(amount) || amount < 0) return;
   if (statusKey === 'zenyBalance') {
+    if(annotateWallet)delete event.walletIncrease;
     if (event.attribution !== 'personal' || !event.actorId || amount > 0x7fffffff) return;
     const previous = telemetry.zenyBalance;
     if (previous != null) {
-      const total = (telemetry.zenyReceived ?? 0) + Math.max(0, amount - previous);
+      const increase=Math.max(0, amount - previous);
+      if(annotateWallet)event.walletIncrease=increase;
+      const total = (telemetry.zenyReceived ?? 0) + increase;
       if (!Number.isSafeInteger(total)) overflow.add('zeny');
       telemetry.zenyReceived = overflow.has('zeny') ? null : total;
     }
@@ -143,7 +146,7 @@ export function applyLiveStatus(telemetry: LiveTelemetry, event: ReplayEvent, ov
 }
 
 /** Keep unknown separate from zero; never derive EXP gained from status differences. */
-export function summarizeLiveTelemetry(events: ReplayEvent[], seed: Partial<LiveTelemetry> = {}): LiveTelemetry {
+export function summarizeLiveTelemetry(events: ReplayEvent[], seed: Partial<LiveTelemetry> = {}, annotateWallet=false): LiveTelemetry {
   const result = { ...emptyLiveTelemetry(), ...seed };
   const seen = new Set<string>();
   const overflow = new Set<'base' | 'job' | 'zeny'>();
@@ -151,7 +154,7 @@ export function summarizeLiveTelemetry(events: ReplayEvent[], seed: Partial<Live
     if (seen.has(event.id)) continue;
     seen.add(event.id);
     if (event.eventType === 'map' && event.mapId) result.currentMap = event.mapId;
-    applyLiveStatus(result, event, overflow);
+    applyLiveStatus(result, event, overflow, annotateWallet);
     if (event.eventType !== 'exp-gain' || !event.expKind || !Number.isSafeInteger(event.amount) || event.amount! < 0 || event.attribution !== 'personal') continue;
     const totalKey = event.expKind === 'base' ? 'baseExpGained' : 'jobExpGained';
     const lastKey = event.expKind === 'base' ? 'lastBaseExpGain' : 'lastJobExpGain';

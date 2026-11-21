@@ -58,7 +58,7 @@ async function capture(name){await page.waitForTimeout(200);await page.screensho
 async function launch(){
   app=await electron.launch({...(process.argv[2]?{executablePath:path.resolve(process.argv[2]),args:[]}:{args:['.']}),env,timeout:30000});
   page=await app.firstWindow();page.setDefaultTimeout(12000);page.on('pageerror',error=>errors.push(error.message));await page.waitForFunction(()=>!!window.midgard);
-  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1480,1000));
+  await app.evaluate(({BaseWindow})=>BaseWindow.getAllWindows()[0].setSize(1480,1000));
   await page.getByRole('navigation',{name:'Ana gezinme'}).getByRole('button',{name:'Kill Count',exact:true}).click();await panel().waitFor();
   await wait(page,async()=>(await window.midgard.getState()).expansion.killCount.totals.observedDeaths===12);
 }
@@ -123,11 +123,11 @@ try{
   await capture('kill-daily-history-dark-1480.png');await panel().getByRole('tab',{name:'Canlı',exact:true}).click();await page.getByRole('button',{name:'Yaratık ayrıntılarını kapat',exact:true}).click();await search().fill('');
   await page.getByRole('button',{name:'Açık tema',exact:true}).click();await capture('kill-daily-light-1480.png');await geometry('1480px light');
   await page.getByRole('button',{name:'Siyah tema',exact:true}).click();await capture('kill-daily-dark-1480.png');
-  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setMinimumSize(480,600));
+  await app.evaluate(({BaseWindow})=>BaseWindow.getAllWindows()[0].setMinimumSize(480,600));
   for(const [width,height] of [[1100,820],[820,800],[620,800]]){
-    await app.evaluate(({BrowserWindow},size)=>BrowserWindow.getAllWindows()[0].setSize(...size),[width,height]);await page.waitForTimeout(100);await geometry(`${width}px dark`);await capture(`kill-daily-dark-${width}.png`);
+    await app.evaluate(({BaseWindow},size)=>BaseWindow.getAllWindows()[0].setSize(...size),[width,height]);await page.waitForTimeout(100);await geometry(`${width}px dark`);await capture(`kill-daily-dark-${width}.png`);
   }
-  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1480,1000));
+  await app.evaluate(({BaseWindow})=>BaseWindow.getAllWindows()[0].setSize(1480,1000));
   await panel().getByRole('button',{name:'Bugün',exact:true}).click();const today=await page.evaluate(()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Istanbul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()));await page.waitForFunction(value=>document.querySelector('input[aria-label="Kill Count günü"]')?.value===value,today);
   await wait(page,async()=>(await window.midgard.getKillView()).dailyDate===null);check((await prefs()).dailyDate===null,'Today control follows the current local day instead of freezing a saved date');
   await chooseDate('2026-11-05');await expectRows(4);

@@ -80,6 +80,17 @@ export interface DailyLootSummary {
 }
 export interface LiveStreamState {
   id: string;
+  /** Today's estimated own-damage kills from the character's dated Kill Count archive. */
+  taskbarKillDay?: {date: string; count: number | null};
+  /** Observed character totals for one Istanbul calendar day. */
+  taskbarDay?: {
+    date: string;
+    items: {itemId: number; quantity: number}[];
+    recentItemIds: number[];
+    lootObserved: boolean;
+    zenyReceived: number | null;
+    observedMs: number | null;
+  };
   /** Most recent accepted bag delta in this live source, for this app session. */
   lastLoot?: {itemId: number; quantity: number};
   /** Latest three accepted pickups on this stream, grouped by item in newest-first order. */
@@ -163,11 +174,20 @@ export interface AppState {
     watchPolicyVerified: boolean;
   };
 }
+export interface TaskbarOptions {
+  pinned: boolean;
+  orientation: 'horizontal' | 'vertical';
+}
 export interface DesktopAPI {
+  closeStartup(): void;
   onRareDrop(callback: (event: import('./rare-drop').RareDropEvent) => void): () => void;
   compareReplayExperience?(mode: 'tracked' | 'choose'): Promise<import('../domain/replay-experience-comparison').ReplayComparisonResult | null>;
   getTaskbarMode(): Promise<boolean>;
   setTaskbarMode(active: boolean): Promise<boolean>;
+  getTaskbarOptions(): Promise<TaskbarOptions>;
+  setTaskbarOptions(patch: Partial<TaskbarOptions>): Promise<TaskbarOptions>;
+  closeTaskbar(): Promise<void>;
+  setTaskbarDetailHeight(height: number): Promise<void>;
   getHuntAnalytics(query:import('./hunt-analytics').HuntAnalyticsQuery):Promise<import('./hunt-analytics').HuntAnalyticsState>;
   getHuntAnalyticsEvidence(query:import('./hunt-analytics').HuntAnalyticsEvidenceQuery):Promise<import('./hunt-analytics').HuntAnalyticsEvidencePage>;
   getHuntAnalyticsPreferences():Promise<import('./hunt-analytics-preferences').HuntAnalyticsPreferences>;
@@ -177,6 +197,8 @@ export interface DesktopAPI {
   controlKillExperience(input:import('./kill-experience').KillExperienceControl):Promise<AppState>;
   getSoloExperienceDaily(query:import('./solo-experience-daily').SoloExperienceDailyQuery):Promise<import('./solo-experience-daily').SoloExperienceDailyState>;
   getAppearanceTheme(): Promise<'light' | 'dark'>;
+  getLanguage(): Promise<'tr' | 'en'>;
+  setLanguage(value: 'tr' | 'en'): Promise<void>;
   setAppearanceTheme(theme: 'light' | 'dark'): Promise<void>;
   getFinanceView():Promise<import('./finance-view').FinanceViewPreferences>;
   getFinanceDaily(query:import('./finance-daily').FinanceDailyQuery):Promise<import('./finance-daily').FinanceDailyState>;

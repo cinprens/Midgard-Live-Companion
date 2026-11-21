@@ -9,6 +9,7 @@ import {createDefaultAlertPreferences} from '../src/domain/notifications';
 import {createDefaultLiveView} from '../src/shared/live-view';
 import type {LiveAppearanceId} from '../src/shared/live-appearance';
 import {buildLiveWorkspaceRows,filterLiveWorkspaceRows,isLiveSourceActive,liveHealthPercent,liveKnownFarmSummary,liveSourceCoverage,liveSourceIssue,liveTargetCount,liveWorkspacePage,paginateLiveSourceFields,selectedLiveSource,stableLiveWorkspaceRows} from '../src/domain/live-workspace';
+import {buildTaskbarPartyRows,isTaskbarSourceLive,taskbarPartyReading,taskbarPartyTotals} from '../src/domain/taskbar-party';
 
 // Pixel assets are verified by packaged UI QA; rendering behavior uses stable URLs.
 vi.mock('../src/components/live-adventure-assets',()=>({LIVE_CHARACTER_ART:Object.fromEntries(['feminine-1','feminine-2','feminine-3','feminine-4','masculine-1','masculine-2','masculine-3'].map(id=>[id,`/art/${id}.png`])),LIVE_SCENE_ART:'/art/scene.png',LIVE_LOOT_ART:{card:'/art/loot-card.png',costume:'/art/loot-costume.png',generic:'/art/loot-generic.png'}}));
@@ -28,6 +29,56 @@ const kill=(key='a',available=true):KillCountCharacter=>({characterKey:key,chara
 function state(streams:LiveStreamState[],farms:AutoFarmCharacter[]=[],kills:KillCountCharacter[]=[]):AppState {
   return{records:[],jobs:[],folderFiles:[],settings:{replayFolder:null,databasePath:'SYNTHETIC-db',watchRequested:false,watchPermissionConfirmed:false,watchActive:false,watchPolicyVerified:false},live:{streams,limits:{maxWorkers:2,memoryBudgetBytes:128*1024*1024,perFileBytes:0,pollIntervalMs:500,settleMs:1000},activeWorkers:0,queuedCount:0,bufferedBytes:0,discovery:{enabled:false,folder:null,blockedReason:null},compatibility:'skadi-unverified',mode:'incremental'},expansion:{databasePath:'SYNTHETIC-db',finance:{version:1,revision:0,prices:[],sessions:[],events:[]},catalog:{counts:{item:0,monster:0,map:0,skill:0,drop:0,experience:0},sources:[],versions:0,licenseNotice:'SYNTHETIC'},autoFarm:{revision:1,status:'tracking',characters:farms,items:farms.flatMap(value=>value.items),prices:[],totals:farmTotals(),notice:'SYNTHETIC'},killCount:{revision:1,status:'tracking',characters:kills,monsters:[killed(1313,34)],totals:killTotals(34),notice:'SYNTHETIC'},inventoryInbox:[],experience:{},alertPreferences:{},persistenceNotice:'SYNTHETIC',error:null}};
 }
+
+describe('taskbar data boundaries',()=>{
+  it('uses actual progression for liveness and retains one recording on interruption',()=>{
+    const now=Date.parse('2026-11-05T01:00:00Z'),prefs=createDefaultAlertPreferences();
+    const recent=stream('recent','a',{lastValidatedProgressAt:new Date(now-1000).toISOString(),lastSuccessfulReadAt:new Date(now-1000).toISOString()},
+      {currentBaseExp:99999,recordingStartExp:{base:{level:67,amount:60000,required:500000}},jobExpGained:12,zenyReceived:1600});
+    const archive=stream('archive','a',{status:'settled',lastSuccessfulReadAt:new Date(now).toISOString()},{baseExpGained:999,zenyBalance:777});
+    const rows=buildTaskbarPartyRows(state([archive,recent]),prefs,archive.id,now);
+    expect(isTaskbarSourceLive(archive,now)).toBe(false);
+    expect(rows[0].stream.id).toBe(recent.id);
+    expect(taskbarPartyReading(rows[0])).toMatchObject({baseLevel:67,baseGain:null,jobGain:12,wallet:null,recordingZeny:1600,zenyToday:null});
+    recent.status='missing';
+    const stale=buildTaskbarPartyRows(state([archive,recent]),prefs,archive.id,now);
+    expect(isTaskbarSourceLive(recent,now)).toBe(false);
+    expect(stale[0].stream.id).toBe(recent.id);
+    expect(taskbarPartyReading(stale[0]).lastReadAt).toBe(recent.lastSuccessfulReadAt);
+  });
+  it('never sums recordings or overlaps character observation time',()=>{
+    const taskbarDay={date:'2026-11-05',items:[{itemId:501,quantity:7}],recentItemIds:[501],lootObserved:true,zenyReceived:80,observedMs:1800000};
+    const rows=buildTaskbarPartyRows(state([stream('first','a',{taskbarDay}),stream('copy','a',{taskbarDay}),stream('unknown','b')]),createDefaultAlertPreferences());
+    expect(taskbarPartyReading(rows[0])).toMatchObject({lootTotal:7,lootPerHour:14,recentLoot:taskbarDay.items});
+    expect(taskbarPartyReading(rows[1])).toMatchObject({lootTotal:null,zenyToday:null,lootPerHour:null});
+    expect(taskbarPartyTotals([...rows,...rows])).toEqual({lootTotal:7,zenyToday:80,estimatedLootZeny:null,estimatePartial:true,durationMs:null});
+  });
+  it('values all daily loot at current Finance prices separately from confirmed wallet movement',()=>{
+    const taskbarDay={date:'2026-11-05',items:[{itemId:501,quantity:5},{itemId:502,quantity:3},{itemId:503,quantity:2}],
+      recentItemIds:[502],lootObserved:true,zenyReceived:null,observedMs:1800000};
+    const sources=[stream('one','a',{taskbarDay},{zenyBalance:29925}),stream('two','b',{taskbarDay:{...taskbarDay,
+      items:[{itemId:501,quantity:4}],zenyReceived:10}})];
+    const priceRows=(unitPrice:number|null)=>buildTaskbarPartyRows(state(sources,[
+      farm('a',[item(501,unitPrice,999),item(502,0),item(503,null),item(504,1000)]),farm('b',[item(501,unitPrice,50)])
+    ]),prefs());
+    const rows=priceRows(1.25);
+    expect(taskbarPartyReading(rows[0])).toMatchObject({estimatedLootZeny:6.25,estimatePartial:true,wallet:29925,zenyToday:null});
+    expect(taskbarPartyReading(rows[1])).toMatchObject({estimatedLootZeny:5,estimatePartial:false,zenyToday:10});
+    expect(taskbarPartyTotals([...rows,...rows])).toMatchObject({estimatedLootZeny:11.25,estimatePartial:true,zenyToday:10});
+    expect(taskbarPartyTotals(priceRows(2))).toMatchObject({estimatedLootZeny:18,estimatePartial:true});
+    const unpriced=priceRows(null);
+    expect(taskbarPartyReading(unpriced[0])).toMatchObject({estimatedLootZeny:0,estimatePartial:true});
+    expect(taskbarPartyReading(unpriced[1])).toMatchObject({estimatedLootZeny:null,estimatePartial:true});
+  });
+  it('distinguishes an observed empty day from missing daily observations when valuing the team',()=>{
+    const empty={date:'2026-11-05',items:[],recentItemIds:[],lootObserved:true,zenyReceived:null,observedMs:5000};
+    const rows=buildTaskbarPartyRows(state([stream('empty','a',{taskbarDay:empty}),stream('missing','b')]),prefs());
+    expect(taskbarPartyReading(rows[0])).toMatchObject({estimatedLootZeny:0,estimatePartial:false});
+    expect(taskbarPartyReading(rows[1])).toMatchObject({estimatedLootZeny:null,estimatePartial:false});
+    expect(taskbarPartyTotals(rows)).toMatchObject({estimatedLootZeny:0,estimatePartial:true});
+    expect(taskbarPartyTotals(rows.slice(1))).toMatchObject({estimatedLootZeny:null,estimatePartial:false});
+  });
+});
 
 describe('Replay EXP cap display',()=>{
   const render = async (baseLevel:number, jobLevel:number, jobClassId:number) => {
@@ -59,7 +110,7 @@ describe('Taskbar party membership',()=>{
   it('uses the pickup stream to select the right portrait, including when character names match',async()=>{
     const {default:TaskbarStrip}=await import('../src/components/TaskbarStrip');
     const source=state([stream('one','a'),stream('two','b',{character:{key:'b',name:'Çağrı',source:'manual',playerId:null}}),stream('three','c')]);
-    const html=renderToStaticMarkup(createElement(TaskbarStrip,{state:source,view:{...createDefaultLiveView(),appearanceByCharacter:{a:'masculine-1',b:'feminine-4'}},pending:false,error:'',onExit:()=>{},
+    const html=renderToStaticMarkup(createElement(TaskbarStrip,{state:source,view:{...createDefaultLiveView(),appearanceByCharacter:{a:'masculine-1',b:'feminine-4'}},pending:false,error:'',onSettings:()=>{},onExit:()=>{},
       scene:{id:'drop-17',streamId:'two',character:'Çağrı',at:0,itemId:17,itemName:'Şapka',quantity:2,category:'costume',audio:{muted:true,volume:0}}}));
     const scene=html.slice(html.indexOf('class="taskbar-drop-scene"'));
     expect(scene).toContain('data-category="costume"');
@@ -70,26 +121,28 @@ describe('Taskbar party membership',()=>{
   });
   it('keeps the original avatar for a queued drop after its Replay source leaves the roster',async()=>{
     const {default:TaskbarStrip}=await import('../src/components/TaskbarStrip');
-    const html=renderToStaticMarkup(createElement(TaskbarStrip,{state:state([]),view:{...createDefaultLiveView(),appearanceByCharacter:{a:'masculine-2'}},pending:false,error:'',onExit:()=>{},
+    const html=renderToStaticMarkup(createElement(TaskbarStrip,{state:state([]),view:{...createDefaultLiveView(),appearanceByCharacter:{a:'masculine-2'}},pending:false,error:'',onSettings:()=>{},onExit:()=>{},
       scene:{id:'drop-18',streamId:'closed',characterKey:'a',character:'Çağrı',at:0,itemId:18,itemName:'Pupa Card',quantity:1,category:'card',audio:{muted:false,volume:50}}}));
     expect(html).toContain('/art/masculine-2.png');
     expect(html).toContain('/art/loot-card.png');
   });
   it('includes the fourth and fifth character, keeps same-name identities distinct and totals only the displayed sources',async()=>{
     const {default:TaskbarStrip}=await import('../src/components/TaskbarStrip');
+    const day=(zenyReceived:number)=>({date:'2026-11-02',items:[{itemId:603,quantity:2}],recentItemIds:[603],lootObserved:true,observedMs:null,zenyReceived});
     const source=state([
-      stream('current','a',{}, {zenyReceived:150}),
+      stream('current','a',{taskbarDay:day(150)}, {zenyReceived:510}),
       stream('archived','a',{status:'paused'}, {zenyReceived:4000}),
-      stream('second','b',{character:{key:'b',name:'Çağrı',source:'manual',playerId:null}}, {zenyReceived:0}),
-      stream('third','c',{}, {zenyReceived:50}),stream('fourth','d'),stream('fifth','e'),
-    ]);
-    const html=renderToStaticMarkup(createElement(TaskbarStrip,{state:source,view:createDefaultLiveView(),pending:false,error:'',onExit:()=>{}}));
+      stream('second','b',{character:{key:'b',name:'Çağrı',source:'manual',playerId:null},taskbarDay:day(0)}, {zenyReceived:0}),
+      stream('third','c',{taskbarDay:day(50)}, {zenyReceived:120}),stream('fourth','d'),stream('fifth','e'),
+    ],[farm('a',[item(603,100)]),farm('b',[item(603,100)]),farm('c',[item(603,100)])]);
+    const html=renderToStaticMarkup(createElement(TaskbarStrip,{state:source,view:createDefaultLiveView(),pending:false,error:'',onSettings:()=>{},onExit:()=>{}}));
     expect(html.match(/<article\b/g)).toHaveLength(5);
     expect(html).toContain('data-stream-id="current"');
     expect(html).not.toContain('data-stream-id="archived"');
     expect(html).toContain('data-stream-id="fifth"');
-    expect(html).toContain('Kısmi toplam');
-    expect(html).toContain('+200');
+    expect(html).toContain('data-partial="true"');
+    expect(html).toContain('≈600 Z*');
+    expect(html).toContain('Av sayacı');
   });
 });
 

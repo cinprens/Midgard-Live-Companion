@@ -24,7 +24,7 @@ const executable = process.argv[2];
 const app = await electron.launch(executable ? {executablePath: path.resolve(executable), args, env} : {args: ['.', ...args], env});
 
 // Do not grant a browser user gesture when observing or exercising cold-start audio.
-const run = fn => app.evaluate(({BrowserWindow}, script) => BrowserWindow.getAllWindows()[0].webContents.executeJavaScript(script, false), '(' + fn.toString() + ')()');
+const run = fn => app.evaluate(({BaseWindow}, script) => BaseWindow.getAllWindows().find(win => win.contentView.children[0]?.webContents).contentView.children[0].webContents.executeJavaScript(script, false), '(' + fn.toString() + ')()');
 async function until(label, predicate) {
   const deadline = Date.now() + 30000;
   while (Date.now() < deadline) {
@@ -97,9 +97,9 @@ try {
 
   await run(() => document.querySelector('.taskbar-launch').click());
   await until('taskbar layout', () => !!document.querySelector('.taskbar-party-row'));
-  await app.evaluate(({BrowserWindow}) => BrowserWindow.getAllWindows()[0].hide());
-  const windowState = await app.evaluate(({BrowserWindow}) => {
-    const win = BrowserWindow.getAllWindows()[0];
+  await app.evaluate(({BaseWindow}) => BaseWindow.getAllWindows().find(win => win.contentView.children[0]?.webContents).hide());
+  const windowState = await app.evaluate(({BaseWindow}) => {
+    const win = BaseWindow.getAllWindows().find(win => win.contentView.children[0]?.webContents);
     return {visible: win.isVisible(), focused: win.isFocused()};
   });
   assert.deepEqual(windowState, {visible: false, focused: false});

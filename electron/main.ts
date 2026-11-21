@@ -1,10 +1,11 @@
-import { app, BrowserWindow, dialog, ipcMain, session, type Session } from 'electron';
+import { app, BaseWindow, WebContentsView, dialog, ipcMain, session, type Session, type WebContents } from 'electron';
 import {compareReplayFiles, compareTrackedReplays} from './replay-experience-comparison';
 import { randomUUID } from 'node:crypto';
 import { mkdir,realpath,writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { AppState, ManualCharacterInput } from '../src/shared/types';
+import {killDailyDate} from '../src/shared/kill-daily';
 import type {RareDropEvent} from '../src/shared/rare-drop';
 import {usesSelectedItemSound} from '../src/domain/alert-targets';
 import type {RarePickup} from './compact-farm-store';
@@ -36,7 +37,8 @@ import { LiveViewSettings } from './live-view-settings';
 import {createDefaultHuntAnalyticsPreferences,validateHuntAnalyticsPreferences} from '../src/shared/hunt-analytics-preferences';
 import {prepareStartupDatabase} from './startup-preparation';
 import {startupScreenUrl} from './startup-screen';
-import {TaskbarWindow} from './taskbar-window';
+import {UiLanguage} from './ui-language';
+import {TaskbarWindow, readTaskbarOptions} from './taskbar-window';
 import {groupLiveSources} from '../src/domain/live-workspace';
 
 export const WATCH_POLICY_VERIFIED=false;
@@ -44,7 +46,8 @@ const alertKinds=ALERT_KINDS;
 const recordingDisabled='Ayrıntılı olay geçmişi kaldırıldı. Yalnız günlük kesim, loot ve EXP toplamları ile fiyatlar saklanır.';
 const experienceChannels=new Set(['midgard:kill-experience-rate','midgard:kill-experience-penalty','midgard:kill-experience-control','midgard:solo-experience-daily','midgard:exp-calibrate','midgard:exp-job-track']);
 const soloExperienceChannels=new Set(['midgard:kill-experience-rate','midgard:kill-experience-control','midgard:solo-experience-daily']);
-let window:BrowserWindow|null=null;
+let window:BaseWindow|null=null;
+let contents:WebContents;
 let taskbarWindow:TaskbarWindow;
 let live:LiveController;
 let memory:LiveOnlySession;
@@ -90,7 +93,7 @@ let startupMessage='Kayıt dosyası kontrol ediliyor…';
 const qaDirectory=process.env.MIDGARD_USER_DATA;
 if(qaDirectory)app.setPath('userData',path.resolve(qaDirectory));
 if(!app.requestSingleInstanceLock())app.exit(0);
-app.on('second-instance',()=>{if(window&&!window.isDestroyed()){if(window.isMinimized())window.restore();window.show();window.focus();}});
+app.on('second-instance',()=>{const host=taskbarWindow?.host??window;if(host&&!host.isDestroyed()){if(host.isMinimized())host.restore();host.show();host.focus();contents.focus();}});
 // The renderer uses an in-memory partition; gameplay data never enters browser storage.
 app.commandLine.appendSwitch('disable-http-cache');
 app.commandLine.appendSwitch('disable-background-networking');
@@ -105,7 +108,12 @@ if(developmentUrl&&!(['127.0.0.1','localhost'].includes(developmentUrl.hostname)
 const windowUrl=new URL(developmentUrl?.toString()??pathToFileURL(rendererFile).toString());
 windowUrl.searchParams.set('section','live');
 const pageUrl=windowUrl.toString();
-const startupUrl=startupScreenUrl();
+const uiLanguage = new UiLanguage(app.getPath('userData'));
+const startupUrl=startupScreenUrl(uiLanguage.value);
+
+function openLocalizedDialog(options: Electron.OpenDialogOptions) {
+  return dialog.showOpenDialog(taskbarWindow.host, uiLanguage.dialog(options));
+}
 
 function errorText(error:unknown):string{
   const code=(error as NodeJS.ErrnoException|null)?.code;
@@ -155,8 +163,12 @@ function state():AppState{
       stream.recentLoot=farm.recentLootFor(stream.id,stream.character?.key);
     }
   }
-  if (taskbarWindow?.active && 'attachTaskbarDailyLoot' in farm) farm.attachTaskbarDailyLoot(current.streams);
   expansion.killCount.syncStatuses(current.streams);
+  if (taskbarWindow?.active) {
+    const date=killDailyDate();
+    if ('attachTaskbarDailyLoot' in farm) farm.attachTaskbarDailyLoot(current.streams,date);
+    if ('attachTaskbarDailyKills' in expansion.killCount) expansion.killCount.attachTaskbarDailyKills(current.streams,date);
+  }
   expansion.huntAnalytics.syncStatuses(current.streams);
   if(EXPERIENCE_ENABLED||SOLO_EXPERIENCE_ENABLED)expansion.killExperience.syncStatuses(current.streams.map(stream=>({...stream,currentSnapshot:live.hasCurrentSnapshot(stream.id)})));
   expansion.targetHunt.setTargets({monsterIds:notifications.getPreferences().selectedMonsterIds});
@@ -172,7 +184,7 @@ function state():AppState{
 function publish():AppState{
   const current=state();if(window&&!window.isDestroyed()){
     const{finance,autoFarm,killCount,...unchanged}=current.expansion!;
-    window.webContents.send('midgard:update',{...current,expansion:{...unchanged,...(lastPublishedFinanceRevision!==finance.revision?{finance}:{}),...(lastPublishedAutoFarmRevision!==autoFarm.revision?{autoFarm}:{}),...(lastPublishedKillCountRevision!==killCount.revision?{killCount}:{})}});
+    contents.send('midgard:update',{...current,expansion:{...unchanged,...(lastPublishedFinanceRevision!==finance.revision?{finance}:{}),...(lastPublishedAutoFarmRevision!==autoFarm.revision?{autoFarm}:{}),...(lastPublishedKillCountRevision!==killCount.revision?{killCount}:{})}});
     lastPublishedFinanceRevision=finance.revision;lastPublishedAutoFarmRevision=autoFarm.revision;lastPublishedKillCountRevision=killCount.revision;
   }return current;
 }
@@ -195,7 +207,7 @@ function savePreferences(alertPatch?: Parameters<NotificationEngine['setPreferen
   preferenceQueue=saving.catch(()=>undefined);
   return saving.catch(error=>{preferenceError=errorText(error);schedulePublish();throw error;});
 }
-function emitNotification(notification:LiveNotification):void{if(!EXPERIENCE_ENABLED&&notification.type==='level')return;if(!shutdown&&window&&!window.isDestroyed())window.webContents.send('midgard:notification',notification);}
+function emitNotification(notification:LiveNotification):void{if(!EXPERIENCE_ENABLED&&notification.type==='level')return;if(!shutdown&&window&&!window.isDestroyed())contents.send('midgard:notification',notification);}
 function expansionSignals():void{
   if(shutdown||!expansion||!experience||!expansionAlerts)return;
   const now=Date.now(),farm=expansion.autoFarm.snapshot(),global=notifications.getPreferences();
@@ -208,7 +220,7 @@ function expansionSignals():void{
     let cached=farmSignalCache.get(key);if(!cached||cached.revision!==farm.revision){cached={revision:farm.revision,receipts:expansion.autoFarm.alertReceipts(key)};farmSignalCache.set(key,cached);}
     const{receipts}=cached,view=EXPERIENCE_ENABLED&&stream?experience.view(stream.id,now):null;
     const output=expansionAlerts.observeSignals({characterKey:key,character:stream?.character?.name??key,streamId:stream?.id??`farm:${key}`,recordingId:view?.recordingId,now,experience:view,netPerHour:character?.totals.hourlyValue??null,financeVerified:false,receipts},global);
-    if(window&&!window.isDestroyed())for(const event of output){if(!EXPERIENCE_ENABLED&&['base-level','job-level','base-90','job-90','exp-idle'].includes(event.type))continue;window.webContents.send('midgard:expansion-notification',event);}
+    if(window&&!window.isDestroyed())for(const event of output){if(!EXPERIENCE_ENABLED&&['base-level','job-level','base-90','job-90','exp-idle'].includes(event.type))continue;contents.send('midgard:expansion-notification',event);}
   }
 }
 function observeSnapshot(parsed:ParsedReplay,meta:StableSnapshotMeta):void{
@@ -241,7 +253,7 @@ function observeSnapshot(parsed:ParsedReplay,meta:StableSnapshotMeta):void{
       at:Date.parse(meta.observedAt),
       audio:{volume:effectivePreferences.volume,muted:effectivePreferences.muted,
         useSelectedItemSound:usesSelectedItemSound(pickup.itemId,effectivePreferences,globalPreferences)}};
-    if(window&&!window.isDestroyed())window.webContents.send('midgard:rare-drop',drop);
+    if(window&&!window.isDestroyed())contents.send('midgard:rare-drop',drop);
   }
   if(observationError)throw observationError instanceof Error?observationError:new Error(errorText(observationError));
   expansionError=null;
@@ -261,13 +273,39 @@ function assertKind(value:unknown):AlertKind{if(typeof value!=='string'||!alertK
 function registerIpc():void{
   function handle(channel:string,action:(...args:unknown[])=>unknown):void{
     ipcMain.handle(channel,async(event,...args:unknown[])=>{
-      if(!window||event.sender!==window.webContents||event.senderFrame!==window.webContents.mainFrame||event.senderFrame.url!==pageUrl)throw new Error('Bu işlem yalnızca yerel uygulama penceresinden yapılabilir.');
+      if(!window||event.sender!==contents||event.senderFrame!==contents.mainFrame||event.senderFrame.url!==pageUrl)throw new Error('Bu işlem yalnızca yerel uygulama penceresinden yapılabilir.');
       if(!EXPERIENCE_ENABLED&&experienceChannels.has(channel)&&!(SOLO_EXPERIENCE_ENABLED&&soloExperienceChannels.has(channel)))throw new Error('Bu EXP işlemi bu sürümde kapalı.');
       try{return await action(...args);}catch(error){throw new Error(errorText(error));}
     });
   }
   handle('midgard:get-state',()=>state());
   handle('midgard:taskbar-get',()=>taskbarWindow.active);
+  handle('midgard:taskbar-options-get',()=>taskbarWindow.options);
+  handle('midgard:taskbar-options-set',patch=>{
+    if(!taskbarWindow.active || !patch || typeof patch!=='object' || Array.isArray(patch) ||
+      Object.keys(patch).some(key=>key!=='pinned'&&key!=='orientation') ||
+      ('pinned' in patch && typeof patch.pinned!=='boolean') ||
+      ('orientation' in patch && patch.orientation!=='horizontal' && patch.orientation!=='vertical'))
+      throw new Error('Görev çubuğu görünüm seçimi geçersiz.');
+    const previous=taskbarWindow.options;
+    const next=readTaskbarOptions({...previous,...patch});
+    try {
+      taskbarWindow.setOptions(next);
+      expansion.setSetting('taskbar-options',next);
+    } catch (error) {
+      taskbarWindow.setOptions(previous);
+      throw error;
+    }
+    return next;
+  });
+  handle('midgard:taskbar-close',()=>{
+    if(!taskbarWindow.active)throw new Error('Görev çubuğu modu etkin değil.');
+    setImmediate(()=>app.quit());
+  });
+  handle('midgard:taskbar-detail-height',height=>{
+    if(typeof height!=='number')throw new Error('Görev çubuğu detay yüksekliği geçersiz.');
+    taskbarWindow.setDetailHeight(height);
+  });
   handle('midgard:taskbar-set',active=>{
     if(typeof active!=='boolean')throw new Error('Görev çubuğu modu seçimi geçersiz.');
     if (active) taskbarWindow.setRows(groupLiveSources(memory.applyIdentities(live.snapshot()).streams).size);
@@ -276,6 +314,8 @@ function registerIpc():void{
     return result;
   });
   handle('midgard:appearance-get',()=>expansion.getSetting('ui-theme')==='dark'?'dark':'light');
+  handle('midgard:language-get',()=>uiLanguage.value);
+  handle('midgard:language-set',value=>uiLanguage.set(value));
   handle('midgard:appearance-set',theme=>{if(theme!=='light'&&theme!=='dark')throw new Error('Geçersiz görünüm teması.');expansion.setSetting('ui-theme',theme);});
   handle('midgard:finance-view-get',()=>financeViewSettings.get());
   handle('midgard:finance-daily',query=>expansion.financeDaily.read(query));
@@ -283,7 +323,7 @@ function registerIpc():void{
   handle('midgard:replay-exp-compare', async (mode) => {
     if (mode === 'tracked') return compareTrackedReplays(memory.preferences.replayFolder ?? null, memory.preferences.sources);
     if (mode !== 'choose') throw new Error('Replay karşılaştırma seçimi geçersiz.');
-    const selection = await dialog.showOpenDialog(window!, {
+    const selection = await openLocalizedDialog( {
       title:'Karşılaştırmak için aynı karakterin iki Replay dosyasını seç',
       defaultPath:memory.preferences.replayFolder ?? undefined,
       properties:['openFile','multiSelections'], filters:[{name:'Ragnarok Replay',extensions:['rrf']}],
@@ -378,7 +418,7 @@ function registerIpc():void{
     expansion.killExperience.setDeathPenalty(value);return publish();
   });
   handle('midgard:catalog-search',query=>expansion.searchCatalog(query as CatalogSearch));
-  handle('midgard:catalog-import',async()=>{const selection=await dialog.showOpenDialog(window!,{title:'İzinli oyun verisi paketi seç',properties:['openFile'],filters:[{name:'Kaynak ve lisans bilgili veri paketi',extensions:['json','csv']}]});if(!selection.canceled&&selection.filePaths[0]){
+  handle('midgard:catalog-import',async()=>{const selection=await openLocalizedDialog({title:'İzinli oyun verisi paketi seç',properties:['openFile'],filters:[{name:'Kaynak ve lisans bilgili veri paketi',extensions:['json','csv']}]});if(!selection.canceled&&selection.filePaths[0]){
     expansion.importCatalog(await readCatalogPackage(await realpath(selection.filePaths[0])));
     refreshLocalMonsterNames();
   }return publish();});
@@ -386,12 +426,12 @@ function registerIpc():void{
   handle('midgard:exp-job-track',(streamId,track)=>{const stream=memory.applyIdentities(live.snapshot()).streams.find(stream=>stream.id===streamId);if(typeof streamId!=='string'||!stream?.character||track!==null&&!['novice','first','second'].includes(String(track)))throw new Error('Geçersiz karakter veya meslek sınıfı.');experience.setJobTrack(streamId,track as 'novice'|'first'|'second'|null);jobTracks[stream.character.key]=track as 'novice'|'first'|'second'|null;expansion.setSetting('job-tracks',jobTracks);return publish();});
   handle('midgard:character-alerts',(key,config)=>{if(typeof key!=='string')throw new Error('Karakter kimliği gerekli.');expansionAlerts.configure(key,config);expansion.setSetting('character-alerts',expansionAlerts.preferences());expansionSignals();return publish();});
   handle('midgard:live-add-files',async()=>{
-    const selected=await dialog.showOpenDialog(window!,{title:'Takip edilecek mevcut Replay dosyalarını seç',properties:['openFile','multiSelections'],filters:[{name:'Ragnarok Replay',extensions:['rrf']}]});
+    const selected=await openLocalizedDialog({title:'Takip edilecek mevcut Replay dosyalarını seç',properties:['openFile','multiSelections'],filters:[{name:'Ragnarok Replay',extensions:['rrf']}]});
     if(!selected.canceled){await loadNamesFor(selected.filePaths);await live.addFiles(selected.filePaths);await savePreferences();}return publish();
   });
   handle('midgard:live-add-folder',async discover=>{
     if(typeof discover!=='boolean')throw new Error('Geçersiz klasör tercihi.');
-    const selected=await dialog.showOpenDialog(window!,{title:'Replay kaynak klasörünü seç',properties:['openDirectory']});
+    const selected=await openLocalizedDialog({title:'Replay kaynak klasörünü seç',properties:['openDirectory']});
     if(!selected.canceled&&selected.filePaths[0]){const folder=await realpath(selected.filePaths[0]);await loadNamesFor([path.join(folder,'source.rrf')]);await live.addFolder(folder,{discover:true,replaceSources:true});await savePreferences();}return publish();
   });
   handle('midgard:live-refresh',async()=>{
@@ -420,14 +460,14 @@ function registerIpc():void{
     return publish();
   });
   handle('midgard:select-alert-sound',async kindValue=>{
-    const kind=assertKind(kindValue);const selected=await dialog.showOpenDialog(window!,{title:'Bu bildirim için ses seç',properties:['openFile'],filters:[{name:'Ses dosyası',extensions:['wav','mp3','ogg']}]});
+    const kind=assertKind(kindValue);const selected=await openLocalizedDialog({title:'Bu bildirim için ses seç',properties:['openFile'],filters:[{name:'Ses dosyası',extensions:['wav','mp3','ogg']}]});
     if(selected.canceled||!selected.filePaths[0])return null;
     const file=await realpath(selected.filePaths[0]);const sound=await readMemorySound(file);
     memory.sounds[kind]=sound;memory.preferences.soundPaths[kind]=file;if(kind==='level')delete memory.preferences.gameLevelSound;if(kind==='monster')delete memory.preferences.gameMobsterSound;await savePreferences();publish();return sound;
   });
   handle('midgard:rare-drop-sound-choose',async input=>{
     const target=validateRareSoundTarget(input);
-    const selected=await dialog.showOpenDialog(window!,{title:'Ganimet bildirim sesi seç',properties:['openFile'],filters:[{name:'Ses dosyası',extensions:['wav','mp3','ogg']}]});
+    const selected=await openLocalizedDialog({title:'Ganimet bildirim sesi seç',properties:['openFile'],filters:[{name:'Ses dosyası',extensions:['wav','mp3','ogg']}]});
     return selected.canceled || !selected.filePaths[0] ? null : rareDropSounds.prepare(target,selected.filePaths[0]);
   });
   handle('midgard:rare-drop-sound-set',(input,token)=>{
@@ -443,7 +483,7 @@ function registerIpc():void{
     return state();
   });
   handle('midgard:select-ragnarok-sound',async()=>{
-    const selected=await dialog.showOpenDialog(window!,{title:'Kendi Ragnarok oyun arşivinden seviye sesini seç',properties:['openFile'],filters:[{name:'Ragnarok oyun arşivi',extensions:['grf']}]});
+    const selected=await openLocalizedDialog({title:'Kendi Ragnarok oyun arşivinden seviye sesini seç',properties:['openFile'],filters:[{name:'Ragnarok oyun arşivi',extensions:['grf']}]});
     if(selected.canceled||!selected.filePaths[0])return null;
     const file=await realpath(selected.filePaths[0]);const sound=await readRagnarokLevelSound(file);
     memory.sounds.level={name:sound.name,dataUrl:sound.dataUrl};memory.preferences.gameLevelSound={archivePath:file,entry:sound.entry};delete memory.preferences.soundPaths.level;await savePreferences();publish();return{name:sound.name,dataUrl:sound.dataUrl};
@@ -451,7 +491,7 @@ function registerIpc():void{
   handle('midgard:get-alert-sound',kind=>memory.sounds[assertKind(kind)]??null);
   handle('midgard:select-loot-chime-sound',async()=>{const sound=await readLootChimeSound();memory.sounds['old-blue-box']=sound;delete memory.preferences.soundPaths['old-blue-box'];await savePreferences();publish();return sound;});
   handle('midgard:select-mobster-sound',async()=>{
-    const selected=await dialog.showOpenDialog(window!,{title:'Ragnarok oyun arşivinden Mobster ölüm sesini seç',defaultPath:memory.preferences.gameMobsterSound?.archivePath??memory.preferences.gameLevelSound?.archivePath,properties:['openFile'],filters:[{name:'Ragnarok oyun arşivi',extensions:['grf']}]});
+    const selected=await openLocalizedDialog({title:'Ragnarok oyun arşivinden Mobster ölüm sesini seç',defaultPath:memory.preferences.gameMobsterSound?.archivePath??memory.preferences.gameLevelSound?.archivePath,properties:['openFile'],filters:[{name:'Ragnarok oyun arşivi',extensions:['grf']}]});
     if(selected.canceled||!selected.filePaths[0])return null;
     const file=await realpath(selected.filePaths[0]);const sound=await readRagnarokMobsterSound(file);
     memory.sounds.monster={name:sound.name,dataUrl:sound.dataUrl};memory.preferences.gameMobsterSound={archivePath:file,entry:sound.entry};delete memory.preferences.soundPaths.monster;await savePreferences();publish();return{name:sound.name,dataUrl:sound.dataUrl};
@@ -465,31 +505,36 @@ function registerIpc():void{
 }
 function showStartupProgress(message:string):void{
   startupMessage=message;
-  const visible=startupQuitRequested?`Kapatma isteği alındı. Hazırlık güvenle tamamlanınca kapanacak. ${message}`:message;
-  if(window&&!window.isDestroyed())void window.webContents.executeJavaScript(`{const element=document.querySelector('[data-startup-message]');if(element)element.textContent=${JSON.stringify(visible)};}`).catch(()=>undefined);
+  const visible=(startupQuitRequested ? uiLanguage.text('Kapatma isteği alındı. Hazırlık güvenle tamamlanınca kapanacak.')+' ' : '')+uiLanguage.text(message);
+  if(window&&!window.isDestroyed())void contents.executeJavaScript(`{const element=document.querySelector('[data-startup-message]');if(element)element.textContent=${JSON.stringify(visible)};}`).catch(()=>undefined);
 }
 async function showStartupError(error:unknown):Promise<void>{
   startupFinished=true;
   const message=errorText(error);
   await writeFile(path.join(app.getPath('userData'),'last-startup-error.txt'),`${new Date().toISOString()}\n${startupMessage}\n${message}\n`,'utf8').catch(()=>undefined);
   if(startupQuitRequested){app.quit();return;}
-  if(!window||window.isDestroyed()){dialog.showErrorBox('MIDGARD LIVE açılamadı',message);app.exit(1);return;}
-  if(window.webContents.getURL()!==startupUrl)await window.loadURL(startupUrl);
-  await window.webContents.executeJavaScript(`{document.documentElement.dataset.startupState='error';document.querySelector('[data-startup-title]').textContent='Başlatma tamamlanamadı';document.querySelector('[data-startup-message]').textContent='Aşağıdaki hata nedeniyle uygulama açılamadı.';document.querySelector('[data-startup-error]').textContent=${JSON.stringify(message)};}`).catch(()=>undefined);
+  if(!window||window.isDestroyed()){dialog.showErrorBox(uiLanguage.text('MIDGARD LIVE açılamadı'),uiLanguage.text(message));app.exit(1);return;}
+  if(contents.getURL()!==startupUrl)await contents.loadURL(startupUrl);
+  await contents.executeJavaScript(`{document.documentElement.dataset.startupState='error';document.querySelector('[data-startup-title]').textContent=${JSON.stringify(uiLanguage.text('Başlatma tamamlanamadı'))};document.querySelector('[data-startup-message]').textContent=${JSON.stringify(uiLanguage.text('Aşağıdaki hata nedeniyle uygulama açılamadı.'))};document.querySelector('[data-startup-error]').textContent=${JSON.stringify(uiLanguage.text(message))};}`).catch(()=>undefined);
   window.show();window.focus();
 }
 async function createStartupWindow():Promise<void>{
-  window=new BrowserWindow({width:1480,height:980,minWidth:1100,minHeight:720,backgroundColor:'#101710',title:'MIDGARD LIVE — Hazırlanıyor',icon:path.join(__dirname,'../build/icon.png'),show:false,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true,webSecurity:true,spellcheck:false,partition}});
-  window.removeMenu();window.webContents.setWindowOpenHandler(()=>({action:'deny'}));
-  taskbarWindow=new TaskbarWindow(window);
-  window.webContents.on('will-navigate',(event,url)=>{if(url!==pageUrl&&url!==startupUrl)event.preventDefault();});
-  window.webContents.on('will-attach-webview',event=>event.preventDefault());
+  window=new BaseWindow({width:1480,height:980,minWidth:1100,minHeight:720,backgroundColor:'#101710',title:uiLanguage.text('MIDGARD LIVE — Hazırlanıyor'),icon:path.join(__dirname,'../build/icon.png'),show:false});
+  const view=new WebContentsView({webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true,webSecurity:true,spellcheck:false,partition}});
+  contents=view.webContents;
+  ipcMain.on('midgard:startup-close',event=>{
+    if(startupFinished && event.sender===contents && event.senderFrame===contents.mainFrame && event.senderFrame.url===startupUrl)app.quit();
+  });
+  window.removeMenu();contents.setWindowOpenHandler(()=>({action:'deny'}));
+  taskbarWindow=new TaskbarWindow(window,view,()=>uiLanguage.value);
+  contents.on('will-navigate',(event,url)=>{if(url!==pageUrl&&url!==startupUrl)event.preventDefault();});
+  contents.on('will-attach-webview',event=>event.preventDefault());
   window.on('close',event=>{if(!startupFinished){event.preventDefault();startupQuitRequested=true;showStartupProgress(startupMessage);}});
-  window.once('ready-to-show',()=>window?.show());await window.loadURL(startupUrl);window.show();
+  await contents.loadURL(startupUrl);window.show();contents.focus();
 }
 async function createWindow():Promise<void>{
   if(!window||window.isDestroyed())throw new Error('Uygulama penceresi hazırlık sırasında kapandı.');
-  await window.loadURL(pageUrl);window.setTitle('MIDGARD LIVE');window.show();
+  await contents.loadURL(pageUrl);window.setTitle('MIDGARD LIVE');window.show();contents.focus();
 }
 app.whenReady().then(async()=>{
   browserSession=session.fromPartition(partition,{cache:false});
@@ -516,6 +561,7 @@ app.whenReady().then(async()=>{
   showStartupProgress('Sesler ve karakter ayarları yükleniyor…');
   expansion=new ExpansionStore(databasePath,{killExperienceSoloOnly:SOLO_EXPERIENCE_ENABLED,ownDamageOnly:true,lightweightHistory:true,summaryOnly:true});experience=new ExperienceTracker();expansionAlerts=new ExpansionAlertManager((expansion.getSetting('character-alerts')??{}) as Record<string,unknown>);
   rareDropSounds=new RareDropSoundLibrary(expansion.getSetting('rare-drop-sounds'),saved=>expansion.setSetting('rare-drop-sounds',saved));
+  taskbarWindow.setOptions(readTaskbarOptions(expansion.getSetting('taskbar-options')));
   sceneDurations=readSceneDurations(expansion.getSetting('taskbar-scene-durations'));
   financeViewSettings=new FinanceViewSettings(expansion);
   killViewSettings=new KillViewSettings(expansion);

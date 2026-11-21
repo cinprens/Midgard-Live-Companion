@@ -1,7 +1,19 @@
 import {describe,it,expect} from 'vitest';
 import {parseFarmPriceInput,formatFarmPriceInput} from '../src/domain/farm-price-input';
+import {applyLanguage} from '../src/i18n/locale';
 
 describe('manual Zeny price notation',()=>{
+  it('round-trips English prices after a language change',()=>{
+    applyLanguage('en');
+    try{
+      expect(formatFarmPriceInput(35000.5)).toBe('35,000.5');
+      for(const [raw,value] of [['35,000.50',35000.5],['100,000',100000],['12.50',12.5],['0',0]] as const)
+        expect(parseFarmPriceInput(raw)).toEqual({valid:true,value});
+      for(const raw of ['35.000,50','1,00','35.000','-12','1,000,000,000,000.01'])
+        expect(parseFarmPriceInput(raw).valid).toBe(false);
+    }finally{applyLanguage('tr');}
+    expect(formatFarmPriceInput(35000.5)).toBe('35.000,5');
+  });
   it.each([
     ['35000',35000],['35.000',35000],['35.000,50',35000.5],['1.000.000',1000000],
     ['1,5',1.5],['1.5',1.5],['35.00',35],['0',0],['0,00',0],['0.00',0],

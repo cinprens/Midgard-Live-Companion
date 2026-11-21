@@ -3,7 +3,8 @@ import {DatabaseSync} from 'node:sqlite';
 import path from 'node:path';
 import {COMPACT_KILL_SCHEMA,CompactKillStore,CompactKillDailyStore,migrateCompactKills} from '../electron/compact-kill-store';
 import {emptySummary,type ParsedReplay,type ReplayEvent} from '../src/parser';
-import type {CharacterIdentity} from '../src/shared/types';
+import type {CharacterIdentity,LiveStreamState} from '../src/shared/types';
+import {taskbarHuntCount} from '../src/domain/taskbar-hunt';
 const closers:(()=>void)[]=[];
 afterEach(()=>{for(const close of closers.splice(0).reverse())close();});
 const START='2026-11-05T23:59:59+03:00';
@@ -14,6 +15,42 @@ function replay(edge:number,events:ReplayEvent[]=[],id=1,startedAt:string|null=S
 function fixture(){const db=new DatabaseSync(':memory:');db.exec(COMPACT_KILL_SCHEMA);let store=new CompactKillStore(db);const daily=new CompactKillDailyStore(db);closers.push(()=>{store.close();db.close();});return{db,daily,get store(){return store;},reopen(){store.close();store=new CompactKillStore(db);}};}
 const count=(f:ReturnType<typeof fixture>)=>f.store.snapshot().totals.observedDeaths;
 const number=(db:DatabaseSync,sql:string)=>Number(db.prepare(sql).get()!.n);
+
+describe('taskbar daily hunt counter',()=>{
+ it('separates today, measured zero and unknown, with one contribution per roster identity',()=>{
+  const {store}=fixture();
+  const streams:Pick<LiveStreamState,'character'|'taskbarKillDay'>[]=[1,1,2,3,4].map(id=>({character:who(id)}));
+  const rows=streams.map(stream=>({key:stream.character!.key,stream}));
+  const yesterday='2026-11-05',today='2026-11-06';
+  store.observe(replay(0),meta(),who());
+  store.observe(replay(1500,[death(900),death(1450)]),meta(),who());
+  store.observe(replay(0,[],2),meta(2),who(2));
+  store.observe(replay(1500,[],2),meta(2),who(2));
+  store.observe(replay(0,[],3,null),meta(3),who(3));
+  store.observe(replay(2000,[death(1400,8,3)],3,null),meta(3),who(3));
+  store.attachTaskbarDailyKills(streams,today);
+  expect(streams.map(stream=>stream.taskbarKillDay?.count)).toEqual([1,1,0,null,null]);
+  expect(taskbarHuntCount(rows)).toEqual({count:1,partial:true});
+  expect(taskbarHuntCount([rows[1],rows[0],rows[2]])).toEqual({count:1,partial:false});
+  expect(taskbarHuntCount([rows[2]])).toEqual({count:0,partial:false});
+  expect(taskbarHuntCount([rows[3]])).toEqual({count:null,partial:false});
+  const own=death(1650);
+  store.observe(replay(1700,[own]),meta(),who());
+  store.attachTaskbarDailyKills(streams,today);
+  expect(taskbarHuntCount([rows[0]]).count).toBe(2);
+  const conflict={...own,rawData:{...own.rawData,attackers:[1,2]}};
+  store.observe(replay(1800,[conflict]),meta(),who());
+  store.attachTaskbarDailyKills(streams,today);
+  expect(taskbarHuntCount([rows[0]]).count).toBe(1);
+  store.attachTaskbarDailyKills(streams,yesterday);
+  expect(streams[0].taskbarKillDay).toEqual({date:yesterday,count:1});
+  store.attachTaskbarDailyKills(streams,'2026-11-07');
+  expect(taskbarHuntCount(rows)).toEqual({count:null,partial:false});
+  streams[0].character={...who(),source:'unassigned'};
+  store.attachTaskbarDailyKills(streams,today);
+  expect(streams[0].taskbarKillDay).toBeUndefined();
+ });
+});
 
 describe('compact kill migration',()=>{
  it('shows reference names for unnamed counts while preserving recorded and installed monster names',()=>{

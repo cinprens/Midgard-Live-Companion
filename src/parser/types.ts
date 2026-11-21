@@ -39,6 +39,8 @@ export interface ReplayEvent {
   timestamp: number;
   eventType: 'spawn' | 'damage' | 'death' | 'exp' | 'drop' | 'unknown' | 'map' | 'item-ground' | 'item-obtained' | 'item-disappear' | 'player-death' | 'status' | 'exp-gain' | 'exp-loss' | 'level-up' | 'inventory-ack' | 'inventory-snapshot' | 'inventory-removal' | 'server-time';
   statusKey?: StatusKey;
+  /** Nonnegative part of a change between two observed personal wallet balances. */
+  walletIncrease?: number;
   expKind?: 'base' | 'job';
   actorId?: number;
   targetId?: number;

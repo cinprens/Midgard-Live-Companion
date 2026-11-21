@@ -149,14 +149,14 @@ try{
   await append(0,mobDeath(20400,1313,'Mobster',42),940000);await waitSession(0,{observedDeaths:4});
   check(sessions(await state())[0].base.gained===61000,'Restored measurement continues only with fresh post-restart Replay events');
   for(const [width,height]of [[1480,1000],[1100,820],[620,900]]){
-    await app.evaluate(({BrowserWindow},[w,h])=>{const win=BrowserWindow.getAllWindows()[0];win.setMinimumSize(400,500);win.setSize(w,h);},[width,height]);
+    await app.evaluate(({BaseWindow},[w,h])=>{const win=BaseWindow.getAllWindows()[0];win.setMinimumSize(400,500);win.setSize(w,h);},[width,height]);
     for(const label of ['Siyah','Açık']){
       await theme(label);await goExperience();await geometryCheck(`${label} ${width}x${height} EXP`,'experience');await capture(`exp-${label==='Siyah'?'dark':'light'}-${width}x${height}.png`);
       await goLive();await geometryCheck(`${label} ${width}x${height} live`,'live');await capture(`live-${label==='Siyah'?'dark':'light'}-${width}x${height}.png`);
     }
     if(width===620){for(const index of [1,2]){await page.getByRole('button',{name:'Sonraki karakter sayfası',exact:true}).click();await liveCard(index).waitFor();check(await liveCard(index).locator('.solo-exp-compact').count()===1,`Narrow live pagination exposes character ${index+1} EXP`);}for(let i=0;i<2;i++)await page.getByRole('button',{name:'Önceki karakter sayfası',exact:true}).click();}
   }
-  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1480,1000));await theme('Siyah');await goLive();
+  await app.evaluate(({BaseWindow})=>BaseWindow.getAllWindows()[0].setSize(1480,1000));await theme('Siyah');await goLive();
   const firstBar=liveCard(0).locator('[data-solo-track="base"] .solo-exp-gain-bar>i');
   check(await firstBar.evaluate(n=>n.style.width)==='100%'&&(await liveCard(0).locator('[data-solo-percent="base"]').innerText()).includes('+%491,94'),'Compact gain bar clamps its width while the numeric equivalent stays above 100 percent');
   await liveCard(0).getByRole('button',{name:`${adventureNames[0]} EXP Kazanımı aç`,exact:true}).click();await page.locator('.solo-exp-workspace').waitFor();

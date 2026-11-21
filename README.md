@@ -1,3 +1,87 @@
+# MIDGARD LIVE · v0.28.0
+
+**English** · [Türkçe](README.tr.md) · [Windows downloads on GitHub Releases](https://github.com/cinprens/Midgard-Live-Companion/releases)
+
+MIDGARD LIVE is an offline Windows companion for Ragnarok Zero Global on Skadi. It follows local Replay recordings and shows your characters together while you play. The compact **Hunting Party** panel tracks HP, bag weight, daily loot, Zeny and the EXP reported by each recording.
+
+## Get started
+
+1. On the Windows x64 release you want, open **Assets**, download the file ending in `-Portable.exe`, and run it. Close any older instance before opening a new build.
+2. To switch from Turkish to English, click **ENG** beside **Görev çubuğu modu** in the main window. **TR** switches back. The current page, alerts and compact panel change immediately. MIDGARD remembers your choice the next time it starts.
+3. In the game, start a Replay recording for each character you want to follow. In MIDGARD, open **Live tracking** → **Choose Replay folder** and select the folder where the game writes its `.rrf` files. Three characters recording to the same folder appear as three separate rows.
+
+![Live tracking in English with three example characters and the TR and ENG controls in the upper-right corner](docs/images/live-tracker-en.png)
+
+## Use the compact Hunting Party panel
+
+Click **Taskbar mode** in the main window. Drag the header to move the panel, use the pin to keep it above other windows, and use the orientation button to switch between horizontal and vertical layouts.
+
+| What you see | How to read it |
+| --- | --- |
+| Party header | The header shows the party’s totals for today. Click a character to see that character’s totals and details. Click again to return to the party totals. |
+| Character row | See the recording, data status, HP and bag weight. The three most recent distinct loot types show how many of each the character collected today. |
+| Zeny | **Estimated Zeny** values the day’s collected loot using the unit prices entered in **Finance**. **Wallet** shows the latest balance read from the Replay. |
+| EXP and kills | Base and Job EXP use supported Replay readings. The kill count is an estimate based on recorded damage. Missing evidence is shown as unavailable. |
+
+![English Hunting Party panel showing three example characters in horizontal mode](docs/images/hunting-party-en.png)
+
+Use **Main window** or **Esc** to return to the full app. The **×** button closes MIDGARD.
+
+## Alerts, Finance and EXP
+
+- In **Notification settings**, set the sound and scene duration for items, monster deaths, bag weight, map changes and character deaths. A scene can stay on screen for 1–60 seconds. The default is 5 seconds.
+- Under **Card and costume sounds**, choose a default sound for each category or give a particular card or costume its own sound. Use **Test** to hear your selection. A step-by-step guide is available at the bottom of the settings page.
+- **Finance** lists card and costume gains separately. **EXP gains** shows supported personal EXP changes and can compare compatible recordings. An unavailable EXP reading stays unknown.
+
+## Data and offline use
+
+The Windows app processes Replays, preferences, audio and character data on your computer. It reads the game’s Replay folder without writing to it. The catalog, EXP table, interface art and built-in loot chime ship with the application. The first launch creates a local SQLite profile. Gameplay tracking and language switching work offline.
+
+| Data | Available sources |
+| --- | --- |
+| Cards, costumes and monsters | The bundled community catalog contains IDs and names for **324 cards**, **1,413 costumes** and **489 monsters**. You can search for alert targets offline on first launch. The catalog describes names and IDs. Current Skadi drops and drop rates require separate evidence. [Bundled name list](src/data/public-game-names.json) · [RagnaDex source](https://ragnadex.com/en/api/) |
+| Names from your installation | Selecting the game’s Replay folder allows MIDGARD to read `System/iteminfo_enUS.lub` and `System/itemInfo_data.lub` from the same installation when available. Monster names can also come from the Replay or an installed `Ragnarok Calculator` catalog on the desktop. |
+| Loot and kills | Observations come from the Replay. Supported item types and costume slots help identify pickups. Unresolved names can appear as numeric IDs. |
+
+To take your own local name list to another computer, run the following from the source project. Replace the Replay path with your own. The optional second path adds monster names from your local calculator.
+
+```powershell
+npm.cmd run catalog:local -- "C:\Gravity\RagnarokZero\Replay" "$([Environment]::GetFolderPath('Desktop'))\Ragnarok Calculator"
+```
+
+The command writes `game-names.local.json` to the project root. Source builds load it there. For a Portable build, place it next to the executable. Git ignores this local file. It contains names, categories and numeric IDs.
+
+If the Mobster sound is available in your installed copy of the game, MIDGARD can read it locally. The tests use synthetic recordings and one documented LATAM sample. [Test fixture source](tests/fixtures/README.md)
+
+## Run from source
+
+Use Windows x64, Node.js 24 and npm. Run these commands in the project folder.
+
+```powershell
+npm.cmd ci
+npm.cmd run build
+npm.cmd start
+```
+
+The initial setup downloads the project dependencies and Electron. For development with live interface updates, run `npm.cmd run dev`.
+
+## Test and build for Windows
+
+```powershell
+npm.cmd test
+npm.cmd run package:win
+```
+
+Windows packages are written to `release/`. After building, run `npm.cmd run test:rare-drop:desktop` to exercise notification scenes with sample data. After packaging, the following check opens a clean profile, searches three catalog categories and verifies network blocking and startup connection logs.
+
+```powershell
+node scripts/verify-offline-desktop.mjs
+```
+
+## License and credits
+
+The MIDGARD LIVE source code is licensed under MIT. The bundled dependencies, font, catalog and sample Replay have their own terms and attributions. [MIT license](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+
 ## Sponsor
 
 [![Become a Sponsor](https://img.shields.io/badge/Sponsor%20Me-%F0%9F%92%96-red?style=flat-square)](https://github.com/sponsors/cinprens)
@@ -28,238 +112,125 @@ If you want to support maintenance directly:
 
 [GitHub Sponsors](https://github.com/sponsors/cinprens)
 
-
-
-
-# MIDGARD LIVE · v0.28.0
-
-Ragnarok Zero Global / Skadi için Windows masaüstü takip aracı. Birden fazla karakterin Replay kaydını birlikte izler. Görev çubuğu modunda her karakterin son ganimetlerini, gün içindeki adetlerini, çanta ağırlığını ve Replay’de görülen Zeny hareketlerini gösterir.
-
-Taşınabilir Windows uygulaması tamamen çevrimdışı çalışır. Katalog uygulamanın içinde gelir. Replay, ayarlar, sesler ve karakter kayıtları bilgisayarda işlenir. Çalışma sırasında dış API bağlantıları kapalıdır.
-
-![Görev çubuğunda ağırlık eşiğine ulaşan karakter](docs/images/taskbar-weight.png)
-
-## Oyunda kullanım
-
-1. Oyunda Replay kaydını başlat. MIDGARD LIVE’da **Canlı takip** bölümüne gir ve oyunun **Replay** klasörünü seç.
-2. **Görev çubuğu modu** ile karakterlerini aynı şeritte takip et. **Bildirim ayarları** bölümünde eşya, yaratık ölümü, çanta ağırlığı, harita değişimi ve karakter ölümü için sahne süresini ayrı ayrı seçebilirsin.
-3. **Kart ve kostüm sesleri** bölümünden genel bir ses veya belirli bir eşya için özel bir ses seç. Sahne süreleri 1–60 saniye, başlangıç değeri 5 saniyedir.
-
-**Finans** kart ve kostüm kazanımlarını ayrı gösterir. **EXP Kazanımı** desteklenen Replay verilerini ve doğrulanabilen kayıt karşılaştırmalarını kullanır. Kayıtta bulunmayan değerler için uygulama eksik bilgiyi belirtir.
-
-## Kaynaktan çalıştırma
-
-Windows x64, Node.js 24 ve npm ile proje klasöründe çalıştır:
-
-```powershell
-npm.cmd ci
-npm.cmd run build
-npm.cmd start
-```
-
-İlk kurulum, bağımlılıkları ve Electron’u internetten indirir. Geliştirme sırasında canlı arayüz güncellemeleri için `npm.cmd run dev` kullanabilirsin.
-
-## Test ve Windows paketi
-
-```powershell
-npm.cmd test
-npm.cmd run package:win
-```
-
-Windows paketleri `release/` klasörüne yazılır. Derlemeden sonra bildirim sahnelerini örnek verilerle masaüstünde denemek için `npm.cmd run test:rare-drop:desktop` komutunu çalıştırabilirsin.
-
-Paketlemeden sonra çevrimdışı çalışmayı doğrulamak için aşağıdaki komutu çalıştır. Denetim boş bir profilde üç katalog aramasını, ağ engelini ve açılıştaki bağlantı kayıtlarını kontrol eder.
-
-```powershell
-node scripts/verify-offline-desktop.mjs
-```
-
-## Veriler
-
-Kaynak paketinde EXP tablosu, arayüz görselleri, yerleşik ses ve test verileri bulunur. Kullanıcının SQLite profili ilk çalıştırmada oluşturulur.
-
-| Bilgi | Yeni kurulumda nereden gelir? |
-| --- | --- |
-| Kart, kostüm ve canavar adları | Hazır gelen topluluk listesinde 324 kart, 1.413 kostüm ve 489 canavarın ID’si ve adı bulunur. Bildirim hedeflerini ilk açılışta çevrimdışı arayabilirsin. Bu liste Skadi’de hangi eşyaların şu anda düştüğünü veya düşme oranlarını göstermez. [Ad listesi](src/data/public-game-names.json) · [RagnaDex veri kaynağı](https://ragnadex.com/en/api/) |
-| Kurulu oyundaki adlar | Oyunun `Replay` klasörünü seçtiğinde MIDGARD LIVE aynı kurulumdaki `System/iteminfo_enUS.lub` ve `System/itemInfo_data.lub` dosyalarını okur. Canavarlar için Replay’de görülen adlar ve varsa masaüstündeki `Ragnarok Calculator` kataloğu da kullanılabilir. |
-| Gerçek ganimet ve kesimler | Ganimet ve kesimler Replay’den takip edilir. Desteklenen paketlerdeki eşya türü ve kostüm yuvası düşüşü tanımaya yardım eder. Ad çözülemezse kimlik numarası gösterilebilir. |
-
-Kendi kurulumundaki kart, kostüm ve canavar adlarını başka bir bilgisayara taşımak için aşağıdaki örnekteki klasör yollarını kendi kurulumuna göre düzenle. İkinci yol isteğe bağlıdır ve canavar adlarını ekler.
-
-```powershell
-npm.cmd run catalog:local -- "C:\Gravity\RagnarokZero\Replay" "$([Environment]::GetFolderPath('Desktop'))\Ragnarok Calculator"
-```
-
-Komut proje köküne `game-names.local.json` yazar. Kaynaktan çalıştırdığında uygulama bu dosyayı bulunduğu yerden okur. Taşınabilir sürüm için dosyayı `Portable.exe` ile aynı klasöre koy. Git bu yerel kopyayı dışarıda tutar. Dosya yalnızca ad, tür ve sayısal kimlik içerir.
-
-Oyunda varsa Mobster sesi yerel kurulumdan okunabilir. Birim testleri sentetik kayıtlar ve kaynağı belgelenmiş tek bir LATAM örneği kullanır. [Test verisinin kaynağı](tests/fixtures/README.md)
-
-## Lisans
-
-MIDGARD LIVE kaynak kodu MIT lisanslıdır. Üçüncü taraf bileşenlerin, yazı tipinin ve örnek Replay’in kendi lisansları ve atıfları geçerlidir. [MIT lisansı](LICENSE) · [Üçüncü taraf bildirimleri](THIRD_PARTY_NOTICES.md)
-
 <details>
-<summary>Önceki sürümlerin notları (v0.22.0 ve öncesi)</summary>
+<summary>Earlier release notes (v0.22.0 and older)</summary>
 
-# MIDGARD LIVE · v0.22.0
+These notes describe the behavior and verification of each release at the time it shipped.
 
-Bildirim ayarlarında **Hızlı bildirim ekle** alanından eşya veya yaratığı adıyla arayabilir, sayısal ID girebilir ya da harita kimliği yazabilirsin. Bir öneriye tıklamak veya tek eşleşmede Enter’a basmak kuralı etkinleştirir. Yaratık seçimi ortak av hedefleriyle paylaşılır.
+### v0.22.0 · Notification center
 
-Finans’ta bir eşyayı açıp **Bu eşya için bildirim ekle** düğmesini kullanabilirsin. Bildirim merkezinde bir kuralın satırını açarak hedeflerini ve sesini düzenleyebilirsin. Karaktere özel tercihler ayrı bölümde bulunur.
+Quick Add could find an item or monster by name, accept its numeric ID, or accept a map ID. Clicking a suggestion or pressing Enter on a single match enabled the rule. Monster selections were shared with hunt targets.
 
-[Windows Portable](release/notification-center-0.22.0/MIDGARD-LIVE-0.22.0-x64-Portable.exe)
+Finance gained an action to create an alert for the selected item. Expanding a rule in the notification center opened its targets and sound settings. Character-specific preferences had their own section.
 
-## v0.21.1
+### v0.21.1 · Startup fix
 
-**Açılış düzeltildi:** Büyük kayıtlar hazırlanırken pencere hemen görünür ve yanıt vermeye devam eder. Gerçek hazırlık aşamaları gösterilir; tamamlanınca aynı pencerede ana ekran açılır. Hata varsa görünür açıklama çıkar. Günlük özetler ve fiyatlar korunur.
+The window appeared immediately and stayed responsive while the app prepared large archives. It showed the actual preparation stages, opened the main view in the same window, and displayed an explanation on failure. Daily summaries and prices survived the upgrade.
 
-[Portable](release/startup-hotfix-0.21.1/MIDGARD-LIVE-0.21.1-x64-Portable.exe) · [Açılış doğrulama raporu](QA-STARTUP-HOTFIX-0.21.1.md)
+All 1,043 tests passed, together with 32/32 startup-screen checks, 10/10 checks on a copy of real records, and 40/40 on the Portable executable. With a large archive copy, the window appeared in 345 ms and the main view opened after about 95 seconds. Startup also completed with the original user profile. The main window was visible, daily totals and prices were intact, and the 1.29 MB active database passed its integrity check.
 
-1.043/1.043 test, başlangıç ekranında 32/32 kontrol, gerçek kayıtların deneme kopyasında 10/10 ve gerçek Portable'da 40/40 kontrol geçti. Büyük arşiv kopyasında pencere 345 ms'de görünür oldu; yaklaşık 95 saniyelik hazırlık sonrasında ana ekran açıldı.
+### v0.21.0 · Daily summaries
 
-Gerçek kullanıcı profiliyle v0.21.1 açılışı da tamamlandı: ana pencere görünür, günlük toplamlar/fiyatlar korunmuş, aktif veritabanı 1,29 MB ve bütünlük kontrolü temiz.
+The app began storing daily monster counts and item quantities per character, daily EXP, and prices. Individual kill and loot timestamps, event history, and detailed hunt analytics were retired. Folder tracking and live notifications continued.
 
-## v0.21.0 — Yalnız günlük özetler
+The migration verified daily totals before clearing old event details and compacting the active database. On a test copy of a real profile, it shrank from 1.42 GB to 1.29 MB. Older backups stayed separate and were retained. The conversion could take time on the first launch.
 
-**Yalnız günlük toplamlar:** Karakter/gün/yaratık kesim sayısı, karakter/gün/eşya miktarı ve günlük EXP saklanır. Fiyatlar korunur. Tek tek kesim/loot saatleri, olay geçmişi ve ayrıntılı av analizi kaldırıldı. Replay klasörü takibi ve canlı bildirimler devam eder.
+All 1,035 tests passed. Verification included 27/27 checks of preserved totals on a profile copy, 39/39 desktop checks in each of the source and packaged builds, 39/39 Portable checks, 25/25 package-content checks, and 30/30 capacity checks for 50 characters. The original profile stayed untouched during these tests.
 
-**Eski kayıtlar özetlere dönüştürülür:** Günlük toplamlar doğrulandıktan sonra aktif veritabanındaki ayrıntılar temizlenir ve dosya sıkıştırılır. Gerçek profilin deneme kopyasında aktif veritabanı **1,42 GB → 1,29 MB** oldu. Eski sürüm yedekleri bu hesaba dahil değildir ve otomatik silinmez. İlk açılışta dönüşüm nedeniyle bekleme olabilir.
+With 50 characters, increasing kills from 5,000 to 50,000 for the same dates and monster types kept the database at 1.41 MB. A separate simulation of 365 days, 50 characters, and 20 monster and 40 item types per day used about 201 MB after compaction (213 MB before), including EXP, durations, and indexes. These figures cover the active database.
 
-[Portable](release/summary-storage-0.21.0/MIDGARD-LIVE-0.21.0-x64-Portable.exe) · [Setup](release/summary-storage-0.21.0/MIDGARD-LIVE-0.21.0-x64-Setup.exe) · [Geçiş, alan ve doğrulama](QA-SUMMARY-STORAGE-0.21.0.md)
+### v0.20.0 · Automatic Replay folder tracking
 
-Doğrulama: 1.035/1.035 test, gerçek profil kopyasında 27/27 toplam koruma kontrolü, kaynak ve paket masaüstünde ayrı ayrı 39/39, gerçek Portable'da 39/39, paket içerik kontrolü 25/25. 50 karakter kapasite denemesinde 30/30 kontrol geçti. Gerçek profil test sırasında değiştirilmedi.
+Selecting a Replay folder enabled automatic discovery of new and growing files across characters. A verified advance marked a source live. After 15 seconds without progress, the app marked it stopped and retained the last valid values. The initial scan excluded old, static files from live activity. The folder selection survived restarts.
 
-50 karakterde aynı gün/türlerde 5.000 → 50.000 kesim, veritabanını 1,41 MB'tan büyütmedi. Ayrı yıllık simülasyon: 365 gün × 50 karakter × günlük 20 yaratık/40 eşya türü, EXP/süre/indexler dahil yaklaşık 201 MB (sıkıştırma öncesi 213 MB). Replay, uygulama dosyaları ve eski yedekler dahil değildir.
+Repeated reads and inbox polling no longer accumulated history. Fewer temporary state records were stored, and continuous EXP intervals were merged. Daily totals, prices, older archives, backups, and the existing damage and weight filters were preserved.
 
-## v0.20.0 — Otomatik klasör takibi
+Verification passed 999/999 tests, 32/32 folder-flow checks each in the source and packaged builds, 38/38 Portable checks, and 25/25 package-content checks. The fixtures used generated Replays and isolated profiles. These runs did not include installation into a real game profile or a live play session.
 
-**Replay klasörünü bir kez seç:** Yeni ve ilerleyen kayıtlar otomatik bulunur; tek tek dosya seçmek gerekmez. İlk tarama eski sabit dosyaları canlı saymaz. Doğrulanmış yeni veri ilerleyince **Canlı**, 15 saniye ilerleme olmayınca **Durdu** gösterilir; son doğru değerler korunur. Birden fazla karakter birlikte takip edilir. Seçilen klasör yeniden açılışta hatırlanır.
+### v0.19.2 · Weight-confirmed loot
 
-**Günlük toplamlar ve fiyatlar kalır:** Tekrarlanan okuma/inbox geçmişi durduruldu, geçici aktif durum kayıtları azaltıldı, kesintisiz EXP süreleri birleştirildi. Eski arşivler ve yedekler silinmez. Kendi hasarı ve loot ağırlığı kontrolleri korunur.
+Loot income and item alerts required an inventory addition followed by a rise in that character’s raw carried weight. Changes in capacity or weight percentage alone did not qualify. A single weight increase could not validate multiple ambiguous additions. Storage, cart, trade, and inventory refresh events were excluded. The live view showed entries awaiting weight confirmation.
 
-[Portable](release/folder-live-0.20.0/MIDGARD-LIVE-0.20.0-x64-Portable.exe) · [Setup](release/folder-live-0.20.0/MIDGARD-LIVE-0.20.0-x64-Setup.exe) · [Klasör takibi ve doğrulama](QA-FOLDER-LIVE-0.20.0.md)
+Existing income and prices were retained without retroactively marking old entries as weight-confirmed. The filter could miss zero-weight items, pickups offset by simultaneous consumption, and acquisitions with incomplete evidence. Identifying the source monster required separate evidence.
 
-Doğrulama: 999/999 test; kaynak ve nihai paket klasör akışında ayrı ayrı 32/32; gerçek Portable 38/38; paket içerik denetimi 25/25. Üretilmiş Replay dosyaları ve ayrı profiller kullanıldı; gerçek oyun ve gerçek profile kurulum denenmedi.
+Verification passed 970/970 tests, 43/43 loot-screen checks in the source and packaged builds, 21/21 Kill Count checks, and 38/38 Portable checks. Installation into a real profile and in-game validation were outside this run.
 
-## Korunan ağırlık filtresi (v0.19.2)
+### v0.19.1 · Kills estimated from the character’s damage
 
-**Ağırlıkla doğrulanan loot:** Yeni loot gelirleri ve eşya bildirimleri için çantaya ekleme kaydından sonra aynı karakterin ham ağırlığında artış gerekir. Ağırlık yüzdesi veya taşıma kapasitesi artışı yeterli değildir. Tek artış birden fazla belirsiz eşya kaydına paylaştırılmaz; depo, cart, ticaret ve çanta yenilemeleri gelir sayılmaz. Canlı ekranda bekleyen kayıtlar “Ağırlık doğrulaması bekleniyor” diye gösterilir.
+Kill Count, daily and historical lists, target hunting, analytics, and Solo EXP used deaths where only the tracked character’s HP damage appeared in the last ten seconds of that monster’s life. Deaths with no qualifying damage or with another attacker were excluded. The interface labeled this an estimate because the recording did not explicitly identify the killer.
 
-Eski gelirler ve fiyatlar korunur; eski kayıtlar geriye dönük ağırlık doğrulaması kazanmaz. Sıfır ağırlıklı, eşzamanlı tüketim nedeniyle net artış göstermeyen veya kanıtı eksik eşya alımları bu sıkı filtrede sayılmayabilir. Eşyanın hangi yaratıktan düştüğü bu kontrolle kanıtlanmaz.
+The raw archive was retained. Eligible historical Kill Count records could be filtered using attacker evidence. Old target, analytics, and EXP totals without ownership evidence stayed separate. Players upgrading to this release needed to start a new EXP measurement. The app created a SQLite backup before migrating to schema 13.
 
-[Portable](release/loot-weight-0.19.2/MIDGARD-LIVE-0.19.2-x64-Portable.exe) · [Setup](release/loot-weight-0.19.2/MIDGARD-LIVE-0.19.2-x64-Setup.exe) · [Loot doğrulama raporu](QA-LOOT-WEIGHT-0.19.2.md)
+### v0.15.0 · Daily hunt journal
 
-Doğrulama: 970/970 test; kaynak ve paket loot ekranında 43/43; kesim ekranında 21/21; gerçek Portable 38/38. Gerçek profile kurulum ve gerçek oyun denemesi yapılmadı.
+Kill Count gained an all-time/daily switch, a calendar, previous and next day controls, a Today shortcut, and a seven-day count strip. The monster list, search, character filter, favorites, and observation details followed the selected day. A new day began at midnight in Türkiye, and Today refreshed automatically.
 
-## Korunan kendi hasarı filtresi (v0.19.1)
+Only recordings with a verified start time contributed to dated totals. Undated observations were identified separately and retained in all-time totals. The release reused existing records without rewriting them or migrating the database.
 
-**Kendi hasarına göre kesim:** Kill Count, günlük/geçmiş listeleri, hedef avı, av analizi ve Solo EXP artık aynı yaratığın yaşamında son 10 saniyede yalnız kendi HP hasarın görülen ölümleri kullanır. Hasarsız, başka saldırganlı ve karışık saldırılı ölümler dışarıda kalır. Arayüz “Hasarına göre kesim / Tahmini” der; açık öldüren kimliği veya %100 kişisel kill iddiası değildir.
+### v0.14.1 · Replay reader and storage fixes
 
-Eski ham arşiv korunur. Kill Count geçmişindeki uygun saldırgan kanıtları süzülür; sahiplik saklamayan eski hedef/analiz/EXP toplamları yeni hesapla birleşmez. **EXP için yeni ölçüm başlat.** Şema13 geçişinden önce SQLite yedeği oluşturulur.
+A zero-timestamp `0x08AE` packet found in real recordings no longer stalled the reader. A new storage slot could be matched to a withdrawal. The interface displayed the last successful read separately from the file modification time. New transfer evidence generated review candidates and left old income intact. The app kept a consistent profile backup before the schema 9 migration.
 
-[Portable](release/own-damage-0.19.1/MIDGARD-LIVE-0.19.1-x64-Portable.exe) · [Setup](release/own-damage-0.19.1/MIDGARD-LIVE-0.19.1-x64-Setup.exe) · [Hasar filtresi ve doğrulama](QA-OWN-DAMAGE-0.19.1.md)
+Verification included 681 tests, 186/186 packaged error-screen checks, 72/72 checks on a real profile copy, and 27/27 Portable checks. Migration of the existing profile also completed, and all three sources resumed advancing.
 
-## Önceki günlük av görünümü (v0.15.0)
+### v0.14.0 · Live tracking workspace
 
-**Günlük av günlüğü:** Kill Count içindeki **Tümü / Günlük** geçişiyle birikmiş toplam veya seçtiğin gün görüntülenir. Takvim, önceki/sonraki gün, Bugün ve yedi günlük sayı şeridi bulunur. Günlük yaratık listesi, arama, karakter filtresi, favoriler ve gözlem ayrıntıları aynı güne göre çalışır. Günler Türkiye saatine göre 00.00 sınırında ayrılır; bugün görünümü kendiliğinden yenilenir.
+Compact character rows shared a target strip. The right-hand detail panel showed HP, weight and threshold, observed target deaths, and a read-only farm summary. Opening an item or price carried the selected character into Finance. Multiple recordings for one character were grouped in a single row. HP and map came from the selected source, which the app remembered by file path. Pagination and separate detail views limited scrolling.
 
-Başlangıç saati doğrulanabilen Replay kayıtları günlük deftere ayrılır. Tarihi doğrulanamayan gözlemler yalnız genel toplamda kalır ve ayrıca belirtilir; işlenme saati avın gerçek tarihi sayılmaz. Mevcut kayıtlar yeniden yazılmaz, yeni veritabanı geçişi gerekmez.
+Verification passed 631/631 tests, 48/48 packaged live-tracking checks, and 27/27 Portable checks, with zero renderer errors. The expanded panel was checked at 1480 × 1000, 1100 × 820, and the minimum 1100 × 720 window size.
 
-[Portable](release/daily-0.15.0/MIDGARD-LIVE-0.15.0-x64-Portable.exe) · [Setup](release/daily-0.15.0/MIDGARD-LIVE-0.15.0-x64-Setup.exe) · [Günlük doğrulama raporu](QA-KILL-DAILY-0.15.0.md)
+### v0.13.0 · Kill Count workspace
 
-## v0.14.1'den korunan okuyucu ve depo onarımı
+Kill Count adopted the compact Finance layout with three indicators, a pinned target, monster name or ID search, a character filter, sorting, favorites, and page sizes of 25, 50, or 100 rows. The selected monster’s panel displayed recent observations and valid historical hunt intervals. The History tab queried a paginated recording or character archive directly. Preferences survived restarts. Observation counts, attributed personal kills, and possible shared targets had distinct labels.
 
-**Okuyucu ve depo onarımı:** Gerçek kayıtlardaki sıfır zamanlı 0x08AE paketi akışı durdurmaz; yeni depo slotu ve geri çekme eşleştirilir. Son başarılı okuma zamanı, dosya değişiminden ayrı gösterilir. Eski gelirler otomatik azaltılmaz; yeni transfer kanıtı inceleme adayı olur. Şema9 geçişi öncesi tutarlı profil yedeği korunur.
+### v0.12.0 · Finance workspace
 
-[Portable](release/hotfix-0.14.1/MIDGARD-LIVE-0.14.1-x64-Portable.exe) · [Setup](release/hotfix-0.14.1/MIDGARD-LIVE-0.14.1-x64-Setup.exe) · [Doğrulama ve geri dönüş](QA-HOTFIX-0.14.1.md)
+Finance gained a compact summary, item name or ID search, character filtering, sorting, and 25-, 50-, or 100-row pages. Favorites, unpriced items, and hidden items had dedicated tabs. Editing a unit price in the detail panel updated it across characters, with an option to move on to the next missing price. Viewing preferences survived restarts. Search and visibility settings left totals intact. An explicit price of zero remained distinct from an unknown price.
 
-Son doğrulama: 681 test, son paket hata ekranı186/186, gerçek profil kopyası72/72 ve gerçek Portable27/27. Mevcut profile geçiş tamamlandı; üç kaynak yeniden ilerliyor. [Ekran örnekleri](outputs/design/hotfix-2026-11-03/README.md).
+### v0.11.0 · Incremental reader
 
-## v0.14.0'dan korunan Canlı takip merkezi
+The live reader began processing bounded batches of packets instead of rereading a long file’s entire history on every change. It updated counters for new events and for events whose evidence had changed. Unknown packets were not retained individually in memory. The initial history was processed silently, with subsequent new events generating alerts.
 
-**Canlı takip merkezi:** Kısa karakter satırları, tek ortak hedef şeridi ve seçili karakterin sağ ayrıntısı. Panelde HP, ağırlık/eşik, hedef yaratık ölüm gözlemi ve salt okunur Farm özeti birlikte gösterilir. Eşya/fiyat düzenleme seçili karakter kapsamıyla Finans'a geçer. Aynı karakterin birden fazla kaydı tek satırda gruplanır; gösterilen HP/harita seçili kaynaktan gelir. Kaynak seçimi dosya yoluyla hatırlanır. Görünüm tablo sayfalama ve ayrı ayrıntı kipleriyle kaydırma gerektirmeden düzenlenir.
+Live reading lifted the 400,000-chunk and 128 MiB whole-file limits. Limits still applied to packet batches, startup metadata, active contexts, worker count, and memory. The reader handled replacement or truncation, incomplete tails, pauses, and reopening. Game files stayed read-only, settings and persistent counters were preserved, and Skadi protocol support remained experimental.
 
-Yeni dağıtım ayrı `release/live-workspace-0.14.0` klasöründedir. [Portable](release/live-workspace-0.14.0/MIDGARD-LIVE-0.14.0-x64-Portable.exe) · [Setup](release/live-workspace-0.14.0/MIDGARD-LIVE-0.14.0-x64-Setup.exe) · [Doğrulama raporu](QA-LIVE-WORKSPACE-0.14.0.md). Önceki sürümler ve kişisel kayıtlar korunur.
+### v0.10.0 · Target hunt timing
 
-Son doğrulama: 631/631 test, paket içi Canlı takip 48/48, gerçek Portable 27/27; renderer hatası 0. Açık panelin kaydırmasız yerleşimi 1480×1000, 1100×820 ve minimum 1100×720 pencerelerde denetlendi. [Çalışan ekran görüntüleri](outputs/design/live-ui-2026-11-02/README.md).
+The live and Kill Count screens showed the interval between the last two observations of Mobster or another target, the average interval, elapsed Replay time since the last observation, and target count. All selected Replay sources contributed automatically. Target selection in Kill Count was shared with monster alerts, and turning off the sound left timing active. Matching observations of the same death across three sources were deduplicated where possible. Matches did not establish a server-wide kill ID.
 
-## v0.13.0'dan korunan Kill Count av günlüğü
+For intervals of four and six minutes, the latest interval was six minutes and the mean was five. Unknown elapsed times or intervals crossing gaps showed a dash. When a recording stopped advancing, its clock waited. The mean described past observations, without establishing a respawn timer.
 
-**Kill Count av günlüğü:** Finans ile aynı kompakt çalışma alanı; üç gösterge, sabitlenen hedef, yaratık adı/ID araması, karakter filtresi, sıralama, favoriler ve 25/50/100 satırlık liste. Sağ panel seçili yaratığın son gözlemlerini ve geçerli geçmiş av aralıklarını gösterir. **Geçmiş** sekmesi kayıt/karakter kapsamındaki arşivi sayfalı sorgular; ekran için RRF yeniden çözümlenmez. Görünüm tercihleri yeniden açılışta korunur. Gözlem, kişisel kill ve olası ortak hedef sayıları açıkça ayrılır.
-
-Yeni paketler ayrı `release/kill-workspace-0.13.0` klasöründedir. [Portable](release/kill-workspace-0.13.0/MIDGARD-LIVE-0.13.0-x64-Portable.exe) · [Setup](release/kill-workspace-0.13.0/MIDGARD-LIVE-0.13.0-x64-Setup.exe) · [Doğrulama raporu](QA-KILL-WORKSPACE-0.13.0.md) · [Tasarım ve kapsam](docs/KILL_COUNT_UI_PLAN_2026-11-02.md). Önceki paketler ve kişisel kayıtlar korunur.
-
-## v0.12.0'dan korunan Finans çalışma alanı
-
-**Yeni Finans çalışma alanı:** Kompakt özet, eşya adı/ID araması, karakter filtresi, sıralama ve 25/50/100 satırlık sayfalama. Favoriler, Fiyat bekleyen ve Gizlenenler sekmeleriyle uzun listeler yönetilir. Sağ ayrıntı panelindeki ortak fiyat bütün karakterlere uygulanır; fiyatı kaydedip sıradaki eksik fiyata geçilebilir. Tercihler yeniden açılışta korunur. Arama, favori ve gizleme muhasebe toplamını değiştirmez; `0` ile bilinmeyen fiyat ayrı kalır.
-
-Yeni dağıtım ayrı `release/finance-0.12.0` klasöründedir: [Portable](release/finance-0.12.0/MIDGARD-LIVE-0.12.0-x64-Portable.exe) · [Setup](release/finance-0.12.0/MIDGARD-LIVE-0.12.0-x64-Setup.exe). [Finans doğrulama raporu](QA-FINANCE-0.12.0.md) · [Tasarım ve kapsam](docs/FINANCE_UI_PLAN_2026-11-02.md). Önceki sürümler ve kişisel kayıtlar korunur.
-
-## v0.11.0'dan korunan artımlı okuyucu
-
-**Uzun kayıtlar için artımlı okuyucu:** Canlı takip artık dosyanın bütün geçmişini her değişimde yeniden çözmez. Kayıt sınırlı gruplar halinde okunur; gerekli paketler seçilir, yeni ve kanıtı değişen olaylar sayaçlara taşınır. Tanınmayan paketler ayrı ayrı bellekte tutulmaz. İlk geçmiş sessiz işlenir; canlı bildirimler sonraki yeni olaylardan gelir.
-
-Canlı okuyucuda 400.000 toplam parça ve 128 MiB toplam dosya sınırı kaldırıldı; güvenli sınırlar artık paket grubu, başlangıç metaverisi ve eşzamanlı aktif bağlam içindir. Bellek bütçesi, işçi sayısı ve hata durumları korunur. Dosya yenilenmesi/kesilmesi, eksik kuyruk, duraklatma ve yeniden açılma desteklenir. Oyun dosyalarına yazılmaz; önceki ayarlar ve kalıcı sayaçlar korunur. Skadi protokolü için deneysel etiketi devam eder.
-
-Yeni paketler ayrı `release/bridge-0.11.0` klasöründedir. Ölçüm ve doğrulama kapsamı: [Artımlı okuyucu raporu](QA-BRIDGE-0.11.0.md). Önceki sürümler kendi klasörlerinde korunur.
-
-## v0.10.0'dan korunan hedef av davranışı
-
-**Asıl hedef: Mobster ve seçtiğin diğer hedefleri kaç dakikada bir gördüğün.** Canlı takip ve Kill Count'ta son iki av arasındaki süre, ortalama av aralığı, son avdan geçen Replay süresi ve hedef adedi görünür. Bütün seçili Replay kaynakları otomatik izlenir; yeni bir ölçüm veya party başlatma işlemi gerekmez.
-
-**Kill Count → Hedefleri düzenle** bölümünden yaratıkları seç. Liste genel yaratık bildirimi listesiyle ortaktır; sesi kapatmak zamanlamayı kapatmaz. Üç kaynakta aynı ölümün eşleşen tekrarları ayıklanır; bu, kesin sunucu kill kimliği olarak sunulmaz.
-
-Örnek: kesimler arasında 4 ve 6 dakika varsa son aralık 6, ortalama 5 dakikadır. Bilinmeyen veya kesintiyi aşan güncel süreler — görünür. Kayıt ilerlemiyorsa sayaç bekler. Bu ortalama, doğrulanmış yaratık doğum süresi değildir.
-
-**EXP bölümleri ve EXP/seviye uyarıları kapalıdır.** Önceki EXP ayarları/kayıtları silinmez. Finans, envanter, Kill Count ve diğer ses tercihleri korunur.
-
-Güncel paketler ayrı `release/hunt-0.10.0` dizinindedir: [Portable](release/hunt-0.10.0/MIDGARD-LIVE-0.10.0-x64-Portable.exe) · [Setup](release/hunt-0.10.0/MIDGARD-LIVE-0.10.0-x64-Setup.exe) · [Doğrulama raporu](QA-HUNT-0.10.0.md). Önce eski uygulamayı kapatıp yeni Portable'ı aç. Kullanım: [Hedef av zamanlaması](docs/TARGET_HUNT.md).
-
-Geliştirici kontrolleri:
+EXP sections and EXP or level alerts were disabled in this release. Earlier EXP records, Finance, inventory, Kill Count, and sound preferences were retained. For a Portable upgrade, the previous app needed to be closed first. Historical verification also covered party EXP in v0.9.0 and kill EXP in v0.8.0. The original v0.10.0 checkout also ran its own `scripts/target-hunt-ui-qa.mjs` check.
 
 ```powershell
 npm.cmd test
 npm.cmd run build
-node scripts/target-hunt-ui-qa.mjs
 ```
 
-Önceki paketler korunur. Arşiv kanıtları: [v0.9.0](QA-PARTY-EXP-0.9.0.md) · [v0.8.0](QA-KILL-EXP-0.8.0.md).
+### v0.7.2 · Sounds and appearance
 
-## Önceki sürüm · v0.7.2
+Old Blue Box (item 603) gained an independent inventory alert and a classic gold-pickup sound preset. Glass Bead (item 746) was silent by default and accepted a custom sound. The Mobster death sound could be read from the player’s installed Ragnarok game archive. The Mobster sound button could select a GRF from another installation. Existing custom sounds kept their assignments.
 
-**Sesler:** Old Blue Box #603 için kartlardan bağımsız yeni çanta bildirimi eklendi. `Diablo II Gold` düğmesi klasik altın toplama sesini Old Blue Box'a bağlar. Glass Bead #746 varsayılan olarak boş ve sessizdir; istenirse sonradan kendi ses dosyası seçilebilir. Mobster ölüm sesi kurulu Ragnarok oyun arşivinden salt okunur yüklenir; `Mobster sesi` düğmesi başka kurulumun GRF dosyasını seçmeye yarar. Önceden seçilmiş kişisel sesler otomatik değiştirilmez.
-
-[Son test raporu](QA-SOUNDS-0.7.2.md) · [Ses eşleştirmeleri ve kaynaklar](docs/SOUND-PRESETS-0.7.2.md)
-
-**Yeni görünüm:** Ragnarok atmosferine uygun özgün şehir illüstrasyonu, sade düğmeler ve düzenli paneller. Üst çubuktaki **Açık / Siyah** seçimi bütün ekranlara uygulanır ve yeniden açılışta hatırlanır. Tanıtım alanında yalnız **PrensCin** yazar.
-
-Görsel dosyaları uygulamaya dahildir. Canlı takip, Finans, Kill Count, EXP ve bildirim işlemleri aynı hesaplama kurallarıyla çalışır. [Tasarım ve görsel kaydı](docs/UI-DESIGN-0.7.1.md), [tasarım doğrulaması](QA-DESIGN-0.7.1.md).
+The application bundled its interface artwork, including an original town illustration. The persistent Light/Dark switch applied to all screens. The promotion area showed PrensCin. The visual update retained the calculation rules in Live tracking, Finance, Kill Count, EXP, and notifications.
 
 ```powershell
 npm.cmd run test:design:desktop
 ```
 
-Görünüm paketleri `release/design-0.7.1`, görünüm ve yeni sesleri içeren güncel paketler `release/design-sounds-0.7.2` klasöründe hazırlanır; önceki sürüm paketleri korunur.
+### v0.7.0 · Replay EXP and monster observations
 
-## v0.7.0'dan devam eden davranış
+Live cards automatically loaded Base and Job levels. A supported starting class selected the corresponding Job EXP table while retaining earlier manual choices. The compact EXP summary showed both levels and separate Base and Job EXP per hour. Progress, last gain, and settings were available in the expandable details. Reopening or rereading the initial file history did not add gains a second time.
 
-Canlı takip kartlarında **Base Lv ve Job Lv otomatik yüklenir**. Desteklenen kayıt başlangıcı sınıfından meslek EXP tablosu da otomatik seçilir; önceden yapılmış manuel tercihler korunur. EXP alanı FARM gibi küçük bir özet kullanır: seviyeler ve ayrı **Base/Job EXP/saat** değerleri görünür; ilerleme, son kazanım ve ayarlar kapalı **EXP ayrıntıları** bölümündedir. İlk dosya geçmişi yeni kazanım sayılmaz; tekrar okuma iki kez eklemez.
+The navigation at this point contained Live tracking, Finance, Kill Count, and Notification settings. Local name mappings and stored Finance and Kill Count data survived removal of the game database screen.
 
-Sol menü yalnız **Canlı takip, Finans, Kill Count, Bildirim ayarları** içerir. Oyun veritabanı ekranı kaldırılmıştır; yerel ad eşleştirmeleri ve kayıtlı Finans/Kill Count verileri korunur.
+This version used only Replay data. In three real Skadi recordings, the reader found class and level information but no supported packets for current EXP or gains. The hourly fields showed that EXP data was pending. After an initial balance, a subsequent supported personal gain or balance change was needed for a rate. A Job level decrease did not establish the character’s new class.
 
-Bu sürüm yalnız **Replay** kaynağını kullanır; ekran okuma, OCR, oyun belleği veya ağ trafiği erişimi eklenmemiştir. İncelenen üç gerçek Skadi kaydında seviye/sınıf bilgisi bulundu, fakat desteklenen güncel EXP ve kazanım paketleri bulunmadı. Bu nedenle o kayıtlarda saatlik alanlar **EXP verisi bekleniyor** gösterir. Seviye artışından, yaratık sayısından veya anlamı kanıtlanmamış başlangıç alanlarından EXP miktarı üretilmez.
+Selected-monster death alerts used Mobster as the initial selection and played only for new confirmed death observations. They supported custom sounds, preview, individual toggles, and global mute. The alert identified an observed death without identifying the killer.
 
-Gerçek EXP miktarı/güncellemesi taşıyan desteklenen Replay akışında hesaplar otomatik ilerler. İlk mevcut EXP değeri tek başına saatlik kazanım üretmez; sonraki kişisel EXP kazanımı veya güncel durum değişimi beklenir. Meslek seviyesi düşerse kayıt başlangıcındaki sınıf otomatik olarak yeni meslek kabul edilmez. Ayrıntılar: [EXP doğrulaması](docs/EXP_VERIFICATION.md), [v0.7 test raporu](QA-AUTO-EXP-0.7.0.md).
+Kill Count provided two main indicators, a filter based on the tracked characters, monster name search, and an automatic monster list. SQLite stored observations by character, Monster ID, Replay session, and time. Rereading the same life cycle or restarting did not duplicate it. Hourly rates used the union of overlapping Replay intervals. Indexed summary tables supplied the totals.
 
-Bildirim ayarlarında **Seçili yaratık ölümü** sesi bulunur; **Mobster** başlangıçta seçilidir. Yalnız yeni ve doğrulanmış ölüm gözlemleri uyarır; açılışta geçmiş seslendirilmez. Ses seçimi, deneme düğmesi, aç/kapat ve genel sessiz mod desteklenir. Bu uyarı öldüren karakterin kimliğini kanıtlamaz; [kapsam ve tekrar kuralları](docs/MONSTER_ALERTS.md) açıktır. Finans ve Kill Count davranışı korunur.
+Damage, disappearance, or a single observed attacker was insufficient to confirm a personal kill. Without a verified killer field, a death remained unattributed and personal totals and rates displayed a dash. Shared deaths were also uncertain without a matchable identity across recordings.
 
-**Ben yaratıkları keseyim, MIDGARD LIVE saysın.** Yeni **Kill Count** sayfası Finans ile aynı sade tasarımı kullanır: iki ana gösterge, takip edilen karakterlerden oluşan dinamik filtre, yaratık adına göre arama ve ince turkuaz çubuklu yaratık listesi. Miktar veya oturum girişi istenmez. Finans, EXP ve bildirim ayarları korunur.
-
-Ölüm gözlemleri SQLite içinde karakter, Monster ID, Replay oturumu ve zaman bilgisiyle saklanır. Aynı kayıt yeniden okunduğunda veya uygulama yeniden açıldığında aynı yaşam döngüsü tekrar eklenmez. Saatlik hesap Replay zaman aralıklarından gelir; paralel karakterlerin ortak süresi bir kez kullanılır. İstatistik özetleri indeksli toplam tablolarından okunur.
-
-**Gerçek ölüm, kesin kişisel kill demek değildir.** Hasar, kaybolma veya tek görülen saldırgan tek başına kişisel kill kanıtı değildir. Mevcut Skadi ölüm bildiriminde öldüren karakteri belirten doğrulanmış bir alan bulunmadığında olay **Atfedilemeyen ölümler** içinde kalır; kişisel toplam ve hız `—` gösterir. Kayıtlar arasında ortak sunucu olay kimliği yoksa benzersiz ortak toplam kesinmiş gibi sunulmaz. Bu sınırlar sentetik testlerle aşılmış sayılmaz.
-
-Yaratık adları mevcut yerel katalogdan Monster ID ile bulunur. Masaüstündeki **Ragnarok Calculator** kurulumunda varsa `Veriler/ragnarok.sqlite` içindeki kaydedilmiş katalog okunur; kaydedilmiş katalog yoksa uygulamanın kurulu `catalog.json` başlangıç verisi kullanılır. Yalnızca kimlik/ad eşlemesi RAM'e alınır. Calculator fiyatları, kişisel kayıtları ve veri dosyaları değiştirilmez veya dağıtıma kopyalanmaz. Ad kataloğu Skadi ölüm aidiyetini doğrulamaz.
+Monster names were resolved locally by ID. If available, the app read the saved catalog from the desktop Ragnarok Calculator installation’s `Veriler/ragnarok.sqlite`, with its installed `catalog.json` as fallback. Only ID and name mappings were loaded into memory. Calculator prices, personal records, and database files stayed on the player’s computer.
 
 ```powershell
 npm.cmd test
@@ -272,25 +243,17 @@ npm.cmd run test:live:desktop
 npm.cmd run package:win
 ```
 
-Windows çıktıları: `release/MIDGARD-LIVE-0.7.0-x64-Portable.exe` ve `release/MIDGARD-LIVE-0.7.0-x64-Setup.exe`. Önceki Kill Count doğrulama kapsamı `QA-KILL-COUNT-0.6.0.md`, yaratık sesi doğrulaması `QA-MONSTER-ALERT-0.6.1.md` raporundadır.
+### v0.5.0 · Automatic Finance
 
----
+Finance began recording reliably decoded inventory additions. Replay events supplied quantities, per-character totals, estimated value, and value per hour. The player entered the shared unit price. Prices were saved automatically, and changes revalued existing automatic sessions. The interface listed items lacking prices. The same price controls appeared in the farm section of live character cards.
 
-## Finans davranışı · v0.5.0'dan korunur
+Manual quantity entry, session management, sales, expenses, and transfer forms were removed. Legacy v0.4 ledger data remained separate. Initial inventory, ground items, and identifiable inventory refreshes, trades, and storage transfers were excluded from new gains. Decoded additions with an unknown source were labeled as items received. Confirming a monster drop or sale profit needed more evidence. Missing observations displayed a waiting state. Missing prices stayed unknown, while an explicit zero counted as zero.
 
-**Sen fiyatı gir, gerisini bana bırak.** Finans artık manuel muhasebe ekranı değildir. Güvenilir şekilde çözümlenen çanta girişleri otomatik kaydedilir; eşya miktarı, karakter toplamı, tahmini değer ve saatlik değer Replay akışından hesaplanır. Kullanıcı yalnızca ortak birim fiyatı düzenler. Fiyatlar otomatik kaydedilir; fiyat değişince mevcut bütün otomatik oturumlar yeni fiyatla anında değerlenir.
+The local catalog took priority. The app could read the installed game’s static name table from `System/iteminfo_enUS.lub` beside the selected Replay installation. It read this as data, without executing Lua or writing to the client. Only an observed item’s name was saved as recording metadata.
 
-Finans ekranında toplam değer, karakter/saat özetleri, otomatik eşya listesi ve fiyat bekleyenler bulunur. Aynı sade fiyat alanları canlı karakter kartlarının **FARM** bölümünde de yer alır. Manuel miktar, oturum başlatma, muhasebe, satış, gider veya transfer formu yoktur. Eski v0.4 defter verileri veritabanında korunur; otomatik çanta toplamına dönüştürülmez.
+Duration came from advancing Replay time, merging overlaps across characters. With a reliable starting context, earlier additions inside a recording could be reconstructed separately from the character’s initial inventory. Restarting preserved sessions and prices and did not double-count events. An inventory decrease alone did not establish negative income.
 
-İlk çantadaki eşyalar, yerdeki eşyalar ve kanıtlanabilen yenileme/ticaret/depo hareketleri yeni kazanım sayılmaz. Kaynağı belirlenemeyen ama gerçek ekleme miktarı çözümlenen olaylar **Çantaya gelen eşya** olarak tutulur; kesin yaratık drop'u veya satış kârı olarak sunulmaz. Güvenilir veri yoksa **Envanter verisi bekleniyor** gösterilir. Fiyatı olmayan eşya sıfır sayılmaz; `0` fiyatı gerçek sıfırdır.
-
-Yerel katalog önceliklidir. Gerektiğinde seçilmiş Replay dosyasının yanındaki kurulu oyunun `System/iteminfo_enUS.lub` sabit ad tablosu salt okunur veri olarak çözümlenir. Lua/oyun kodu çalıştırılmaz; istemci dosyası değiştirilmez. İsimler yerel kullanılır, oyun veri dosyası dağıtıma kopyalanmaz. Yalnızca gözlenen eşyanın adı kayıt metaverisi olarak saklanır.
-
-Süre Replay zamanındaki ilerlemeye dayanır; paralel karakterlerde ortak zaman aralıklarının birleşimi kullanılır. Güvenilir başlangıç bağlamı varsa kayıt içindeki gerçek eski kazanımlar yeniden kurulabilir; çantada zaten bulunan başlangıç yükü bu toplama katılmaz. Oturumlar ve fiyatlar kapanıştan sonra korunur; tekrar açma aynı olayları çoğaltmaz. Envanterden eksilme tek başına negatif gelir değildir.
-
-Mevcut EXP takibi, çoklu karakterler, HP/ağırlık ve ses ayarları korunmuştur. Gerçek Skadi dosyaları üzerinde çanta yapıları ve yeni ekleme paketleri okunmuştur; oyun ekranıyla birebir adet karşılaştırması yapılmadığından genel protokol uyumluluğu hâlâ deneysel olarak etiketlidir.
-
-Güncel belgeler: [Otomatik Finans](docs/AUTO_FARM.md), [envanter doğrulaması](docs/INVENTORY_VERIFICATION.md), [EXP doğrulaması](docs/EXP_VERIFICATION.md).
+Real Skadi recordings supplied readable inventory structures and addition packets. Counts had not been independently reconciled against the game screen, so protocol compatibility remained experimental. EXP tracking, multiple characters, HP, weight, and sound settings continued to work.
 
 ```powershell
 npm.cmd test
@@ -300,26 +263,18 @@ npm.cmd run test:live:desktop
 npm.cmd run package:win
 ```
 
-Windows çıktıları: `release/MIDGARD-LIVE-0.5.0-x64-Portable.exe` ve `release/MIDGARD-LIVE-0.5.0-x64-Setup.exe`.
+### v0.4.0 · Local Finance ledger, EXP, and data import
 
----
+This version of the Electron/React app introduced the manual Finance workflow later replaced in v0.5.0. The Finance ledger and normalized EXP and inventory observations were stored locally in `midgard-live.sqlite`. The previous `midgard-replay.sqlite` archive stayed untouched. Raw Replays and game sounds were not copied. Character tracking, HP, weight, file bindings, and sound preferences were preserved.
 
-## Tarihsel belge · v0.4.0
+- **EXP.** Two hundred official numeric rows carried a source and date. Coverage included Base and Novice, First, and Second Job tables, Second Job above 50, calibration, 5-, 15-, and 60-minute gains, hourly rates, and ETA. Because the official table’s level direction was ambiguous, the target-level interpretation was labeled as an inference and cross-checked against calculator totals.
+- **Finance.** The ledger supported shared and character-specific prices, income, sales, expenses, transfers, open or paused or closed sessions, daily through all-time views, and optional revaluation. Sales reduced remaining inventory value. Overlapping character intervals contributed once to elapsed time.
+- **Offline game data.** JSON and CSV imports included source, license, and version. Outside the official EXP facts, data required a permissioned user-supplied pack. The app supported offline search and source versioning.
+- **Notifications.** Character-specific settings covered Base and Job progress, the 90% threshold, item value thresholds, hourly targets, and stalled EXP. EXP alerts that relied on unverified Skadi data were initially off.
 
-Aşağıdaki manuel Finans açıklamaları v0.4.0'a aittir; v0.5.0'da kullanıcı arayüzünden kaldırılmıştır.
+The three available real Skadi examples contained no supported EXP packets. The interface waited for supported data or calibration. Inventory additions went to a review inbox for classification before they counted as income. Automatic expense and item-removal classification still needed verification, so manual records were available.
 
-Çalışan Electron/React uygulamasına EXP, çevrimdışı oyun veritabanı ve **Finans — Farm Ekonomisi** eklendi. Mevcut canlı karakter takibi, HP/ağırlık, dosya eşleştirmeleri ve ses dosyası tercihleri korunur. Belgede adı geçen Tauri, mevcut kod tabanının altyapısı değildir; çalışan Electron altyapısı değiştirilmedi.
-
-Yeni genişletme isteği Finans geçmişini ve denetlenebilir işlem kayıtlarını açıkça istediği için v0.4.0, önceki kayıt tutmayan sürümden farklıdır: **Finans defteri ve normalleştirilmiş EXP/envanter gözlemleri `midgard-live.sqlite` içinde yerel olarak saklanır.** Eski `midgard-replay.sqlite` açılmaz veya değiştirilmez. Ham Replay dosyaları ve oyun sesleri kopyalanmaz; oyun istemcisine, belleğine veya ağ trafiğine erişilmez.
-
-- EXP: 200 resmî sayısal satır ve satır başına kaynak/tarih; Base ve Novice/First/Second Job tabloları, Second Job 50 üzeri, kalibrasyon, 5/15/60 dakika kazanımı, saatlik hız ve ETA. Resmî tablonun seviye yönü açık olmadığından hedef-seviye yorumu destekleyici hesaplayıcı toplamlarıyla çapraz kontrol edilir ve bu çıkarım görünürdür.
-- Finans: ortak/karaktere özel fiyatlar, manuel kazanım, satış, gider, transfer, açık/duraklatılmış/kapalı oturumlar, günlük/haftalık/aylık/tüm zamanlar ve fiyatların isteğe bağlı yeniden değerlemesi. Satılan eşya elde kalan değerden düşer; paralel karakterlerin saati ortak gerçek sürenin birleşimiyle hesaplanır.
-- Oyun veritabanı: kaynak/lisans/sürüm bilgili JSON/CSV içe aktarma, çevrimdışı arama ve kaynak sürümleme. Üçüncü taraf site veritabanı topluca kopyalanmadı; resmî EXP olguları dışında veri için izinli kullanıcı paketi gerekir.
-- Bildirimler: mevcut sesler ve test düğmeleri korunur. Karaktere özel ayarlar ve Base/Job, %90, değer eşiği, saatlik hedef, EXP durması bildirimleri eklenmiştir. Tahmini/Skadi doğrulaması bekleyen verilerle yeni EXP uyarıları varsayılan olarak kapalıdır.
-
-**Gerçek Skadi EXP paketleri mevcut üç örnekte bulunmadı.** İlerleme sıfır veya doğrulanmış gibi gösterilmez; desteklenen veri veya kalibrasyon beklenir. Envanter bildirimleri doğrudan farm geliri değildir: sınıflandırılmamış inceleme kutusundan kullanıcı onayı gerekir. Otomatik eşya çıkarma ve gider sınıflandırması henüz doğrulanmadı; manuel kayıt kullanılabilir.
-
-Güncel belgeler: [EXP doğrulaması](docs/EXP_VERIFICATION.md), [veritabanı ve içe aktarma](docs/EXPANSION_DATABASE.md), [Finans modeli](docs/FINANCE_V1.md).
+The v0.4.0 and v0.3.0 development packages used these commands:
 
 ```powershell
 npm.cmd install
@@ -330,68 +285,27 @@ npm.cmd start
 npm.cmd run package:win
 ```
 
-Windows paketleri `release/MIDGARD-LIVE-0.4.0-x64-Portable.exe` ve `release/MIDGARD-LIVE-0.4.0-x64-Setup.exe` adlarıyla hazırlanır. Kaynak kod ve testler projeyle birlikte teslim edilir.
+### v0.3.0 · Live-only desktop companion
 
----
+This Turkish, offline release for 64-bit Windows 10/11 tracked selected `.rrf` files independently. Live events, statistics, notifications, and snapshots stayed in memory until the app closed. Notification preferences, source paths, manual character names, and sound paths were saved in `live-preferences.json`. The old SQLite archive was left unopened. Archiving, import, export, and backup were unavailable in this version.
 
-## Tarihsel belge · v0.3.0
+Visual and audio alerts covered death, inventory weight (65% by default), selected cards, entry into a city map, and level gains. Each alert accepted a custom WAV, MP3, or OGG file. The level-up sound could also be read from the player’s Ragnarok archive. The first read was silent. Remembered sources resumed at startup, while starting a Replay recording remained an action in the game.
 
-Aşağıdaki kayıt tutmama açıklamaları v0.3.0'a aittir. Yeni Finans/EXP veritabanı için yukarıdaki v0.4.0 kapsamı geçerlidir.
+Synthetic packet and file-growth tests covered these behaviors. End-to-end verification of every alert type against live Skadi gameplay remained outstanding. The main process used no SQLite in this release. The existing application ID preserved the earlier archive’s location.
 
-Windows 10/11 64-bit için Türkçe, çevrimdışı ve **yalnızca anlık yardım** uygulaması. Seçtiğiniz mevcut `.rrf` kaynaklarını birbirinden bağımsız izler; karakter durumu, EXP ve sesli bildirimleri tek ekranda sunar. Oyun istemcisine, belleğine veya ağ trafiğine erişmez; oyun dosyalarını değiştirmez.
+### v0.2.1 · Replay archive and farm statistics
 
-**Oyun etkinliği kaydedilmez.** Olaylar, istatistikler, bildirimler ve analiz görüntüleri yalnızca bellektedir; uygulama kapanınca silinir. Yalnızca bildirim tercihleri, seçilen kaynak yolları, manuel karakter adları ve ses dosyası yolları `live-preferences.json` içinde hatırlanır. Eski SQLite arşivi bu sürümde açılmaz, okunmaz veya değiştirilmez. Arşiv, içe/dışa aktarma ve veri yedeği işlevleri kapalıdır.
+This earlier offline desktop tool for 64-bit Windows 10/11 inspected completed Replays, compared observations, and exported archive data without a cloud account. It read files locally and left the game client, memory, network traffic, and game files alone.
 
-Ölüm, ayarlanabilir ağırlık eşiği (varsayılan %65), seçili kartlar, şehir haritasına geçiş ve seviye artışı için görsel/sesli bildirim bulunur. Her bildirim için kendi WAV/MP3/OGG sesinizi veya kendi Ragnarok oyun arşivinizdeki orijinal seviye sesini seçebilirsiniz. İlk okuma sessiz başlangıçtır; geçmiş olaylar bildirim üretmez. Hatırlanan kaynaklar açılışta otomatik izlenir; uygulama oyun Replay kaydı başlatmaz.
+**Compatibility.** Three growing Skadi recordings were used to check Turkish names, map, file progress, and a limited set of item observations. This established partial RRF v5 container and packet support. Kill and drop counts still needed independent in-game validation. Monster deaths, confirmed personal kills, and estimated personal kills were displayed separately. Unsupported EXP and drops stayed unknown. Labeled demo data was excluded from real persistent statistics.
 
-**Skadi canlı bildirimlerinin tamamı gerçek oyun olaylarıyla doğrulanmamıştır.** Sentetik paket testleri ve dosya büyümesi kontrolü, ölüm/ağırlık/kart/şehir/seviye bildirimlerinin gerçek oyunda uçtan uca doğrulamasının yerine geçmez. Güncel kapsam ve veri sınırları: [LIVE-ONLY.md](docs/LIVE-ONLY.md).
+**Multiple characters.** Explicitly selected files were independent streams with separate position, revision, status, diagnostics, and temporary summaries. Worker and buffer budgets limited concurrent work, with other files queued fairly. There was no fixed one-, three-, or five-character limit. Players could pause, resume, stop, or remove streams without deleting source files. Recorded identities were matched automatically where available. Manual grouping did not establish ownership of a kill or damage.
 
-Kaynak projeyi çalıştırmak ve paketlemek için:
+At the time, file reading was incremental but analysis reparsed size-limited snapshots. An idle file did not establish that a recording had ended. Character comparisons displayed observed deaths, personal-kill certainty, damage, and supported EXP and drop information separately. Uncertain overlaps across recordings were shown as possible duplicates with their reasons.
 
-```powershell
-npm.cmd install
-node .\node_modules\electron\install.js
-npm.cmd test
-npm.cmd run build
-npm.cmd start
-npm.cmd run package:win
-```
+**Item observations.** The reader distinguished appearance on the ground from a successful inventory-add notification, carrying the item ID and quantity and excluding failed responses. Refining or reforming an existing item could also emit a notification, leaving the net gain and monster source uncertain. The archive item CSV exported these observations by character and Item ID. Live detail lists were bounded while totals were retained. Full item detail was available from the persistent archive.
 
-Paketler `release` klasörüne `MIDGARD-LIVE-0.3.0-x64-Setup.exe` ve `MIDGARD-LIVE-0.3.0-x64-Portable.exe` adlarıyla üretilir. Aynı uygulama kimliği eski arşiv dosyalarının yerinde korunması için sürdürülür; yeni ana süreç SQLite kullanmaz.
-
----
-
-## Önceki sürüm belgesi · v0.2.1
-
-**Aşağıdaki bölüm tarihsel v0.2.1 davranışını anlatır.** Arşiv, içe/dışa aktarma, yedekleme ve açılışta izlememe açıklamaları v0.3.0 için geçerli değildir. Güncel kullanım için yukarıdaki bölüm ve [LIVE-ONLY.md](docs/LIVE-ONLY.md) esas alınmalıdır.
-
-Windows 10/11 64-bit için Türkçe, çevrimdışı `.rrf` replay inceleme ve farm istatistik uygulaması. Hesap veya bulut servisi gerektirmez. Oyun istemcisine bağlanmaz; ağ paketleri yakalamaz, oyun belleği okumaz ve oyun dosyalarını değiştirmez.
-
-## Uyumluluk durumu
-
-**Ragnarok Zero: Global — Skadi protokolünün tamamı doğrulanmamıştır.** v0.2.1'de kullanıcının seçtiği üç büyüyen kayıtta Türkçe adlar, harita, dosya ilerlemesi ve sınırlı eşya gözlemleri sınandı. Bu, oyun ekranıyla bağımsız kill/drop doğrulaması değildir. RRF v5 kapsayıcısı ve sınırlı paket alt kümesi desteklenir; bir dosyanın açılması bütün paketlerinin doğrulandığı anlamına gelmez. Ayrıntılar: [RRF_COMPATIBILITY.md](RRF_COMPATIBILITY.md) ve [v0.2.1 notları](docs/LIVE_0.2.1.md).
-
-Yaratık ölümü, kesin kişisel kill ve tahmini kişisel kill ayrı tutulur. Hasar veren son oyuncu kesin katil sayılmaz. Paketle doğrulanmayan EXP ve drop değerleri bilinmiyor olarak kalır. Demo görünümü **DEMO VERİ** etiketi taşır ve kalıcı gerçek istatistiklere eklenmez.
-
-## MIDGARD LIVE: çoklu karakter
-
-MIDGARD LIVE ekranı, açıkça seçtiğiniz birden fazla `.rrf` dosyasını ayrı akışlar olarak yönetir. Karakter sayısı 1, 3 veya 5 ile sınırlandırılmaz. Eş zamanlı okuma/analiz işi sayısı ve tampon bütçesi bilgisayar kaynaklarına göre sınırlandırılır; diğer kayıtlar adil işlem kuyruğunda bekler.
-
-Her akışın okuma konumu, revizyonu, durumu, tanılaması ve geçici analiz özeti ayrıdır. Akışı duraklatabilir, sürdürebilir, durdurabilir veya listeden kaldırabilirsiniz. Bu işlemler kaynak dosyayı silmez. Kayıt karakter adı ve kimliği veriyorsa otomatik eşleştirme kullanılır; eksik kimlik için manuel karakter eşleştirmesi sunulur. Manuel eşleştirme dosyadaki oyuncu kimliğini veya kill/hasar aidiyetini uydurmaz.
-
-**Bu bir doğrulanmış Skadi canlı çözümleyicisi değildir.** Dosya okuması konumsal ve artımlıdır; değişen içeriğin analizi boyutu sınırlandırılmış tam dosya anlık görüntülerini yeniden ayrıştırır. RRF paketlerinin gerçek zamanlı olarak güvenilir biçimde kuyruktan çözüldüğü iddia edilmez. Dosya boyutunun bir süre değişmemesi, kaydın sona erdiğini kanıtlamaz. Canlı akışlar ve istatistikleri deneysel / doğrulanmamış olarak gösterilir.
-
-Karakter karşılaştırmasında gözlenen ölüm, kişisel kill kesinliği, hasar, destekleniyorsa EXP ve drop ayrı sunulur. Birleşik ölüm gözlemleri, benzersiz yaratık kill sayısı olarak etiketlenmez. Farklı karakter kayıtlarında aynı yaratığın görünmesi güvenilir biçimde eşleştirilemiyorsa birleşik benzersiz ölüm bilinmiyor kalır; şüpheli tekrar adayları ve gerekçeler gösterilir.
-
-Eşya paneli, desteklenen paketlerde **yerde görülme** ile **başarılı envanter ekleme bildirimi** gözlemlerini ayrı gösterir. Item ID ve miktar okunur; başarısız cevaplar sayılmaz. Bildirim, mevcut eşyanın refine/reform sonrası yeniden gösterilmesi için de kullanılabildiğinden net yeni loot veya envanter artışı değildir. Eşyanın yaratık kökeni ve kişisel drop aidiyeti bilinmiyor kalır. Kaynak ve sınırlar: [Eşya gözlemleri](docs/ITEM_OBSERVATIONS.md).
-
-**Arşiv eşya CSV**, kalıcı arşivdeki gözlem dökümünü karakter ve Item ID bilgileriyle dışa aktarır; kişisel drop/kazanç raporu değildir. Geçici canlı görünümde bu aktarım kullanılmaz. Canlı kartlarda ayrıntı listeleri kaynak kullanımı için sınırlandırılır; toplam gözlem sayaçları korunur. Tam arşiv dökümü için kalıcı arşiv görünümünü kullanın.
-
-Yeni dosyaların otomatik keşfi için klasör keşif altyapısı bulunur; Gravity uygunluk kapısı doğrulanmadığından otomatik klasör keşfi etkinleştirilemez. Seçilmiş dosyaların açıkça başlatılan deneysel gözlemi ve elle yenileme bu kapıdan ayrı tutulur. Ayrıntılı davranış ve sınırlar: [MIDGARD LIVE](docs/MIDGARD_LIVE.md).
-
-## Başlatma
-
-Node.js 24 LTS ve npm gerekir. PowerShell'de proje klasöründe:
+**Running the historical build.** Node.js 24 LTS and npm were required. The dependency and Electron setup needed internet on first installation or when repairing missing Electron files. Routine packaged analysis worked offline.
 
 ```powershell
 npm.cmd install
@@ -399,42 +313,28 @@ node .\node_modules\electron\install.js
 npm.cmd run dev
 ```
 
-`electron/install.js`, Electron'un Windows çalışma dosyalarını indirir. Bu ortamda kurulum paketi otomatik indirmeyi çalıştırmadığı için komut açıkça verilmiştir; yalnızca ilk kaynak kurulumu veya eksik Electron dosyalarını onarma sırasında internet gerekir. Paketlenmiş uygulamanın günlük analizi internet gerektirmez.
-
-Derlenmiş uygulamayı çalıştırmak için:
+To run the compiled app:
 
 ```powershell
 npm.cmd run build
 npm.cmd start
 ```
 
-Yalnızca arayüz geliştirme önizlemesi:
+To preview the web interface:
 
 ```powershell
 npm.cmd run dev:web
 ```
 
-Tarayıcı önizlemesi masaüstü dosya seçimi, SQLite veya klasör yönetimi yerine geçmez.
+Desktop file selection, SQLite, and folder management required the desktop application.
 
-## Kullanım
+**Archive workflow.** The user selected completed `.rrf` files for read-only import. The library showed format, version, analysis state, and diagnostics for damaged or unsupported files. Overview, monster tables, and farm sessions compared observed results and labeled personal-kill certainty. Selecting a folder listed its Replays, and manual scanning operated on that folder. JSON exported archive summaries and normalized events. CSV exported Replay and session summaries. An application command created a database backup.
 
-1. **Replay içe aktar** ile tamamlanmış `.rrf` dosyalarını seçin. Kaynak dosyalar salt okunur açılır; değiştirilmez veya silinmez.
-2. Replay kütüphanesinde formatı, sürümü, analiz durumunu ve tanılama mesajlarını inceleyin. Desteklenmeyen ve bozuk dosyalar anlaşılır hata ile kaydedilir.
-3. Genel bakış, yaratık tablosu ve farm oturumları üzerinden gözlenen sonuçları karşılaştırın. Kişisel kill kesinliği ayrı gösterilir.
-4. Replay klasörünü seçmek mevcut `.rrf` dosyalarını listeler. Manuel tarama yalnızca seçilmiş klasörü işler.
-5. JSON/CSV dışa aktarma ve veritabanı yedekleme için uygulamadaki komutları kullanın. JSON, arşiv özetlerini ve normalleştirilmiş olayları; CSV, replay/oturum özetlerini içerir.
+Automatic discovery stayed disabled in v0.2.1 pending validation of the relevant Gravity rules. Manual source selection and folder scanning remained available. File observation did not restart automatically at launch.
 
-Otomatik klasör keşfi varsayılan olarak kapalıdır. Gravity kuralları açısından uygunluk doğrulanmadığından etkinleştirme kapısı kilitlidir; bir onay kutusu bu koşulu tek başına sağlamaz. Manuel dosya seçimi ve klasör taraması kullanılabilir.
+**Local data and duplicates.** SQLite lived in the application data directory shown in Settings. The backup feature used SQLite’s backup API so the backup included changes in an active WAL database. SHA-256 prevented a renamed copy of the same file from being imported twice. For overlapping sessions with matching identity, character name, and start time, the later Replay was excluded from totals. This conservative rule could also exclude unique events. Without reliable identity or timestamps, full event-level deduplication was uncertain. An undated recording displayed the labeled import date and stayed out of daily death totals.
 
-## Yerel veri ve tekrarlar
-
-SQLite veritabanı kullanıcıya ait uygulama veri klasöründe tutulur. Tam konum Ayarlar ekranında gösterilir. Yedekleme SQLite yedekleme API'sini kullanır; açık bir WAL veritabanının yalnızca ana dosyasını kopyalamak yerine uygulamadaki yedekleme komutunu tercih edin.
-
-SHA-256 aynı dosyanın farklı adla tekrar içe alınmasını engeller. Kimlik, karakter adı ve başlangıç zamanı eşleşen örtüşen oturumlarda sonraki replay toplamların dışında bırakılır. Bu muhafazakâr yaklaşım örtüşmeyen bölümdeki olayları da dışlayabilir. Güvenilir kimlik veya zaman olmayan kayıtlarda olay düzeyinde tekrarların bütünüyle giderildiği iddia edilmez. Kayıt tarihi bilinmiyorsa kütüphane içe aktarma tarihini açık etiketle gösterir; bu kayıt günlük ölüm toplamlarına eklenmez.
-
-Tek dosya sınırı 128 MiB'dır. Dosyanın boyutu ve değiştirilme zamanı sabit kalana kadar beklenir. Büyük ayrıştırma işi arayüzden ayrı bir worker'da yürütülür.
-
-## Test ve Windows paketi
+**Testing and packaging.** The per-file limit was 128 MiB. Analysis waited for stable size and modification time and ran in a separate worker. Windows x64 Setup and Portable builds were written under `release/` without code signing. The application ID and data directory preserved existing MIDGARD REPLAY archives through database upgrades.
 
 ```powershell
 npm.cmd test
@@ -444,29 +344,8 @@ npm.cmd run test:live:desktop
 npm.cmd run package:win
 ```
 
+**Technology and limits.** The stack used React, strict TypeScript, Vite, Tailwind CSS, Apache ECharts, Electron, and SQLite through `node:sqlite`. The available Node.js toolchain could build Windows packages. The development machine lacked Rust, Cargo, Visual C++ Build Tools, and the Windows SDK for the proposed Tauri 2 implementation. Electron increased the package size and avoided those build prerequisites.
 
-
-
-`release` klasörü Windows x64 kurulum ve taşınabilir paketleri için hedef klasördür. v0.2 paketleri `MIDGARD-LIVE-0.2.1-x64-Setup.exe` ve `MIDGARD-LIVE-0.2.1-x64-Portable.exe` adını kullanır. Gerçekten tamamlanan v0.2 kontrolleri [QA-LIVE.md](QA-LIVE.md), önceki v0.1 sonuçları [QA.md](QA.md) içinde kaydedilir. Gerçek oyun kaydı doğrulaması ile sentetik birim testleri aynı kanıt değildir.
-
-Dağıtım paketleri kod imzası içermez. Uygulama kimliği ve veri klasörü mevcut MIDGARD REPLAY arşivlerini korumak için değiştirilmez. Veritabanı sürüm geçişleri kayıtları silmeden yapılır. Uygulama açılışında dosya gözlemi kendiliğinden yeniden başlatılmaz.
-
-## Teknoloji kararı
-
-React + TypeScript strict mode, Vite, Tailwind CSS, Apache ECharts, Electron ve SQLite (`node:sqlite`) kullanılır. İstenen Tauri 2 / Rust yerine Electron seçildi: geliştirme ortamında Rust, Cargo, Visual C++ Build Tools ve Windows SDK bulunmadı; mevcut Node.js ile gerçekten çalıştırılıp Windows paketi üretilebilen bir masaüstü altyapısı sağlandı. Bu tercih daha büyük uygulama paketi pahasına Rust derleme araçlarına olan ihtiyacı kaldırır.
-
-Mimari: [ARCHITECTURE.md](ARCHITECTURE.md). Kaynak araştırması ve paket sınırları: [RRF_COMPATIBILITY.md](RRF_COMPATIBILITY.md). Üçüncü taraf lisansları: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-
-## v0.2 sınırları
-
-- Gerçek Skadi `.rrf` örnekleriyle uyumluluk ve istatistik doğrulaması tamamlanmalıdır.
-- Büyüyen gerçek Skadi kayıtlarında canlı okuma, dosya başlığı güncellemeleri ve istemci kapatma davranışı ayrıca doğrulanmalıdır.
-- Dosya başına 128 MiB ve toplam işlem/tampon bütçesi sınırları vardır; kayıt adedi sınırı ile aynı şey değildir.
-- Manuel karakter ataması, kayıt sahipliğini veya kişisel kill/hasar aidiyetini kanıtlamaz.
-- Farklı istemcilerdeki yaratık kimliklerinin aynı sunucu varlığını temsil ettiği varsayılmaz; belirsiz birleşik benzersiz kill toplamı verilmez.
-- Kapsanmayan paketler tanılama olarak raporlanır; uydurma paket şeması kullanılmaz.
-- EXP, item drop ve party kill ayrıntıları yalnızca doğrulanabilir olay varsa anlamlıdır; mevcut kaynak profilindeki eksikler sıfır başarı olarak sunulmaz.
-- 3D oynatma, gelişmiş harita görselleştirme, bulut eşitleme ve topluluk istatistikleri kapsam dışıdır.
-- İstemciye müdahale, otomatik oyun kontrolü ve canlı ağ dinleme uygulanmaz.
+The release still needed wider Skadi compatibility testing, particularly around growing files, header updates, and client shutdown. Worker and buffer budgets were independent of the number of selected records. Monster IDs across clients did not guarantee a shared server entity. Unsupported packets produced diagnostics, and unknown EXP, drops, and party kills stayed unknown. Scope excluded 3D playback, advanced map visualization, cloud sync, community statistics, game automation, and live network capture.
 
 </details>

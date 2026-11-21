@@ -2,7 +2,7 @@ import type {DatabaseSync} from 'node:sqlite';
 import {createHash} from 'node:crypto';
 import path from 'node:path';
 import {isConfirmedMonsterDeath,isOwnDamageKill,type ParsedReplay,type ReplayEvent} from '../src/parser';
-import type {CharacterIdentity,LiveStreamStatus} from '../src/shared/types';
+import type {CharacterIdentity,LiveStreamState,LiveStreamStatus} from '../src/shared/types';
 import type {KillCountState,KillCountStatus,KillCountTimeBasis,KillCountTotals,KillCountMonster} from '../src/shared/kill-count';
 import {isKillDailySelectableDate,killDailyDate,killDailyBounds,shiftKillDailyDate,type KillDailyState} from '../src/shared/kill-daily';
 import {replayClockBasis} from '../src/shared/replay-clock-basis';
@@ -105,12 +105,13 @@ export class CompactKillStore {
  private recent=new Map<string,Recent>();
  private names=new Map<number,string>();
  private cache?:KillCountState;
+ private taskbarDayCache?:{date:string;members:string;revision:number;counts:Map<string,number>};
  private revision:number;
  constructor(private db:DatabaseSync){this.db.prepare("UPDATE compact_kill_characters SET status='stopped' WHERE status='tracking'").run();this.revision=Number(this.db.prepare("SELECT value FROM compact_kill_metadata WHERE key='revision'").get()?.value??0);}
  private transaction(action:()=>void):void{this.db.exec('BEGIN IMMEDIATE');try{action();this.db.exec('COMMIT');}catch(error){this.db.exec('ROLLBACK');throw error;}}
  private changed():void{this.revision++;this.cache=undefined;this.db.prepare("INSERT INTO compact_kill_metadata VALUES('revision',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(this.revision);}
  setLocalMonsterNames(names:Map<number,string>):void{this.names=new Map(names);this.revision++;this.cache=undefined;}
- invalidate():void{this.cache=undefined;}
+ invalidate():void{this.cache=undefined;this.taskbarDayCache=undefined;}
  private forgetSource(key:string):void{const source=this.sources.get(key);this.sources.delete(key);if(source&&![...this.sources.values()].some(value=>value.recording===source.recording)){this.recordings.delete(source.recording);for(const [id,value]of this.recent)if(value.recording===source.recording)this.recent.delete(id);}}
  private adjust(value:Recent,amount:1|-1):void{
   if(amount===1)this.db.prepare('INSERT INTO compact_kill_totals VALUES(?,?,?,?,?) ON CONFLICT(character_key,date,monster_id) DO UPDATE SET count=count+1,monster_name=COALESCE(excluded.monster_name,monster_name)').run(value.character,value.date,value.monster,1,value.name);
@@ -180,6 +181,31 @@ export class CompactKillStore {
   const keys=new Set(streams.map(value=>sourceKey(value.sourcePath)));
   for(const stream of streams)if(['paused','stopped','missing','error'].includes(stream.status))this.suspend(stream.sourcePath,status(stream.status));
   for(const[key,value]of [...this.sources])if(!keys.has(key)){this.forgetSource(key);this.transaction(()=>{this.db.prepare('UPDATE compact_kill_characters SET status=? WHERE character_key=?').run([...this.sources.values()].some(row=>row.character===value.character)?'tracking':'stopped',value.character);this.changed();});}
+ }
+ attachTaskbarDailyKills(streams:Pick<LiveStreamState,'character'|'taskbarKillDay'>[],date:string):void {
+  const keys=new Set<string>();
+  for(const {character} of streams)if(character?.key && character.source!=='unassigned')keys.add(character.key);
+  const members=JSON.stringify([...keys].sort());
+  const previous=this.taskbarDayCache;
+  if(!previous || previous.date!==date || previous.members!==members || previous.revision!==this.revision){
+   const counts=new Map<string,number>();
+   if(keys.size){
+    const rows=this.db.prepare(`SELECT k.value AS character_key, SUM(t.count) AS count, d.duration_ms
+     FROM json_each(?) AS k
+     LEFT JOIN compact_kill_totals t ON t.character_key=k.value AND t.date=?
+     LEFT JOIN compact_kill_days d ON d.character_key=k.value AND d.date=?
+     GROUP BY k.value,d.duration_ms`).all(members,date,date);
+    for(const row of rows){
+     if(row.count!==null || Number(row.duration_ms)>0)counts.set(String(row.character_key),Number(row.count??0));
+    }
+   }
+   this.taskbarDayCache={date,members,revision:this.revision,counts};
+  }
+  for(const stream of streams){
+   const key=stream.character?.key;
+   if(key && stream.character?.source!=='unassigned')stream.taskbarKillDay={date,count:this.taskbarDayCache!.counts.get(key)??null};
+   else delete stream.taskbarKillDay;
+  }
  }
  snapshot():KillCountState{
   if(this.cache)return this.cache;
